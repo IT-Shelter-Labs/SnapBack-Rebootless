@@ -72,8 +72,23 @@ jobs:
         env:
           SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-gui
         run: |
+          # A baseline plus a few apps started afterwards, so the lists are not empty.
+          ./publish/SnapBack/snapback.exe baseline create
+          $extra = @(
+            Start-Process notepad.exe -PassThru
+            Start-Process ./tests/SnapBack.TestTarget/bin/Release/net10.0-windows/SnapBack.TestTarget.exe -ArgumentList normal -PassThru
+          )
           $p = Start-Process ./publish/SnapBack/SnapBack.exe -PassThru
           Start-Sleep -Seconds 20
+          try {
+            Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+            $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+            $bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+            [System.Drawing.Graphics]::FromImage($bmp).CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+            New-Item -ItemType Directory -Force screenshots | Out-Null
+            $bmp.Save("screenshots/main-window.png")
+          } catch { Write-Host "Screenshot failed: $_" }
+          $extra | Where-Object { $_ -and -not $_.HasExited } | ForEach-Object { Stop-Process -Id $_.Id -Force }
           $alive = -not $p.HasExited
           if ($alive) { Stop-Process -Id $p.Id -Force }
           $log = Get-Content "$env:SNAPBACK_DATA_DIR\logs\*.log" -Raw
@@ -92,6 +107,14 @@ jobs:
           if (-not $p.WaitForExit(180000)) { Stop-Process -Id $p.Id -Force; throw "--auto-baseline did not finish" }
           Get-Content "$env:SNAPBACK_DATA_DIR\logs\*.log"
           if (-not (Test-Path "$env:SNAPBACK_DATA_DIR\baseline.json")) { throw "No baseline was created" }
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots
+          if-no-files-found: ignore
 
       - name: Upload build
         uses: actions/upload-artifact@v4

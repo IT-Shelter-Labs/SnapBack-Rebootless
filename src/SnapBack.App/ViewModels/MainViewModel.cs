@@ -134,7 +134,8 @@ public sealed class MainViewModel : ObservableObject
 
             if (_analysis.Snapshot.Context.SelfElevated)
             {
-                return "SnapBack is running as administrator. This is not needed; elevated apps are never closed either way.";
+                return "SnapBack is running as administrator. This is not needed, and apps that run as administrator are never closed. "
+                    + "If User Account Control is turned off, all your apps run elevated and SnapBack will show them as protected.";
             }
 
             return null;
