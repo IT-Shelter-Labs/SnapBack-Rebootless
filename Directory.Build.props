@@ -9,7 +9,7 @@
     <!-- Allows building and testing the platform-independent parts on Linux/macOS CI. -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
 
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Product>SnapBack</Product>
     <Company>SnapBack contributors</Company>
     <Authors>SnapBack contributors</Authors>

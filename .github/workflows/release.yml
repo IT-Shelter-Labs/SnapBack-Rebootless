@@ -28,7 +28,7 @@ jobs:
             $out = "publish/SnapBack-$version-$rid"
             dotnet publish src/SnapBack.App -c Release -r $rid --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=$version -o $out
             dotnet publish src/SnapBack.Cli -c Release -r $rid --self-contained -p:PublishSingleFile=true -p:Version=$version -o $out
-            Copy-Item README.md, LICENSE, docs/SAFETY.md -Destination $out
+            Copy-Item README.md, README.ru.md, README.zh-CN.md, LICENSE, docs/SAFETY.md -Destination $out
             Compress-Archive -Path "$out/*" -DestinationPath "publish/SnapBack-$version-$rid.zip"
           }
           Get-FileHash publish/*.zip -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } | Set-Content publish/SHA256SUMS.txt

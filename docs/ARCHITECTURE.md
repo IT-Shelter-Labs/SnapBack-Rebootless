@@ -14,6 +14,7 @@ safety-relevant decision is unit-tested on any platform with simulated processes
 │ SnapBack.Core                               │   decisions (pure, tested)
 │  Model · Classification · Grouping ·        │
 │  Baselines · Planning · Safety · Execution  │
+│  Memory · Presentation · Localization       │
 │  Persistence · Logging · Startup            │
 │        ▲ ISystemProbe   ▲ IProcessController│
 └────────┼────────────────┼───────────────────┘
@@ -22,6 +23,7 @@ safety-relevant decision is unit-tested on any platform with simulated processes
 │ SnapBack.Windows                            │   Win32 / NT API, no decisions
 │  WindowsSystemProbe · WindowsProcessController│
 │  VerifiedProcess · RestartManager · Console │
+│  MemoryInfoReader · StandbyListPurger       │
 └─────────────────────────────────────────────┘
 ```
 
@@ -158,6 +160,70 @@ Restart Manager additionally checks `RmGetList` (only registered PIDs, our sessi
 and never passes `RmForceShutdown`. Ctrl+C attaches to the target's console, inspects all attached
 processes, ignores the event itself, and detaches.
 
+### 9. Memory analysis (`MemoryStatus`, `SessionStatistics`, `RestoreComparison`, `MemoryAdvisor`)
+
+`WindowsSystemProbe.GetMemoryStatus` combines `GlobalMemoryStatusEx` (total, available),
+`GetPerformanceInfo` (commit charge, system cache) and the PDH counters of the *Memory* object
+(standby lists, modified list, free & zero list) — all readable by a standard user. Unknown values stay
+`null`.
+
+The operation window captures `SessionStatistics` (apps, processes, memory) from the analysis the user
+confirmed, and again ~1.5 s after the graceful phase (and after a forced termination or *Check
+again*). `RestoreComparison` turns the two into *Before → After* rows. The memory released by closing
+apps is the sum of the private working sets of the processes that exited; it is reported on its own
+line. `MemoryAdvisor` classifies the situation by **available** memory (which includes the standby
+cache) into Healthy / Moderate / Low and explains it; it never recommends Deep Memory Cleanup.
+
+### 10. Deep Memory Cleanup (`DeepCleanupService`, `MemoryCleaner`, `DeepCleanupHelper`)
+
+```text
+MemoryWindow ─► DeepCleanupService ─► MemoryCleaner ─┬─ elevated? ─► StandbyListPurger (in process)
+  (button +       measure before/after               └─ otherwise ─► ShellElevatedRunner ("runas")
+   confirmation)                                                       └─► SnapBack.exe --deep-cleanup <mode>
+                                                                            └─► DeepCleanupHelper.Run ─► StandbyListPurger
+                                                                                 exit code ─► outcome
+```
+
+- `MemoryListCommand` maps the two modes to `MemoryPurgeStandbyList` (4) and
+  `MemoryPurgeLowPriorityStandbyList` (5) and rejects every other command.
+- `StandbyListPurger` enables `SeProfileSingleProcessPrivilege` on its own token and calls
+  `NtSetSystemInformation(SystemMemoryListInformation, &command, sizeof(int))`.
+- The helper protocol is two fixed tokens in, one exit code out; `App.OnStartup` handles it before
+  anything else (no window, no single-instance lock).
+- `DeepCleanupReport` computes the cache reclaimed as the decrease of the standby list (or the increase
+  of free memory when list sizes are unknown). It is kept separate from `RestoreComparison`'s numbers.
+- Neither `CleanupOperation` nor `SnapBackEngine` can reach the cleaner; a test enforces this.
+
+### 11. Lists: sorting, search, selection (`AppListOrdering`, `SelectionState`)
+
+Pure functions in Core, used by the main view model:
+
+- `Sort` by name (culture-aware, case-insensitive), memory (bytes — never formatted text),
+  process count or risk rank (Safe < Caution < Manual review < Kept < Protected), ascending or
+  descending, with stable tie-breakers.
+- `Filter` matches every search term against the app name, the executables of all its processes, the
+  detail hint (e.g. a script name) and its risk labels.
+- `SelectionState` stores explicit choices by app-instance identity, so sorting, searching and
+  refreshing (which create new `PlanItem` objects) never lose them; untouched items follow the
+  planner's default; non-selectable items can never be selected; choices for vanished instances are
+  pruned.
+
+### 12. Localization
+
+- `Loc` (Core) resolves keys from `SnapBack.Core/Localization/Strings*.resx` with an explicit culture
+  (not thread-bound, so background work produces text in the chosen language) and falls back to
+  English, then to the key itself.
+- `Tr` (App) adds the UI resources (`SnapBack.App/Localization/Strings*.resx`) and is bindable:
+  XAML uses `{l:Tr Key}`, a binding to `Tr.Instance[Key]`. When `Loc.CultureChanged` fires, the
+  indexer notifies, every binding updates, and the main view model re-analyzes so that engine-made
+  texts (step descriptions, summaries) are regenerated. No restart is needed.
+- `Languages.Resolve` maps the setting (`system`, `en`, `ru`, `zh-CN`) and the Windows display
+  language to a supported culture (`ru-*` → ru; `zh-CN`/`zh-SG`/`zh-Hans` → zh-CN; anything else →
+  English).
+- Decisions never depend on translated text. Tests check that all languages contain the same keys and
+  placeholders, that every key used in code exists, and the fallback rules. The CLI stays English for
+  stable scripting.
+
 ## Persistence
 
 `%LOCALAPPDATA%\SnapBack` (or `SNAPBACK_DATA_DIR`): `settings.json`, `baseline.json`,
@@ -179,5 +245,5 @@ exits. An existing baseline from the same boot is kept.
   using `FakeSystem`.
 - **Other front-ends** (tray icon, scheduled cleanup, PowerShell module): use `SnapBackEngine`; it
   already exposes analysis, baselines, dry runs, operations and history.
-- **Localization**: user-facing strings live in the view models and `RiskReasons`; moving them to
-  resources is a self-contained change.
+- **New language**: add `Strings.<culture>.resx` next to both existing resource sets, add the code to
+  `Languages.Supported`/`NativeName`/`FromSystem`, and extend `Cultures` in `LocalizationTests`.

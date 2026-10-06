@@ -30,6 +30,17 @@ The core (`src/SnapBack.Core`, `tests/SnapBack.Core.Tests`) builds and tests on 
 - Do not log or persist window titles, command lines or other user content.
 - Builds treat warnings as errors; keep it that way.
 
+## Translations
+
+User-facing text lives in resource files, never in code:
+
+- `src/SnapBack.Core/Localization/Strings.resx` (+ `.ru.resx`, `.zh-CN.resx`) — engine texts;
+- `src/SnapBack.App/Localization/Strings.resx` (+ translations) — UI texts.
+
+Add a key to all three files; use `Loc.Get`/`Loc.Format` in Core and `{l:Tr Key}` / `Tr.Get` in the
+app. Avoid plural-dependent sentences ("Processes: {0}" instead of "{0} processes"). The tests fail if
+a key is missing in any language, if placeholders differ, or if code uses an unknown key.
+
 ## Adding a known application
 
 Add its executable name to the right set in `src/SnapBack.Core/Classification/KnownProcesses.cs`

@@ -26,11 +26,17 @@ $Scope = [System.Windows.Automation.TreeScope]
 function New-Cond($property, $value) { New-Object System.Windows.Automation.PropertyCondition($property, $value) }
 
 function Find-TopWindow([int] $processId, [string] $automationId, [int] $timeoutSec = 40) {
-    $cond = New-Object System.Windows.Automation.AndCondition((New-Cond $AE::ProcessIdProperty $processId), (New-Cond $AE::AutomationIdProperty $automationId))
+    # Owned dialogs are often exposed as children of their owner window rather than of the desktop,
+    # so look at the process's top-level windows and inside them.
+    $byId = New-Cond $AE::AutomationIdProperty $automationId
+    $byProcess = New-Cond $AE::ProcessIdProperty $processId
     $deadline = (Get-Date).AddSeconds($timeoutSec)
     while ((Get-Date) -lt $deadline) {
-        $w = $AE::RootElement.FindFirst($Scope::Children, $cond)
-        if ($w) { return $w }
+        foreach ($top in $AE::RootElement.FindAll($Scope::Children, $byProcess)) {
+            if ($top.Current.AutomationId -eq $automationId) { return $top }
+            $inner = $top.FindFirst($Scope::Descendants, $byId)
+            if ($inner) { return $inner }
+        }
         Start-Sleep -Milliseconds 500
     }
     throw "Window '$automationId' did not appear"

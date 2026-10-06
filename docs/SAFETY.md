@@ -72,30 +72,49 @@ reference for reviewing any change that touches classification, planning or exec
 | Automatic forced termination of hanging apps | Does not exist. Hung apps are reported as *Not responding*. |
 | Forced termination | Only after a confirmation dialog listing the apps and warning about data loss. The resulting `ForceAuthorization` covers the exact process identities, expires after 5 minutes, and is only valid for processes that already went through the polite phase of the same operation. The CLI cannot force at all. |
 
+### Deep Memory Cleanup
+
+| Threat | Mitigation |
+|---|---|
+| Cleanup runs as a hidden side effect of Return to baseline | It lives in a separate service (`DeepCleanupService`) that `CleanupOperation` and `SnapBackEngine` cannot reach (verified by a test). It only runs from an explicit button followed by a confirmation dialog. |
+| "Optimizing" memory by trimming working sets (`EmptyWorkingSet`, `MemoryEmptyWorkingSets`) | Not implemented and not reachable: `MemoryListCommand.IsAllowed` accepts only the two standby purges (4 and 5); everything else is rejected before the system call, and tests enumerate the forbidden values. |
+| Losing data waiting to be written (modified list) | Never touched: `MemoryFlushModifiedList` is not an allowed command, and purging standby never discards dirty pages. |
+| Running the whole app elevated | Not needed. Only the purge needs elevation; it runs in a separate, short-lived helper started with one UAC prompt. SnapBack itself stays a standard-user process. |
+| Abusing the elevated helper | The helper accepts exactly `--deep-cleanup standby` or `--deep-cleanup low-priority` (strict, case-sensitive parser), refuses to work unless elevated, reads no input files, writes no output files (only its own log), and answers only with an exit code. It has no other functionality, so a forged invocation can at most empty a cache — and would still need the user's UAC consent. |
+| Misleading numbers ("freed 6 GB!") | SnapBack reports memory released by closing apps and cache dropped by the cleanup separately and never adds them up; it explains that the cache was already available and that *Available* barely changes. The advisor never presents the cleanup as necessary. |
+| Declined UAC prompt or failure | Treated as a normal outcome: nothing changed, the reason is shown, nothing else is affected. |
+
 ### Other
 
 | Threat | Mitigation |
 |---|---|
 | One failing process aborts everything / crashes the app | Every per-process query and action is wrapped; failures become notes on that item. Unhandled UI exceptions are logged and reported without closing the window. |
 | Privacy | Window titles and command lines are shown in the UI only, never persisted or logged. Command lines are reduced to a script or module name. No network access. |
-| Privilege escalation via SnapBack | It has no elevated component, no service, no driver, no IPC surface. The only registry write is the opt-in per-user autostart entry. |
+| Privilege escalation via SnapBack | No service, no driver, no IPC surface. The only elevated code is the Deep Memory Cleanup helper, which needs the user's UAC consent and can do nothing but purge the standby cache. The only registry write is the opt-in per-user autostart entry. |
+| Language switching changes behaviour | Localization only affects texts. All decisions use enums and identities, never translated strings; tests check that every language has every string with the same placeholders. |
 
-## Why no administrator mode?
+## Elevation model
 
-An elevated SnapBack could close elevated programs, but those are exactly the programs most likely
-to be doing something sensitive (installers, admin tools, debuggers). The value is small, the risk is
-large, and a privileged helper would add attack surface. If a future version adds it, it must be a
-separate, short-lived, explicitly requested elevation for a single confirmed operation, never a
-permanently elevated process.
+SnapBack runs as a standard user (`asInvoker`) and never asks for elevation to close apps. An
+elevated SnapBack could close elevated programs, but those are exactly the programs most likely to be
+doing something sensitive (installers, admin tools, debuggers); the value is small and the risk large.
+
+The single exception is the optional Deep Memory Cleanup, which Windows only permits to elevated
+processes. It follows the rule this document set for any future elevation: a separate, short-lived,
+explicitly requested elevation for a single confirmed operation, never a permanently elevated
+process. The elevated helper (`SnapBack.exe --deep-cleanup …`) has no window, no single-instance
+lock, a two-value command whitelist and an exit-code-only answer.
 
 ## What SnapBack never does
 
-- Trim working sets, purge the standby list or "optimize" memory.
+- Trim working sets, flush the modified list or "optimize" memory behind your back. (The standby
+  cache can be purged only through the explicit, separately confirmed Deep Memory Cleanup.)
 - Stop, disable or reconfigure services.
 - Change process priorities or affinities.
 - Delete files, clean temp folders or edit the registry (beyond the opt-in Run entry).
 - Touch Windows Defender or any security software.
 - Use a kernel driver.
+- Run Deep Memory Cleanup automatically or as part of Return to baseline.
 
 ## Known limitations
 
