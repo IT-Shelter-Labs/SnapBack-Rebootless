@@ -47,7 +47,7 @@ reference for reviewing any change that touches classification, planning or exec
 | A process SnapBack cannot open or fully inspect | `AccessDenied`, `OwnerUnknown`, `ImagePathUnknown`, `CannotVerify` → Protected. |
 | A malicious program named like a system file, outside `C:\Windows` | Name-based protection applies anywhere, so it is protected too (over-protection is acceptable). |
 | SnapBack closing itself, or the app it was launched from | Self protected; ancestors require manual review ("closing it may close SnapBack too"). |
-| Settings or JSON files tampered with | No setting can unprotect anything. The keep list can only *add* protection. Corrupt files are quarantined and defaults used. |
+| Settings or JSON files tampered with | No setting can unprotect anything. Rules are evaluated after protection; *Always keep* only adds protection and *Always close* only pre-selects a candidate. Profiles only list apps to keep. Corrupt files are quarantined and defaults used. |
 
 ### Acting on the wrong process
 
@@ -84,18 +84,50 @@ reference for reviewing any change that touches classification, planning or exec
 | Misleading numbers ("freed 6 GB!") | SnapBack reports memory released by closing apps and cache dropped by the cleanup separately and never adds them up; it explains that the cache was already available and that *Available* barely changes. The advisor never presents the cleanup as necessary. |
 | Declined UAC prompt or failure | Treated as a normal outcome: nothing changed, the reason is shown, nothing else is affected. |
 
+### Profiles and rules
+
+| Threat | Mitigation |
+|---|---|
+| A rule or profile closes a system component | Protection is decided first in `CleanupPlanner`; a protected group is never a candidate whatever the rules say (tests set *Always close* on svchost, Explorer and an elevated app). |
+| *Always close* turns into "close without asking" | It only pre-selects. The preview and its confirmation, the polite close, the live guard and handle verification run as always; an app that asks to save is left waiting, and forced termination still needs its own confirmation (tested). |
+| *Always close* skips the live re-check | No: the guard and `VerifiedProcess` act on the live process; a target that became protected (e.g. restarted elevated) is skipped (tested). |
+| Switching to a profile closes apps by itself | Selecting a profile only changes what the session is compared with. Returning to it is the normal *Return to baseline* flow with preview and confirmation; the tray menu only opens that preview. |
+| A stale or foreign profile | Profiles carry the user SID; a profile of another user is refused (`BaselineFactory.Validate`). Profiles from earlier boots match apps by application key only, as before. |
+
+### WSL and Docker
+
+| Threat | Mitigation |
+|---|---|
+| Killing `vmmem`/`vmmemWSL` or Docker processes corrupts the VM or loses container data | They carry `ManagedEnvironment` (protected) and are never candidates, whatever the rules. They are only stopped with `wsl --shutdown` / `docker desktop stop`. |
+| Stopping WSL ends Linux services, jobs or unsaved work; stopping Docker ends containers | Before stopping, SnapBack lists the running distributions or containers and warns explicitly (including that Docker Desktop depends on WSL). Nothing stops without the user's confirmation. |
+| Something starts between the warning and the stop | The confirmation records exactly what was shown and expires after 5 minutes; right before the command, SnapBack inspects again and does nothing if anything new is running or the list can no longer be read. |
+| Old Docker Desktop without `docker desktop stop` | Reported as not supported; SnapBack does not fall back to closing its processes. |
+| SnapBack starts WSL/Docker by inspecting them | Read-only commands are only run when the process list already shows the environment running. |
+| Command injection | Commands are fixed executables with fixed argument lists, started without a shell; nothing user-provided is passed. |
+
+### Tray, autostart and background mode
+
+| Threat | Mitigation |
+|---|---|
+| Running elevated at sign-in | Autostart is the per-user `Run` entry (no administrator rights, no task, no service), written only when the user enables it and removed when disabled. |
+| Automatic actions in the background | The background only analyzes (every 15 minutes) and may show a notification. It never closes anything; the automatic baseline only records a profile. |
+| A forged "activate"/"exit" signal | The named events are per user session; they can only show the window or ask SnapBack to exit, and exit is refused while an operation runs. |
+| SnapBack itself slows the machine down | One analysis per 15 minutes on a background-priority thread with EcoQoS; no polling; bounded in-memory memory history. CI measures idle CPU time and memory. |
+| Notification spam / misleading alerts | Off with one setting; at most 3 per day; never about cached memory; growth is called "unusual", never a leak. |
+
 ### Other
 
 | Threat | Mitigation |
 |---|---|
 | One failing process aborts everything / crashes the app | Every per-process query and action is wrapped; failures become notes on that item. Unhandled UI exceptions are logged and reported without closing the window. |
 | Privacy | Window titles and command lines are shown in the UI only, never persisted or logged. Command lines are reduced to a script or module name. No network access. |
-| Privilege escalation via SnapBack | No service, no driver, no IPC surface. The only elevated code is the Deep Memory Cleanup helper, which needs the user's UAC consent and can do nothing but purge the standby cache. The only registry write is the opt-in per-user autostart entry. |
+| Privilege escalation via SnapBack | No service, no driver, no IPC surface beyond the per-session "show window" / "exit" events. The only elevated code is the Deep Memory Cleanup helper, which needs the user's UAC consent and can do nothing but purge the standby cache. The only registry write is the opt-in per-user autostart entry. |
 | Language switching changes behaviour | Localization only affects texts. All decisions use enums and identities, never translated strings; tests check that every language has every string with the same placeholders. |
 
 ## Elevation model
 
-SnapBack runs as a standard user (`asInvoker`) and never asks for elevation to close apps. An
+SnapBack runs as a standard user (`asInvoker`) and never asks for elevation to close apps, to start
+with Windows (per-user Run entry) or to stop WSL/Docker (their own commands run as the user). An
 elevated SnapBack could close elevated programs, but those are exactly the programs most likely to be
 doing something sensitive (installers, admin tools, debuggers); the value is small and the risk large.
 
@@ -115,6 +147,9 @@ lock, a two-value command whitelist and an exit-code-only answer.
 - Touch Windows Defender or any security software.
 - Use a kernel driver.
 - Run Deep Memory Cleanup automatically or as part of Return to baseline.
+- Close anything from the background, the tray menu or a notification without the preview.
+- Terminate `vmmem`, WSL or Docker processes; they are only stopped with their own commands.
+- Let a rule or profile lower a *Protected* classification or make forced termination implicit.
 
 ## Known limitations
 
@@ -133,6 +168,6 @@ lock, a two-value command whitelist and an exit-code-only answer.
 A change to classification, the guard, the controller or the executor must:
 
 - keep every existing safety test green, and add tests for the new behaviour;
-- never add a way (setting, flag, list) to lower a *Protected* classification;
+- never add a way (setting, flag, list, rule, profile) to lower a *Protected* classification;
 - never make forced termination implicit or automatic;
 - keep identity verification on the handle that performs the action.

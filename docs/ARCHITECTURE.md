@@ -13,8 +13,9 @@ safety-relevant decision is unit-tested on any platform with simulated processes
 ┌─────────────────────────────────────────────┐
 │ SnapBack.Core                               │   decisions (pure, tested)
 │  Model · Classification · Grouping ·        │
-│  Baselines · Planning · Safety · Execution  │
-│  Memory · Presentation · Localization       │
+│  Baselines · Profiles · Rules · Planning ·  │
+│  Safety · Execution · Memory · Insights ·   │
+│  Environments · Presentation · Localization │
 │  Persistence · Logging · Startup            │
 │        ▲ ISystemProbe   ▲ IProcessController│
 └────────┼────────────────┼───────────────────┘
@@ -24,6 +25,8 @@ safety-relevant decision is unit-tested on any platform with simulated processes
 │  WindowsSystemProbe · WindowsProcessController│
 │  VerifiedProcess · RestartManager · Console │
 │  MemoryInfoReader · StandbyListPurger       │
+│  ShellNotifyIcon · AutostartRegistration    │
+│  ProcessCommandRunner · ResourceModes       │
 └─────────────────────────────────────────────┘
 ```
 
@@ -224,18 +227,96 @@ Pure functions in Core, used by the main view model:
   placeholders, that every key used in code exists, and the fallback rules. The CLI stays English for
   stable scripting.
 
+### 13. Profiles (`Profile`, `ProfileSet`, `ProfileStore`)
+
+- A profile is a named `Baseline` plus environment suggestions (`Wsl`/`Docker`: keep or suggest
+  stopping). `ProfileSet` holds all profiles, the default one (startup, automatic baseline) and the
+  selected one (what the session is compared with). Selecting a profile closes nothing.
+- The engine analyzes against the selected profile (`Analyze()`) or a given one
+  (`Analyze(snapshot, profileId)` / `AnalyzeFor`). Comparison and planning are unchanged: a profile is
+  just another baseline, so every safety property of the baseline path applies.
+- Create (from the current state), update (re-capture, keeping name and options), rename (cleaned and
+  made unique), add/remove apps, delete, set default, select. `ProfileSet.Normalize` repairs loaded
+  data (duplicate IDs, missing baselines, dangling default/current IDs, invalid enums).
+- Migration: if `profiles.json` does not exist, the 0.2 `baseline.json` becomes the profile *Clean*
+  (the old file is left as it is).
+
+### 14. Rules (`AppRule`, `PlannerOptions.Rules`)
+
+- Per app key: *AlwaysKeep*, *AlwaysClose*, *AskEveryTime*, stored in settings (the 0.2 keep list is
+  migrated into *AlwaysKeep* rules).
+- Precedence in `CleanupPlanner`: protection first (no rule can change it) → *AlwaysClose* beats
+  profile membership → profile membership or *AlwaysKeep* keeps the app → everything else is a
+  candidate. *AlwaysClose* pre-selects, *AskEveryTime* never pre-selects. Rules change neither the
+  risk level nor the close steps, and `SafetyGuard`/`VerifiedProcess` still re-check every action.
+
+### 15. Insights (`SessionDrift`, `ImpactEstimate`, `MemoryTracker`, `NotificationPolicy`)
+
+- `SessionDrift.Compute(analysis, now)`: score 0–100 = new apps ×4 (≤40) + new-app private memory
+  as % of RAM ×2 (≤40) + extra processes ÷8 (≤10) + baseline age (≤10 after 24 h, only while
+  something is new). < 20 low, < 50 medium, else high. Session uptime is estimated from the oldest
+  process of the user in the session (sign-in), which also works with Fast Startup.
+- `ImpactEstimate.Compute(analysis, itemsToClose)`: breakdown of *in use* (= total − available) into
+  new apps, profile/kept apps and the rest; cache (standby + modified) reported separately; estimate
+  = private memory of the selectable items; level by share of RAM (≥10 % high, ≥4 % or ≥8 apps
+  medium). Explanations are generated in the UI language.
+- `MemoryTracker`: fed by every analysis (`SnapBackEngine.Analyze`), at most one sample per 10
+  minutes; one series per app instance (root identity), committed private bytes; ≤96 samples per
+  series (the older half is thinned when full), ≤64 series (largest kept), exited instances dropped,
+  protected processes never tracked; in memory only. `Assess` flags *Growing* (≥200 MB, ×1.3) or
+  *Unusual* (≥2 h, ≥500 MB, ×1.5, ≥70 % rising steps, still near its maximum) using medians of the
+  first/last three samples.
+- `NotificationPolicy`: high drift (with ≥1 GB reclaimable and scarce memory or high impact; 6 h
+  cooldown; re-armed only after the drift drops), unusual growth once per instance (3 h cooldown),
+  ≤3 per day, none while the window is visible or when disabled.
+
+### 16. WSL and Docker (`EnvironmentDetector`, `EnvironmentService`)
+
+- Detection from the snapshot only: WSL = `vmmemWSL`, or `vmmem` together with `wslservice`/`wslhost`/
+  `wslrelay`; Docker = `com.docker.backend.exe` or `Docker Desktop.exe` in the user's session. These
+  processes carry `RiskReason.ManagedEnvironment` (protected), so they are never candidates.
+- `EnvironmentService.InspectAsync` runs read-only commands through `ICommandRunner` only when the
+  environment is already running: `wsl --list --running --quiet` (`WSL_UTF8=1`, UTF-16 tolerant),
+  `docker desktop status` (support for `docker desktop stop`) and `docker ps --format {{.Names}}`.
+- `StopAsync(EnvironmentStopConfirmation)`: the confirmation is created from what the user was shown
+  and expires after 5 minutes. Right before stopping, the environment is inspected again; if a
+  distribution/container appeared that was not shown (or the list became unknown), nothing is done
+  (`Changed`). Then exactly `wsl --shutdown` or `docker desktop stop` runs (fixed arguments, no shell,
+  timeouts; the command is never killed), and the process list is polled until the environment is
+  gone. Nothing ever terminates `vmmem` or Docker processes.
+- `ProcessCommandRunner` (Windows) starts the tool directly with an argument list, no window, captured
+  output; `EnvironmentToolLocator` finds `%SystemRoot%\System32\wsl.exe` and Docker Desktop's
+  `docker.exe` (then `PATH`).
+
+### 17. Tray, background mode, autostart (App)
+
+- `TrayController`: hidden top-level `HwndSource` (not message-only, so it receives `TaskbarCreated`
+  and re-adds the icon after Explorer restarts) + `ShellNotifyIcon` (`Shell_NotifyIconW`,
+  `NOTIFYICON_VERSION_4`, tooltip, `NIIF_RESPECT_QUIET_TIME` notifications). The context menu is a WPF
+  `ContextMenu` built on open (current language and profiles). Menu actions only open the window,
+  select a profile, refresh or exit; "Return to baseline" opens the normal preview.
+- `App` owns one `MainViewModel` for the whole run; the window is created on demand, the close button
+  hides it (or exits, per setting), `ShutdownMode = OnExplicitShutdown`. `SingleInstance` uses a
+  mutex plus two named events: activate (second launch) and exit (`--quit`). Exit is refused while an
+  operation is running.
+- `BackgroundMonitor`: `engine.Analyzed` → tooltip + notification policy; one analysis every 15
+  minutes while the window is hidden, on a thread in `THREAD_MODE_BACKGROUND_BEGIN`; EcoQoS
+  (`ProcessPowerThrottling`) is on while hidden. Nothing polls in between.
+- Autostart: `AutostartRegistration.Sync` keeps the per-user Run value (`"…\SnapBack.exe" --autostart`)
+  equal to the setting (also fixing a moved path or the 0.2 `--auto-baseline` entry). With
+  `--autostart`: tray only if *start minimized* is on; if *automatic baseline* is on,
+  `AutoBaselineRunner` waits for `StartupSettleDetector` (min. time since sign-in, quiet period of
+  unchanged apps **and** CPU below 50 %, max. wait) and updates the target profile once per sign-in
+  (`AutoBaselinePolicy`).
+
 ## Persistence
 
-`%LOCALAPPDATA%\SnapBack` (or `SNAPBACK_DATA_DIR`): `settings.json`, `baseline.json`,
-`history.json`, `logs\snapback-YYYYMMDD.log`. Writes are atomic (temp file + replace). A corrupt
-file is moved aside (`*.corrupt-<timestamp>`) and defaults are used. Settings are clamped on load.
-
-## Automatic baseline
-
-`SnapBack.exe --auto-baseline` (registered in the per-user Run key only when enabled) runs headless:
-`StartupSettleDetector` waits until a minimum time after sign-in has passed **and** the set of user
-apps has been stable for a quiet period (or a maximum wait expires), then creates the baseline and
-exits. An existing baseline from the same boot is kept.
+`%LOCALAPPDATA%\SnapBack` (or `SNAPBACK_DATA_DIR`): `settings.json` (schema 2: rules, startup,
+tray, notifications), `profiles.json`, `history.json` (one record per operation, upserted by
+operation ID: profile, before/after statistics, forced terminations, Deep Cleanup, stopped
+environments; trimmed to the history limit), `logs\snapback-YYYYMMDD.log`. Writes are atomic (temp
+file + replace). A corrupt file is moved aside (`*.corrupt-<timestamp>`) and defaults are used.
+Settings are clamped on load.
 
 ## Extending SnapBack
 
@@ -243,7 +324,10 @@ exits. An existing baseline from the same boot is kept.
 - **New close methods**: add a `StepKind`, extend `CloseStrategy`, implement it in
   `IProcessController` (with handle verification), and cover it in `CleanupOperationTests`
   using `FakeSystem`.
-- **Other front-ends** (tray icon, scheduled cleanup, PowerShell module): use `SnapBackEngine`; it
-  already exposes analysis, baselines, dry runs, operations and history.
+- **Other front-ends** (scheduled cleanup, PowerShell module): use `SnapBackEngine`; it exposes
+  analysis, profiles, dry runs, operations, history and the memory tracker.
+- **More managed environments** (e.g. Podman, Hyper-V VMs): add detection to `EnvironmentDetector`,
+  protection to `KnownProcesses.ManagedEnvironmentProcesses`, and inspect/stop commands with the same
+  confirmation-and-recheck protocol in `EnvironmentService`.
 - **New language**: add `Strings.<culture>.resx` next to both existing resource sets, add the code to
   `Languages.Supported`/`NativeName`/`FromSystem`, and extend `Cultures` in `LocalizationTests`.
