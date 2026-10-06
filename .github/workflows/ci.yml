@@ -91,9 +91,14 @@ jobs:
           $extra | Where-Object { $_ -and -not $_.HasExited } | ForEach-Object { Stop-Process -Id $_.Id -Force }
           $alive = -not $p.HasExited
           if ($alive) { Stop-Process -Id $p.Id -Force }
-          $log = Get-Content "$env:SNAPBACK_DATA_DIR\logs\*.log" -Raw
+          $log = (Get-ChildItem "$env:SNAPBACK_DATA_DIR/logs" -Filter *.log -ErrorAction SilentlyContinue | Get-Content) -join "`n"
           Write-Host $log
-          if (-not $alive) { throw "SnapBack exited unexpectedly (exit code $($p.ExitCode))" }
+          if (-not $alive) {
+            Get-WinEvent -FilterHashtable @{ LogName = 'Application'; ProviderName = '.NET Runtime', 'Application Error' } -MaxEvents 5 -ErrorAction SilentlyContinue |
+              ForEach-Object { Write-Host $_.Message }
+            throw "SnapBack exited unexpectedly (exit code $($p.ExitCode))"
+          }
+          if ($log -notmatch "App: SnapBack .* started") { throw "The SnapBack window did not log its start-up" }
           if ($log -match '\[(ERR|CRT)\]') { throw "Errors were logged" }
 
       - name: Automatic baseline smoke test (headless mode)
@@ -105,7 +110,7 @@ jobs:
           '{ "autoBaselineOnSignIn": true, "autoBaselineMinDelaySeconds": 0, "autoBaselineQuietSeconds": 10 }' | Set-Content "$env:SNAPBACK_DATA_DIR\settings.json"
           $p = Start-Process ./publish/SnapBack/SnapBack.exe -ArgumentList '--auto-baseline' -PassThru
           if (-not $p.WaitForExit(180000)) { Stop-Process -Id $p.Id -Force; throw "--auto-baseline did not finish" }
-          Get-Content "$env:SNAPBACK_DATA_DIR\logs\*.log"
+          Get-ChildItem "$env:SNAPBACK_DATA_DIR/logs" -Filter *.log -ErrorAction SilentlyContinue | Get-Content
           if (-not (Test-Path "$env:SNAPBACK_DATA_DIR\baseline.json")) { throw "No baseline was created" }
 
       - name: Upload screenshots
