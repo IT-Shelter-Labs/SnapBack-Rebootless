@@ -4,10 +4,31 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SnapBack.App.ViewModels"
+        xmlns:l="clr-namespace:SnapBack.App.Localization"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:OperationViewModel}"
-        Title="Returning to baseline — SnapBack" Width="820" Height="620" MinWidth="600" MinHeight="400"
+        Title="{l:Tr Op_Title}" FontFamily="{Binding UiFont, Source={x:Static l:Tr.Instance}}"
+        Width="900" Height="760" MinWidth="640" MinHeight="460"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+
+    <Window.Resources>
+        <DataTemplate x:Key="ComparisonRow">
+            <Grid Margin="0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="110" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Label}" Style="{StaticResource Secondary}" />
+                <TextBlock Grid.Column="1" Text="{Binding BeforeText}" HorizontalAlignment="Right" />
+                <TextBlock Grid.Column="2" Text="→" HorizontalAlignment="Center" Style="{StaticResource Secondary}" />
+                <TextBlock Grid.Column="3" Text="{Binding AfterText}" FontWeight="SemiBold" />
+                <TextBlock Grid.Column="4" Text="{Binding DeltaText}" Style="{StaticResource Secondary}" HorizontalAlignment="Right" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
 
     <Grid Margin="24,16">
         <Grid.RowDefinitions>
@@ -20,7 +41,7 @@
         <DockPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock DockPanel.Dock="Right" Text="{Binding ElapsedText}" Style="{StaticResource Secondary}" FontSize="14" VerticalAlignment="Center" />
             <StackPanel>
-                <TextBlock Text="{Binding Header}" FontSize="22" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding Header}" FontSize="22" FontWeight="SemiBold" AutomationProperties.AutomationId="OperationHeader" />
                 <ProgressBar IsIndeterminate="True" Height="4" Margin="0,8,0,0"
                              Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
@@ -50,7 +71,7 @@
                             <TextBlock Text="{Binding DetailText}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None"
                                        Visibility="{Binding DetailText, Converter={StaticResource HasValueToVisibility}}" />
                         </StackPanel>
-                        <CheckBox Grid.Column="3" Content="Force-terminate" VerticalAlignment="Center"
+                        <CheckBox Grid.Column="3" Content="{l:Tr Op_ForceCheckbox}" VerticalAlignment="Center"
                                   IsChecked="{Binding ForceSelected, Mode=TwoWay}"
                                   Visibility="{Binding CanForce, Converter={StaticResource BoolToVisibility}}" />
                     </Grid>
@@ -58,25 +79,47 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <TextBlock Grid.Row="2" Text="{Binding Summary}" TextWrapping="Wrap" Margin="0,12,0,12"
-                   Visibility="{Binding Summary, Converter={StaticResource HasValueToVisibility}}" />
+        <!-- Results -->
+        <StackPanel Grid.Row="2" Margin="0,12,0,12" Visibility="{Binding IsFinished, Converter={StaticResource BoolToVisibility}}">
+            <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" Margin="0,0,0,8" AutomationProperties.AutomationId="OperationSummary" />
+
+            <Border Style="{StaticResource Card}" Visibility="{Binding HasComparison, Converter={StaticResource BoolToVisibility}}">
+                <StackPanel>
+                    <TextBlock Text="{l:Tr Op_BeforeAfter}" Style="{StaticResource SectionTitle}" />
+                    <ItemsControl ItemsSource="{Binding Comparison}" ItemTemplate="{StaticResource ComparisonRow}" AutomationProperties.AutomationId="ComparisonTable" />
+                    <TextBlock Text="{Binding ReleasedByAppsText}" FontWeight="SemiBold" Margin="0,8,0,0" AutomationProperties.AutomationId="ReleasedByApps" />
+                    <TextBlock Text="{Binding DeepCleanupText}" FontWeight="SemiBold" Margin="0,4,0,0"
+                               Visibility="{Binding DeepCleanupText, Converter={StaticResource HasValueToVisibility}}" />
+                    <ItemsControl ItemsSource="{Binding DeepCleanupRows}" ItemTemplate="{StaticResource ComparisonRow}" Margin="0,4,0,0" />
+                    <TextBlock Text="{Binding AdviceTitle}" FontWeight="SemiBold" Margin="0,10,0,0" />
+                    <TextBlock Text="{Binding AdviceText}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" />
+                </StackPanel>
+            </Border>
+            <TextBlock Text="{l:Tr Op_Measuring}" Style="{StaticResource Secondary}"
+                       Visibility="{Binding IsMeasuring, Converter={StaticResource BoolToVisibility}}" />
+        </StackPanel>
 
         <DockPanel Grid.Row="3">
-            <Button DockPanel.Dock="Left" Content="Stop waiting" Command="{Binding StopCommand}" Padding="14,8"
-                    Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibility}}"
-                    ToolTip="Stop waiting for apps to close. Nothing is forced." />
+            <Button DockPanel.Dock="Left" Content="{l:Tr Op_StopWaiting}" Command="{Binding StopCommand}" Padding="14,8"
+                    Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibility}}" ToolTip="{l:Tr Op_StopWaiting_Tooltip}" />
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Visibility="{Binding HasStillRunning, Converter={StaticResource BoolToVisibility}}">
-                <Button Content="Check again" Command="{Binding RecheckCommand}" Padding="14,8" Margin="0,0,8,0"
-                        ToolTip="If you answered an app's save prompt, check whether it has closed now" />
-                <Button Command="{Binding ForceCommand}" Style="{StaticResource DangerButton}" Padding="14,8">
+                <Button Content="{l:Tr Op_CheckAgain}" Command="{Binding RecheckCommand}" Padding="14,8" Margin="0,0,8,0" ToolTip="{l:Tr Op_CheckAgain_Tooltip}" />
+                <Button Command="{Binding ForceCommand}" Style="{StaticResource DangerButton}" Padding="14,8" Margin="0,0,8,0">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource Icon}" Text="&#xE7BA;" Margin="0,0,6,0" />
-                        <TextBlock Text="Force-terminate selected…" />
+                        <TextBlock Text="{l:Tr Op_ForceSelected}" />
                     </StackPanel>
                 </Button>
             </StackPanel>
-            <Button Content="Close" HorizontalAlignment="Right" Padding="22,8" Click="Close_Click"
-                    IsEnabled="{Binding IsFinished}" Style="{DynamicResource AccentButtonStyle}" />
+            <Button DockPanel.Dock="Left" Command="{Binding DeepCleanupCommand}" Padding="14,8" ToolTip="{l:Tr Op_DeepCleanup_Tooltip}"
+                    Visibility="{Binding IsFinished, Converter={StaticResource BoolToVisibility}}" AutomationProperties.AutomationId="DeepCleanupButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource Icon}" Text="&#xE964;" Margin="0,0,6,0" />
+                    <TextBlock Text="{l:Tr Op_DeepCleanup}" />
+                </StackPanel>
+            </Button>
+            <Button Content="{l:Tr Common_Close}" HorizontalAlignment="Right" Padding="22,8" Click="Close_Click"
+                    IsEnabled="{Binding IsFinished}" Style="{DynamicResource AccentButtonStyle}" AutomationProperties.AutomationId="CloseOperationButton" />
         </DockPanel>
     </Grid>
 </Window>

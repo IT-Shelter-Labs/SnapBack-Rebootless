@@ -83,7 +83,7 @@ internal sealed class FakeSystem : ISystemProbe, IProcessController
     {
         lock (_gate)
         {
-            return TestData.Snapshot(_processes.Values.ToList(), Context);
+            return new SystemSnapshot(Context, _processes.Values.ToList(), GetMemoryStatus(), TestData.Boot.AddHours(3));
         }
     }
 
@@ -95,7 +95,16 @@ internal sealed class FakeSystem : ISystemProbe, IProcessController
         }
     }
 
-    public MemoryStatus GetMemoryStatus() => new(16L << 30, 8L << 30);
+    /// <summary>16 GB machine: 4 GB used by the system plus whatever the simulated processes use; 2 GB standby cache.</summary>
+    public MemoryStatus GetMemoryStatus()
+    {
+        lock (_gate)
+        {
+            var used = (4L << 30) + _processes.Values.Sum(p => p.PrivateWorkingSet);
+            var available = (16L << 30) - used;
+            return new MemoryStatus(16L << 30, available) { StandbyBytes = 2L << 30, ModifiedBytes = 100L << 20, FreeBytes = available - (2L << 30) };
+        }
+    }
 
     // ---- IProcessController ----------------------------------------------------------------
 

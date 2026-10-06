@@ -11,7 +11,9 @@ public sealed class DialogService(Func<Window?> owner) : IDialogService
 
     public bool ShowSettings(SettingsViewModel settings) => new SettingsWindow(settings) { Owner = owner() }.ShowDialog() == true;
 
-    public void ShowHistory(HistoryViewModel history) => new HistoryWindow(history) { Owner = owner() }.ShowDialog();
+    public void ShowHistory(HistoryViewModel history) => new HistoryWindow(history) { Owner = Owner() }.ShowDialog();
+
+    public void ShowMemory(MemoryViewModel memory) => new MemoryWindow(memory) { Owner = Owner() }.ShowDialog();
 
     public bool Confirm(string title, string message, bool dangerous = false) =>
         MessageBox.Show(Owner(), message, title, MessageBoxButton.YesNo,

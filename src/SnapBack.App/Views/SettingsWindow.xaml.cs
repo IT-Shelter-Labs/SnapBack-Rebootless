@@ -28,4 +28,15 @@ public partial class SettingsWindow : Window
             DialogResult = true;
         }
     }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        // The language is previewed live while the dialog is open; Cancel restores the previous one.
+        if (DialogResult != true)
+        {
+            Localization.LanguageManager.Apply(_vm.OriginalLanguage);
+        }
+
+        base.OnClosed(e);
+    }
 }

@@ -1,10 +1,12 @@
 using System.Text;
 using System.Windows.Media;
+using SnapBack.App.Localization;
 using SnapBack.App.Mvvm;
 using SnapBack.App.Services;
 using SnapBack.Core.Classification;
 using SnapBack.Core.Model;
 using SnapBack.Core.Planning;
+using SnapBack.Core.Presentation;
 using SnapBack.Core.Text;
 
 namespace SnapBack.App.ViewModels;
@@ -18,20 +20,19 @@ public enum BadgeKind
     Kept,
 }
 
-/// <summary>One application row in the main list.</summary>
+/// <summary>One application row. Its checkbox state lives in the shared <see cref="SelectionState"/>.</summary>
 public sealed class AppRowViewModel : ObservableObject
 {
+    private readonly SelectionState _selection;
     private readonly Action? _selectionChanged;
-    private bool _isSelected;
     private ImageSource? _icon;
     private bool _iconLoaded;
 
-    public AppRowViewModel(PlanItem item, bool isSelected, Action? selectionChanged)
+    public AppRowViewModel(PlanItem item, SelectionState selection, Action? selectionChanged)
     {
         Item = item;
-        _isSelected = item.IsSelectable && isSelected;
+        _selection = selection;
         _selectionChanged = selectionChanged;
-        (Badge, BadgeText) = BadgeFor(item);
     }
 
     public PlanItem Item { get; }
@@ -49,31 +50,34 @@ public sealed class AppRowViewModel : ObservableObject
         }
     }
 
-    public long MemoryBytes => Item.IsSelectable ? Item.Group.ActionablePrivateWorkingSet : Item.Group.PrivateWorkingSet;
+    public long MemoryBytes => AppListOrdering.MemoryOf(Item);
 
     public string MemoryText => ByteSize.Format(MemoryBytes);
 
     public int ProcessCount => Item.Group.ProcessCount;
 
-    public string ProcessCountText => ProcessCount == 1 ? "1 process" : $"{ProcessCount} processes";
+    public BadgeKind Badge => BadgeFor(Item).Kind;
 
-    public BadgeKind Badge { get; }
-
-    public string BadgeText { get; }
+    public string BadgeText => BadgeFor(Item).Text;
 
     public bool IsSelectable => Item.IsSelectable;
 
     public bool IsSelected
     {
-        get => _isSelected;
+        get => _selection.IsSelected(Item);
         set
         {
-            if (Item.IsSelectable && Set(ref _isSelected, value))
+            if (Item.IsSelectable && value != _selection.IsSelected(Item))
             {
+                _selection.Set(Item, value);
+                OnPropertyChanged();
                 _selectionChanged?.Invoke();
             }
         }
     }
+
+    /// <summary>Re-reads the selection (after "select suggested" / "clear").</summary>
+    public void RefreshSelection() => OnPropertyChanged(nameof(IsSelected));
 
     public ImageSource? Icon
     {
@@ -102,10 +106,10 @@ public sealed class AppRowViewModel : ObservableObject
 
             if (Item.Group.LaunchedByName is { } launcher)
             {
-                sb.AppendLine("Started by: " + launcher);
+                sb.AppendLine(Tr.Format("Row_StartedBy", launcher));
             }
 
-            sb.AppendLine($"{ProcessCountText}, {MemoryText}");
+            sb.AppendLine(Tr.Format("Row_ProcessesMemory", ProcessCount, MemoryText));
             foreach (var reason in Item.Reasons.Distinct())
             {
                 sb.AppendLine("• " + RiskReasons.Label(reason) + ": " + RiskReasons.Explain(reason));
@@ -113,14 +117,14 @@ public sealed class AppRowViewModel : ObservableObject
 
             foreach (var title in Item.Group.WindowTitles.Take(5))
             {
-                sb.AppendLine("Window: " + title);
+                sb.AppendLine(Tr.Format("Row_Window", title));
             }
 
             return sb.ToString().TrimEnd();
         }
     }
 
-    internal static (BadgeKind, string) BadgeFor(PlanItem item)
+    internal static (BadgeKind Kind, string Text) BadgeFor(PlanItem item)
     {
         if (item.Category == PlanCategory.Kept)
         {
@@ -129,17 +133,17 @@ public sealed class AppRowViewModel : ObservableObject
 
         if (item.Category == PlanCategory.Protected || item.Level == SafetyLevel.Protected)
         {
-            return (BadgeKind.Protected, "Protected");
+            return (BadgeKind.Protected, Tr.Get("Badge_Protected"));
         }
 
         return item.Level switch
         {
-            SafetyLevel.Safe => (BadgeKind.Safe, "Safe"),
+            SafetyLevel.Safe => (BadgeKind.Safe, Tr.Get("Badge_Safe")),
             SafetyLevel.Caution => (BadgeKind.Caution, item.Reasons
                 .Where(r => RiskReasons.LevelOf(r) == SafetyLevel.Caution)
                 .Select(RiskReasons.Label)
-                .FirstOrDefault() ?? "Caution"),
-            _ => (BadgeKind.Review, "Manual review"),
+                .FirstOrDefault() ?? Tr.Get("Badge_Caution")),
+            _ => (BadgeKind.Review, Tr.Get("Badge_ManualReview")),
         };
     }
 }

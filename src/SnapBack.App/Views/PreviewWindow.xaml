@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SnapBack.App.ViewModels"
+        xmlns:l="clr-namespace:SnapBack.App.Localization"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:PreviewViewModel}"
-        Title="Preview — SnapBack" Width="820" Height="680" MinWidth="600" MinHeight="420"
+        Title="{l:Tr Preview_Title}" FontFamily="{Binding UiFont, Source={x:Static l:Tr.Instance}}" Width="820" Height="680" MinWidth="600" MinHeight="420"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
 
     <Grid Margin="24,16">
@@ -78,15 +79,15 @@
 
         <DockPanel Grid.Row="3">
             <Button DockPanel.Dock="Left" Command="{Binding DryRunCommand}" Padding="14,8"
-                    ToolTip="Run every safety check against the live system without changing anything">
+                    ToolTip="{l:Tr Preview_DryRun_Tooltip}" AutomationProperties.AutomationId="DryRunButton">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource Icon}" Text="&#xE9D9;" Margin="0,0,6,0" />
-                    <TextBlock Text="Dry run (check only)" />
+                    <TextBlock Text="{l:Tr Preview_DryRun}" />
                 </StackPanel>
             </Button>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancel" IsCancel="True" Padding="18,8" Margin="0,0,8,0" />
-                <Button Content="{Binding ConfirmText}" Click="Confirm_Click" Style="{DynamicResource AccentButtonStyle}" Padding="18,8" />
+                <Button Content="{l:Tr Common_Cancel}" IsCancel="True" Padding="18,8" Margin="0,0,8,0" />
+                <Button Content="{Binding ConfirmText}" Click="Confirm_Click" AutomationProperties.AutomationId="ConfirmCloseButton" Style="{DynamicResource AccentButtonStyle}" Padding="18,8" />
             </StackPanel>
         </DockPanel>
     </Grid>

@@ -30,6 +30,8 @@ jobs:
         run: dotnet build SnapBack.sln -c Release --no-restore
 
       - name: Test (unit + Windows integration)
+        env:
+          SNAPBACK_TEST_PURGE: '1'
         run: dotnet test SnapBack.sln -c Release --no-build --logger "trx" --logger "console;verbosity=normal" --results-directory TestResults
 
       - name: Upload test results
@@ -64,7 +66,8 @@ jobs:
             @('baseline', 'show'),
             @('list', '--all'),
             @('preview', '--include-caution', '--include-review'),
-            @('history')
+            @('history'),
+            @('memory')
           )
           foreach ($c in $commands) {
             Write-Host "> snapback-cli $c"
@@ -72,39 +75,49 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw "snapback-cli $c failed with exit code $LASTEXITCODE" }
           }
 
-      - name: GUI smoke test (window starts and analyzes without errors)
+      - name: GUI smoke test — English (sorting, Memory window, live switch to Russian)
         shell: pwsh
         env:
-          SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-gui
+          SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-ui-en
         run: |
-          # A baseline plus a few apps started afterwards, so the lists are not empty.
           ./publish/SnapBack/snapback-cli.exe baseline create
           $extra = @(
             Start-Process notepad.exe -PassThru
             Start-Process ./tests/SnapBack.TestTarget/bin/Release/net10.0-windows/SnapBack.TestTarget.exe -ArgumentList normal -PassThru
           )
-          $p = Start-Process ./publish/SnapBack/SnapBack.exe -PassThru
-          Start-Sleep -Seconds 20
           try {
-            Add-Type -AssemblyName System.Windows.Forms, System.Drawing
-            $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-            $bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
-            [System.Drawing.Graphics]::FromImage($bmp).CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
-            New-Item -ItemType Directory -Force screenshots | Out-Null
-            $bmp.Save("screenshots/main-window.png")
-          } catch { Write-Host "Screenshot failed: $_" }
-          $extra | Where-Object { $_ -and -not $_.HasExited } | ForEach-Object { Stop-Process -Id $_.Id -Force }
-          $alive = -not $p.HasExited
-          if ($alive) { Stop-Process -Id $p.Id -Force }
-          $log = (Get-ChildItem "$env:SNAPBACK_DATA_DIR/logs" -Filter *.log -ErrorAction SilentlyContinue | Get-Content) -join "`n"
-          Write-Host $log
-          if (-not $alive) {
-            Get-WinEvent -FilterHashtable @{ LogName = 'Application'; ProviderName = '.NET Runtime', 'Application Error' } -MaxEvents 5 -ErrorAction SilentlyContinue |
-              ForEach-Object { Write-Host $_.Message }
-            throw "SnapBack exited unexpectedly (exit code $($p.ExitCode))"
+            ./ci/ui-smoke.ps1 -Exe ./publish/SnapBack/SnapBack.exe -DataDir $env:SNAPBACK_DATA_DIR -Language en `
+              -Expect 'Return to baseline', 'New since baseline', 'Memory', 'Make current state the baseline' `
+              -Interact -SwitchTo 'Русский' -ExpectAfterSwitch 'Вернуть к baseline', 'Новые после baseline', 'Память'
+          } finally {
+            $extra | Where-Object { $_ -and -not $_.HasExited } | ForEach-Object { Stop-Process -Id $_.Id -Force }
           }
-          if ($log -notmatch "App: SnapBack .* started") { throw "The SnapBack window did not log its start-up" }
-          if ($log -match '\[(ERR|CRT)\]') { throw "Errors were logged" }
+
+      - name: GUI smoke test — Russian
+        shell: pwsh
+        run: |
+          ./ci/ui-smoke.ps1 -Exe ./publish/SnapBack/SnapBack.exe -DataDir "$env:RUNNER_TEMP/snapback-ui-ru" -Language ru `
+            -Expect 'Вернуть к baseline', 'Новые после baseline', 'Сделать текущее состояние базовым', 'Настройки'
+
+      - name: GUI smoke test — Simplified Chinese (and live switch to English)
+        shell: pwsh
+        run: |
+          ./ci/ui-smoke.ps1 -Exe ./publish/SnapBack/SnapBack.exe -DataDir "$env:RUNNER_TEMP/snapback-ui-zh" -Language zh-CN `
+            -Expect '返回基线', '基线之后新增', '将当前状态设为基线', '设置' `
+            -SwitchTo 'English' -ExpectAfterSwitch 'Return to baseline', 'Settings'
+
+      - name: Deep Memory Cleanup helper (elevated runner)
+        shell: pwsh
+        env:
+          SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-helper
+        run: |
+          ./publish/SnapBack/snapback-cli.exe memory
+          $ok = Start-Process ./publish/SnapBack/SnapBack.exe -ArgumentList '--deep-cleanup', 'low-priority' -Wait -PassThru
+          if ($ok.ExitCode -ne 0) { throw "Helper failed with exit code $($ok.ExitCode)" }
+          $bad = Start-Process ./publish/SnapBack/SnapBack.exe -ArgumentList '--deep-cleanup', 'empty-working-sets' -Wait -PassThru
+          if ($bad.ExitCode -ne 23) { throw "Helper accepted a forbidden request (exit code $($bad.ExitCode))" }
+          ./publish/SnapBack/snapback-cli.exe memory --json
+          Get-ChildItem "$env:SNAPBACK_DATA_DIR/logs" -Filter *.log | Get-Content
 
       - name: Automatic baseline smoke test (headless mode)
         shell: pwsh

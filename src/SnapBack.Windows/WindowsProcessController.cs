@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using SnapBack.Core.Execution;
+using SnapBack.Core.Localization;
 using SnapBack.Core.Model;
 using SnapBack.Windows.Native;
 
@@ -34,7 +35,7 @@ public sealed unsafe class WindowsProcessController : IProcessController
         var windows = WindowEnumerator.Enumerate().Where(w => w.Pid == p.Pid && w.IsMainWindow).ToList();
         if (windows.Count == 0)
         {
-            return new ActionResult(ActionStatus.NotApplicable, "The process has no visible windows.");
+            return new ActionResult(ActionStatus.NotApplicable, Loc.Get("Act_NoVisibleWindows"));
         }
 
         var posted = 0;
@@ -53,12 +54,12 @@ public sealed unsafe class WindowsProcessController : IProcessController
 
         if (posted > 0)
         {
-            return new ActionResult(ActionStatus.Done, $"Close request sent to {posted} window(s).", posted);
+            return new ActionResult(ActionStatus.Done, Loc.Format("Act_CloseSent", posted), posted);
         }
 
         return lastError == Kernel32.ERROR_ACCESS_DENIED
-            ? new ActionResult(ActionStatus.AccessDenied, "Windows blocked the close request.")
-            : new ActionResult(ActionStatus.Failed, $"The close request could not be sent (error {lastError}).");
+            ? new ActionResult(ActionStatus.AccessDenied, Loc.Get("Act_CloseBlocked"))
+            : new ActionResult(ActionStatus.Failed, Loc.Format("Act_CloseFailed", lastError));
     }
 
     public ActionResult InterruptConsole(ProcessTarget target, Func<int, string?, bool> isAllowedSharer)
@@ -68,7 +69,7 @@ public sealed unsafe class WindowsProcessController : IProcessController
         // Attaching to another console requires that SnapBack has none of its own (true for the GUI).
         if (Kernel32.GetConsoleWindow() != 0)
         {
-            return new ActionResult(ActionStatus.NotApplicable, "Ctrl+C can only be sent from the SnapBack window, not from a console.");
+            return new ActionResult(ActionStatus.NotApplicable, Loc.Get("Act_CtrlCFromConsole"));
         }
 
         using var p = VerifiedProcess.Open(target, _ctx, 0, out var failure);
@@ -83,8 +84,8 @@ public sealed unsafe class WindowsProcessController : IProcessController
             {
                 var error = Marshal.GetLastPInvokeError();
                 return error == Kernel32.ERROR_INVALID_HANDLE
-                    ? new ActionResult(ActionStatus.NotApplicable, "The process has no console.")
-                    : new ActionResult(ActionStatus.AccessDenied, $"Could not attach to its console (error {error}).");
+                    ? new ActionResult(ActionStatus.NotApplicable, Loc.Get("Act_NoConsole"))
+                    : new ActionResult(ActionStatus.AccessDenied, Loc.Format("Act_AttachFailed", error));
             }
 
             try
@@ -99,7 +100,7 @@ public sealed unsafe class WindowsProcessController : IProcessController
                     var name = ProcessQueries.ImageNameOf((int)other);
                     if (!isAllowedSharer((int)other, name))
                     {
-                        return new ActionResult(ActionStatus.SharedConsole, $"Its console is shared with {name ?? "PID " + other}, which is not being closed.");
+                        return new ActionResult(ActionStatus.SharedConsole, Loc.Format("Act_ConsoleShared", name ?? "PID " + other));
                     }
                 }
 
@@ -107,12 +108,12 @@ public sealed unsafe class WindowsProcessController : IProcessController
                 Kernel32.SetConsoleCtrlHandler(0, true);
                 if (!Kernel32.GenerateConsoleCtrlEvent(Kernel32.CTRL_C_EVENT, 0))
                 {
-                    return new ActionResult(ActionStatus.Failed, $"Ctrl+C could not be sent (error {Marshal.GetLastPInvokeError()}).");
+                    return new ActionResult(ActionStatus.Failed, Loc.Format("Act_CtrlCFailed", Marshal.GetLastPInvokeError()));
                 }
 
                 // Give the console host a moment to deliver the event before detaching.
                 Thread.Sleep(100);
-                return new ActionResult(ActionStatus.Done, "Ctrl+C sent.");
+                return new ActionResult(ActionStatus.Done, Loc.Get("Act_CtrlCSent"));
             }
             finally
             {
@@ -182,14 +183,14 @@ public sealed unsafe class WindowsProcessController : IProcessController
 
             if (verified.Count == 0)
             {
-                return new ActionResult(ActionStatus.Exited, "Nothing left to close.");
+                return new ActionResult(ActionStatus.Exited, Loc.Get("Act_NothingLeft"));
             }
 
             var key = stackalloc char[RestartManager.CCH_RM_SESSION_KEY + 1];
             var rc = RestartManager.RmStartSession(out var session, 0, key);
             if (rc != RestartManager.ERROR_SUCCESS)
             {
-                return new ActionResult(ActionStatus.Failed, $"Restart Manager is unavailable (error {rc}).");
+                return new ActionResult(ActionStatus.Failed, Loc.Format("Act_RmUnavailable", rc));
             }
 
             try
@@ -232,7 +233,7 @@ public sealed unsafe class WindowsProcessController : IProcessController
 
         if (rc != RestartManager.ERROR_SUCCESS)
         {
-            return new ActionResult(ActionStatus.Failed, $"Restart Manager registration failed (error {rc}).");
+            return new ActionResult(ActionStatus.Failed, Loc.Format("Act_RmRegisterFailed", rc));
         }
 
         // Ask Restart Manager how it sees these processes, and refuse anything that is not a plain
@@ -245,7 +246,7 @@ public sealed unsafe class WindowsProcessController : IProcessController
 
         if (ct.IsCancellationRequested)
         {
-            return new ActionResult(ActionStatus.Cancelled, "Cancelled.");
+            return new ActionResult(ActionStatus.Cancelled, Loc.Get("Act_Cancelled"));
         }
 
         using (ct.Register(() => RestartManager.RmCancelCurrentTask(session)))
@@ -257,10 +258,10 @@ public sealed unsafe class WindowsProcessController : IProcessController
         _log.LogInformation("RmShutdown for {Pids} returned {Code}", string.Join(",", verified.Select(v => v.Pid)), rc);
         return rc switch
         {
-            RestartManager.ERROR_SUCCESS => new ActionResult(ActionStatus.Done, "The app agreed to exit."),
-            RestartManager.ERROR_FAIL_SHUTDOWN or RestartManager.ERROR_FAIL_NOACTION_REBOOT => new ActionResult(ActionStatus.Declined, "The app did not agree to exit."),
-            RestartManager.ERROR_CANCELLED => new ActionResult(ActionStatus.Cancelled, "Cancelled."),
-            _ => new ActionResult(ActionStatus.Failed, $"Restart Manager failed (error {rc})."),
+            RestartManager.ERROR_SUCCESS => new ActionResult(ActionStatus.Done, Loc.Get("Act_RmAgreed")),
+            RestartManager.ERROR_FAIL_SHUTDOWN or RestartManager.ERROR_FAIL_NOACTION_REBOOT => new ActionResult(ActionStatus.Declined, Loc.Get("Act_RmDeclined")),
+            RestartManager.ERROR_CANCELLED => new ActionResult(ActionStatus.Cancelled, Loc.Get("Act_Cancelled")),
+            _ => new ActionResult(ActionStatus.Failed, Loc.Format("Act_RmFailed", rc)),
         };
     }
 
@@ -270,12 +271,12 @@ public sealed unsafe class WindowsProcessController : IProcessController
         var rc = RestartManager.RmGetList(session, out var needed, ref count, null, out _);
         if (rc == RestartManager.ERROR_SUCCESS && needed == 0)
         {
-            return new ActionResult(ActionStatus.NotApplicable, "Restart Manager found nothing it could close politely.");
+            return new ActionResult(ActionStatus.NotApplicable, Loc.Get("Act_RmNothing"));
         }
 
         if (rc != RestartManager.ERROR_MORE_DATA && rc != RestartManager.ERROR_SUCCESS)
         {
-            return new ActionResult(ActionStatus.Failed, $"Restart Manager query failed (error {rc}).");
+            return new ActionResult(ActionStatus.Failed, Loc.Format("Act_RmQueryFailed", rc));
         }
 
         var infos = new RM_PROCESS_INFO[needed + 4];
@@ -287,7 +288,7 @@ public sealed unsafe class WindowsProcessController : IProcessController
 
         if (rc != RestartManager.ERROR_SUCCESS)
         {
-            return new ActionResult(ActionStatus.Failed, $"Restart Manager query failed (error {rc}).");
+            return new ActionResult(ActionStatus.Failed, Loc.Format("Act_RmQueryFailed", rc));
         }
 
         for (var i = 0; i < count; i++)
@@ -296,25 +297,25 @@ public sealed unsafe class WindowsProcessController : IProcessController
             var pid = (int)info.Process.dwProcessId;
             if (!expectedPids.Contains(pid))
             {
-                return new ActionResult(ActionStatus.Refused, $"Restart Manager would also affect PID {pid}; nothing was done.");
+                return new ActionResult(ActionStatus.Refused, Loc.Format("Act_RmExtraPid", pid));
             }
 
             if (info.TSSessionId != _ctx.SessionId)
             {
-                return new ActionResult(ActionStatus.Refused, $"PID {pid} is in another session; nothing was done.");
+                return new ActionResult(ActionStatus.Refused, Loc.Format("Act_RmOtherSession", pid));
             }
 
             if (info.ApplicationType is not (RestartManager.RmMainWindow or RestartManager.RmOtherWindow))
             {
                 var kind = info.ApplicationType switch
                 {
-                    RestartManager.RmService => "a service",
-                    RestartManager.RmExplorer => "Windows Explorer",
-                    RestartManager.RmConsole => "a console program",
-                    RestartManager.RmCritical => "a critical process",
-                    _ => "not a window application",
+                    RestartManager.RmService => Loc.Get("Act_RmType_Service"),
+                    RestartManager.RmExplorer => Loc.Get("Act_RmType_Explorer"),
+                    RestartManager.RmConsole => Loc.Get("Act_RmType_Console"),
+                    RestartManager.RmCritical => Loc.Get("Act_RmType_Critical"),
+                    _ => Loc.Get("Act_RmType_Other"),
                 };
-                return new ActionResult(ActionStatus.NotApplicable, $"Restart Manager reports PID {pid} as {kind}; it was not asked to exit.");
+                return new ActionResult(ActionStatus.NotApplicable, Loc.Format("Act_RmNotEligible", pid, kind));
             }
         }
 
@@ -357,13 +358,13 @@ public sealed unsafe class WindowsProcessController : IProcessController
         {
             var error = Marshal.GetLastPInvokeError();
             return error == Kernel32.ERROR_ACCESS_DENIED
-                ? new ActionResult(ActionStatus.AccessDenied, "Windows denied the termination.")
-                : new ActionResult(ActionStatus.Failed, $"Termination failed (error {error}).");
+                ? new ActionResult(ActionStatus.AccessDenied, Loc.Get("Act_TerminateDenied"))
+                : new ActionResult(ActionStatus.Failed, Loc.Format("Act_TerminateFailed", error));
         }
 
         var wait = Kernel32.WaitForSingleObject(p.Handle, 5000);
         return wait == Kernel32.WAIT_OBJECT_0
-            ? new ActionResult(ActionStatus.Done, "Terminated.")
-            : new ActionResult(ActionStatus.Failed, "The process did not exit after termination was requested.");
+            ? new ActionResult(ActionStatus.Done, Loc.Get("Act_Terminated"))
+            : new ActionResult(ActionStatus.Failed, Loc.Get("Act_TerminateNoExit"));
     }
 }

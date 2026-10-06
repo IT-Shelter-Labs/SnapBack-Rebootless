@@ -188,6 +188,9 @@ public sealed class SnapBackEngine
     public DryRunReport DryRun(Analysis analysis, IEnumerable<PlanItem> selected) =>
         CleanupOperation.DryRun(selected, analysis.Snapshot.Context, _probe, Guard, _time.GetUtcNow().UtcDateTime);
 
+    /// <summary>Current physical memory statistics.</summary>
+    public MemoryStatus ReadMemory() => _probe.GetMemoryStatus();
+
     public void RecordHistory(OperationReport report)
     {
         try

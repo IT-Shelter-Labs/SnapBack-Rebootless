@@ -1,4 +1,5 @@
 using SnapBack.Core.Model;
+using SnapBack.Core.Localization;
 using SnapBack.Core.Planning;
 using SnapBack.Core.Safety;
 using SnapBack.Core.Text;
@@ -86,25 +87,17 @@ public sealed record ItemResult
 
     public static string Describe(ItemOutcome outcome, StillRunningReason reason) => outcome switch
     {
-        ItemOutcome.Pending => "Waiting",
-        ItemOutcome.Closing => "Asking to close…",
-        ItemOutcome.Closed => "Closed",
-        ItemOutcome.PartiallyClosed => "Closed; some background processes remain",
-        ItemOutcome.Terminated => "Force-terminated",
-        ItemOutcome.Skipped => "Skipped by safety checks",
-        ItemOutcome.Failed => "Failed",
-        ItemOutcome.AlreadyExited => "Had already exited",
-        ItemOutcome.StillRunning => reason switch
+        ItemOutcome.StillRunning => Loc.Get(reason switch
         {
-            StillRunningReason.WaitingForUser => "Still open - it may be asking you to save changes",
-            StillRunningReason.NotResponding => "Not responding",
-            StillRunningReason.Declined => "The app declined to exit",
-            StillRunningReason.NoGracefulMethod => "Cannot be closed politely (no window)",
-            StillRunningReason.SharedConsole => "Its console is shared with other programs",
-            StillRunningReason.Cancelled => "Stopped waiting",
-            _ => "Did not exit in time",
-        },
-        _ => outcome.ToString(),
+            StillRunningReason.WaitingForUser => "Still_WaitingForUser",
+            StillRunningReason.NotResponding => "Still_NotResponding",
+            StillRunningReason.Declined => "Still_Declined",
+            StillRunningReason.NoGracefulMethod => "Still_NoGracefulMethod",
+            StillRunningReason.SharedConsole => "Still_SharedConsole",
+            StillRunningReason.Cancelled => "Still_Cancelled",
+            _ => "Still_DidNotExit",
+        }),
+        _ => Loc.Get("Outcome_" + outcome),
     };
 }
 
@@ -141,8 +134,8 @@ public sealed record OperationReport
     public long AvailableMemoryGainBytes => MemoryAfter.AvailablePhysicalBytes - MemoryBefore.AvailablePhysicalBytes;
 
     public string Summary =>
-        $"{ClosedCount} of {Items.Count} app(s) closed, about {ByteSize.Format(MemoryFreedBytes)} released"
-        + (StillRunningCount > 0 ? $", {StillRunningCount} still running" : "");
+        Loc.Format("Report_Summary", ClosedCount, Items.Count, ByteSize.Format(MemoryFreedBytes))
+        + (StillRunningCount > 0 ? Loc.Format("Report_StillRunningSuffix", StillRunningCount) : "");
 }
 
 /// <summary>Result of a dry run: what would happen, as judged by the live safety checks.</summary>

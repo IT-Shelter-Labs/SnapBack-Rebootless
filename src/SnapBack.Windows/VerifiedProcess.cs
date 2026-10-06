@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 using SnapBack.Core.Classification;
 using SnapBack.Core.Execution;
+using SnapBack.Core.Localization;
 using SnapBack.Core.Model;
 using SnapBack.Core.Text;
 using SnapBack.Windows.Native;
@@ -39,7 +40,7 @@ internal sealed class VerifiedProcess : IDisposable
         var pid = target.Identity.Pid;
         if (pid is 0 or 4 || pid == ctx.SelfPid || pid == Environment.ProcessId)
         {
-            failure = new ActionResult(ActionStatus.Refused, "This process is never touched.");
+            failure = new ActionResult(ActionStatus.Refused, Loc.Get("Verify_NeverTouched"));
             return null;
         }
 
@@ -51,9 +52,9 @@ internal sealed class VerifiedProcess : IDisposable
             handle.Dispose();
             failure = error switch
             {
-                Kernel32.ERROR_INVALID_PARAMETER => new ActionResult(ActionStatus.Exited, "The process has exited."),
-                Kernel32.ERROR_ACCESS_DENIED => new ActionResult(ActionStatus.AccessDenied, "Access denied."),
-                _ => new ActionResult(ActionStatus.Failed, $"Could not open the process (error {error})."),
+                Kernel32.ERROR_INVALID_PARAMETER => new ActionResult(ActionStatus.Exited, Loc.Get("Verify_Exited")),
+                Kernel32.ERROR_ACCESS_DENIED => new ActionResult(ActionStatus.AccessDenied, Loc.Get("Verify_AccessDenied")),
+                _ => new ActionResult(ActionStatus.Failed, Loc.Format("Verify_OpenFailed", error)),
             };
             return null;
         }
@@ -74,56 +75,56 @@ internal sealed class VerifiedProcess : IDisposable
     {
         if (ProcessQueries.CreationTime(h) is not { } created || created != target.Identity.CreationTime)
         {
-            return new ActionResult(ActionStatus.IdentityMismatch, "The PID now belongs to a different process.");
+            return new ActionResult(ActionStatus.IdentityMismatch, Loc.Get("Verify_PidReused"));
         }
 
         if (ProcessQueries.HasExited(h))
         {
-            return new ActionResult(ActionStatus.Exited, "The process has exited.");
+            return new ActionResult(ActionStatus.Exited, Loc.Get("Verify_Exited"));
         }
 
         var path = ProcessQueries.ImagePath(h);
         if (path is null)
         {
-            return new ActionResult(ActionStatus.Refused, "The executable could not be verified.");
+            return new ActionResult(ActionStatus.Refused, Loc.Get("Verify_PathUnverified"));
         }
 
         if (target.ExpectedImagePath is not null && !PathUtil.PathEquals(path, target.ExpectedImagePath))
         {
-            return new ActionResult(ActionStatus.IdentityMismatch, "The executable does not match.");
+            return new ActionResult(ActionStatus.IdentityMismatch, Loc.Get("Verify_PathMismatch"));
         }
 
         var fileName = Path.GetFileName(path);
         if (KnownProcesses.ShellAndSessionComponents.Contains(fileName)
             || (PathUtil.IsUnder(path, ctx.WindowsDirectory) && !KnownProcesses.WindowsUserTools.Contains(fileName)))
         {
-            return new ActionResult(ActionStatus.Refused, "Windows components are never touched.");
+            return new ActionResult(ActionStatus.Refused, Loc.Get("Verify_WindowsComponent"));
         }
 
         if (ProcessQueries.IsCritical(h) != false)
         {
-            return new ActionResult(ActionStatus.Refused, "Critical (or unverifiable) process.");
+            return new ActionResult(ActionStatus.Refused, Loc.Get("Verify_Critical"));
         }
 
         if (ProcessQueries.IsProtected(h) != false)
         {
-            return new ActionResult(ActionStatus.Refused, "Protected (or unverifiable) process.");
+            return new ActionResult(ActionStatus.Refused, Loc.Get("Verify_Protected"));
         }
 
         if (ProcessQueries.SessionOf(target.Identity.Pid) != ctx.SessionId)
         {
-            return new ActionResult(ActionStatus.Refused, "The process belongs to another session.");
+            return new ActionResult(ActionStatus.Refused, Loc.Get("Verify_OtherSession"));
         }
 
         var token = ProcessQueries.Token(h);
         if (!string.Equals(token.OwnerSid, ctx.UserSid, StringComparison.OrdinalIgnoreCase))
         {
-            return new ActionResult(ActionStatus.Refused, "The process belongs to another (or unknown) user.");
+            return new ActionResult(ActionStatus.Refused, Loc.Get("Verify_OtherUser"));
         }
 
         if (token.IsElevated != false || token.Integrity >= IntegrityLevel.High)
         {
-            return new ActionResult(ActionStatus.Refused, "The process runs with administrator rights.");
+            return new ActionResult(ActionStatus.Refused, Loc.Get("Verify_Elevated"));
         }
 
         return null;

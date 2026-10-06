@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Reason_KernelOrSystemProcess_Label" xml:space="preserve">
+    <value>Windows kernel process</value>
+  </data>
+  <data name="Reason_KernelOrSystemProcess_Explain" xml:space="preserve">
+    <value>Part of the Windows kernel. SnapBack never touches it.</value>
+  </data>
+  <data name="Reason_SnapBackItself_Label" xml:space="preserve">
+    <value>SnapBack itself</value>
+  </data>
+  <data name="Reason_SnapBackItself_Explain" xml:space="preserve">
+    <value>This is SnapBack.</value>
+  </data>
+  <data name="Reason_OtherSession_Label" xml:space="preserve">
+    <value>Another session</value>
+  </data>
+  <data name="Reason_OtherSession_Explain" xml:space="preserve">
+    <value>Runs in a different Windows session (system services or another signed-in user).</value>
+  </data>
+  <data name="Reason_OtherUser_Label" xml:space="preserve">
+    <value>Another user</value>
+  </data>
+  <data name="Reason_OtherUser_Explain" xml:space="preserve">
+    <value>Runs under a different user account.</value>
+  </data>
+  <data name="Reason_CriticalProcess_Label" xml:space="preserve">
+    <value>Critical system process</value>
+  </data>
+  <data name="Reason_CriticalProcess_Explain" xml:space="preserve">
+    <value>Windows marks this process as critical: ending it would crash the computer.</value>
+  </data>
+  <data name="Reason_ProtectedProcess_Label" xml:space="preserve">
+    <value>Protected process</value>
+  </data>
+  <data name="Reason_ProtectedProcess_Explain" xml:space="preserve">
+    <value>Windows protects this process (for example anti-malware or DRM).</value>
+  </data>
+  <data name="Reason_ServiceHost_Label" xml:space="preserve">
+    <value>Windows service</value>
+  </data>
+  <data name="Reason_ServiceHost_Explain" xml:space="preserve">
+    <value>Hosts a Windows service. SnapBack does not manage services.</value>
+  </data>
+  <data name="Reason_ShellComponent_Label" xml:space="preserve">
+    <value>Windows component</value>
+  </data>
+  <data name="Reason_ShellComponent_Explain" xml:space="preserve">
+    <value>An essential part of the Windows desktop, session or security.</value>
+  </data>
+  <data name="Reason_WindowsComponent_Label" xml:space="preserve">
+    <value>Windows component</value>
+  </data>
+  <data name="Reason_WindowsComponent_Explain" xml:space="preserve">
+    <value>Runs from the Windows folder.</value>
+  </data>
+  <data name="Reason_Elevated_Label" xml:space="preserve">
+    <value>Runs as administrator</value>
+  </data>
+  <data name="Reason_Elevated_Explain" xml:space="preserve">
+    <value>Runs with administrator rights. SnapBack never touches elevated programs.</value>
+  </data>
+  <data name="Reason_AccessDenied_Label" xml:space="preserve">
+    <value>Access denied</value>
+  </data>
+  <data name="Reason_AccessDenied_Explain" xml:space="preserve">
+    <value>Windows does not allow SnapBack to inspect this process.</value>
+  </data>
+  <data name="Reason_OwnerUnknown_Label" xml:space="preserve">
+    <value>Owner unknown</value>
+  </data>
+  <data name="Reason_OwnerUnknown_Explain" xml:space="preserve">
+    <value>The owner of this process could not be verified.</value>
+  </data>
+  <data name="Reason_ImagePathUnknown_Label" xml:space="preserve">
+    <value>Unknown executable</value>
+  </data>
+  <data name="Reason_ImagePathUnknown_Explain" xml:space="preserve">
+    <value>The executable of this process could not be verified.</value>
+  </data>
+  <data name="Reason_CannotVerify_Label" xml:space="preserve">
+    <value>Cannot verify</value>
+  </data>
+  <data name="Reason_CannotVerify_Explain" xml:space="preserve">
+    <value>Some safety attributes of this process could not be verified.</value>
+  </data>
+  <data name="Reason_ConsoleProgram_Label" xml:space="preserve">
+    <value>Console program</value>
+  </data>
+  <data name="Reason_ConsoleProgram_Explain" xml:space="preserve">
+    <value>May be running a job; stopping it can interrupt work in progress.</value>
+  </data>
+  <data name="Reason_ScriptOrRuntime_Label" xml:space="preserve">
+    <value>Script or runtime</value>
+  </data>
+  <data name="Reason_ScriptOrRuntime_Explain" xml:space="preserve">
+    <value>Python, Node.js and similar runtimes may be in the middle of a task.</value>
+  </data>
+  <data name="Reason_NoWindow_Label" xml:space="preserve">
+    <value>Background process</value>
+  </data>
+  <data name="Reason_NoWindow_Explain" xml:space="preserve">
+    <value>Has no window, so it cannot be asked to close politely.</value>
+  </data>
+  <data name="Reason_VirtualMachine_Label" xml:space="preserve">
+    <value>Virtual machine</value>
+  </data>
+  <data name="Reason_VirtualMachine_Explain" xml:space="preserve">
+    <value>Closing it may stop a virtual machine and lose its unsaved state.</value>
+  </data>
+  <data name="Reason_InstallerOrUpdater_Label" xml:space="preserve">
+    <value>Installer or updater</value>
+  </data>
+  <data name="Reason_InstallerOrUpdater_Explain" xml:space="preserve">
+    <value>Interrupting it may leave an installation broken.</value>
+  </data>
+  <data name="Reason_LaunchedSnapBack_Label" xml:space="preserve">
+    <value>Started SnapBack</value>
+  </data>
+  <data name="Reason_LaunchedSnapBack_Explain" xml:space="preserve">
+    <value>SnapBack was launched from this program; closing it may close SnapBack too.</value>
+  </data>
+  <data name="Reason_WindowsUserTool_Label" xml:space="preserve">
+    <value>Windows tool</value>
+  </data>
+  <data name="Reason_WindowsUserTool_Explain" xml:space="preserve">
+    <value>A tool that ships with Windows.</value>
+  </data>
+  <data name="Reason_PossibleUnsavedWork_Label" xml:space="preserve">
+    <value>Possible unsaved data</value>
+  </data>
+  <data name="Reason_PossibleUnsavedWork_Explain" xml:space="preserve">
+    <value>Editors, IDEs and office apps may hold unsaved documents. They are asked to close normally, so they can prompt you.</value>
+  </data>
+  <data name="Reason_UnsavedChangesInTitle_Label" xml:space="preserve">
+    <value>Unsaved changes</value>
+  </data>
+  <data name="Reason_UnsavedChangesInTitle_Explain" xml:space="preserve">
+    <value>A window title indicates unsaved changes.</value>
+  </data>
+  <data name="Reason_Browser_Label" xml:space="preserve">
+    <value>Web browser</value>
+  </data>
+  <data name="Reason_Browser_Explain" xml:space="preserve">
+    <value>Tabs are usually restored, but downloads in progress and unsent forms may be lost.</value>
+  </data>
+  <data name="Reason_Terminal_Label" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="Reason_Terminal_Explain" xml:space="preserve">
+    <value>Closing a terminal ends every shell and command running in it.</value>
+  </data>
+  <data name="Reason_SyncOrTransfer_Label" xml:space="preserve">
+    <value>May be transferring files</value>
+  </data>
+  <data name="Reason_SyncOrTransfer_Explain" xml:space="preserve">
+    <value>Sync, torrent and download apps may be in the middle of a transfer.</value>
+  </data>
+  <data name="Reason_Launcher_Label" xml:space="preserve">
+    <value>Launcher</value>
+  </data>
+  <data name="Reason_Launcher_Explain" xml:space="preserve">
+    <value>Game and app launchers may be downloading or installing updates.</value>
+  </data>
+  <data name="Reason_Recording_Label" xml:space="preserve">
+    <value>Recording or streaming</value>
+  </data>
+  <data name="Reason_Recording_Explain" xml:space="preserve">
+    <value>May be recording or streaming right now.</value>
+  </data>
+  <data name="Reason_NotResponding_Label" xml:space="preserve">
+    <value>Not responding</value>
+  </data>
+  <data name="Reason_NotResponding_Explain" xml:space="preserve">
+    <value>The app is not responding at the moment.</value>
+  </data>
+  <data name="Reason_NewInstanceOfBaselineApp_Label" xml:space="preserve">
+    <value>Extra instance</value>
+  </data>
+  <data name="Reason_NewInstanceOfBaselineApp_Explain" xml:space="preserve">
+    <value>Another instance of this app was already running at the baseline.</value>
+  </data>
+  <data name="Reason_StartedByBaselineApp_Label" xml:space="preserve">
+    <value>Started by a baseline app</value>
+  </data>
+  <data name="Reason_StartedByBaselineApp_Explain" xml:space="preserve">
+    <value>Started by an app that was already running at the baseline; it may still need it.</value>
+  </data>
+  <data name="Reason_RunsInBackground_Label" xml:space="preserve">
+    <value>Runs in background</value>
+  </data>
+  <data name="Reason_RunsInBackground_Explain" xml:space="preserve">
+    <value>No visible window (for example minimized to the tray).</value>
+  </data>
+  <data name="Plan_Kept_InBaseline" xml:space="preserve">
+    <value>Was present in baseline</value>
+  </data>
+  <data name="Plan_Kept_Restarted" xml:space="preserve">
+    <value>Was present in baseline (restarted since)</value>
+  </data>
+  <data name="Plan_Kept_UserList" xml:space="preserve">
+    <value>In your keep list</value>
+  </data>
+  <data name="Plan_Kept" xml:space="preserve">
+    <value>Kept</value>
+  </data>
+  <data name="Plan_Protected" xml:space="preserve">
+    <value>Protected</value>
+  </data>
+  <data name="Plan_ExtraInstance" xml:space="preserve">
+    <value>Extra instance since baseline</value>
+  </data>
+  <data name="Plan_StartedBy" xml:space="preserve">
+    <value>Started by {0} after baseline</value>
+  </data>
+  <data name="Plan_StartedAfter" xml:space="preserve">
+    <value>Started after baseline</value>
+  </data>
+  <data name="Step_CloseWindows" xml:space="preserve">
+    <value>Send a close request to {0} (PID {1}), windows: {2} — like clicking ✕.</value>
+  </data>
+  <data name="Step_ConsoleInterrupt" xml:space="preserve">
+    <value>Send Ctrl+C to the console of {0} (PID {1}), only if no unrelated program shares that console.</value>
+  </data>
+  <data name="Step_RestartManager" xml:space="preserve">
+    <value>Ask {0} (PID {1}) to exit through Windows Restart Manager, the way installers do (never forced).</value>
+  </data>
+  <data name="Step_NoGracefulMethod" xml:space="preserve">
+    <value>{0} (PID {1}) has no window to close politely; it will only be reported as still running.</value>
+  </data>
+  <data name="Step_ExitsWithApp" xml:space="preserve">
+    <value>{0} (PID {1}) is expected to exit together with the app.</value>
+  </data>
+  <data name="Step_LeftAlone" xml:space="preserve">
+    <value>{0} (PID {1}) is left alone ({2}).</value>
+  </data>
+  <data name="Step_ProtectedFallback" xml:space="preserve">
+    <value>protected</value>
+  </data>
+  <data name="Note_TrayRetry" xml:space="preserve">
+    <value>If the app hides to the tray instead of exiting, it is asked again through Windows Restart Manager.</value>
+  </data>
+  <data name="Note_WaitsForUser" xml:space="preserve">
+    <value>If the app asks to save changes, SnapBack waits for your answer and does not continue on its own.</value>
+  </data>
+  <data name="Note_NoForce" xml:space="preserve">
+    <value>Nothing is force-terminated without your separate confirmation.</value>
+  </data>
+  <data name="Outcome_Pending" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="Outcome_Closing" xml:space="preserve">
+    <value>Asking to close…</value>
+  </data>
+  <data name="Outcome_Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Outcome_PartiallyClosed" xml:space="preserve">
+    <value>Closed; some background processes remain</value>
+  </data>
+  <data name="Outcome_Terminated" xml:space="preserve">
+    <value>Force-terminated</value>
+  </data>
+  <data name="Outcome_Skipped" xml:space="preserve">
+    <value>Skipped by safety checks</value>
+  </data>
+  <data name="Outcome_Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Outcome_AlreadyExited" xml:space="preserve">
+    <value>Had already exited</value>
+  </data>
+  <data name="Still_WaitingForUser" xml:space="preserve">
+    <value>Still open — it may be asking you to save changes</value>
+  </data>
+  <data name="Still_NotResponding" xml:space="preserve">
+    <value>Not responding</value>
+  </data>
+  <data name="Still_Declined" xml:space="preserve">
+    <value>The app declined to exit</value>
+  </data>
+  <data name="Still_NoGracefulMethod" xml:space="preserve">
+    <value>Cannot be closed politely (no window)</value>
+  </data>
+  <data name="Still_SharedConsole" xml:space="preserve">
+    <value>Its console is shared with other programs</value>
+  </data>
+  <data name="Still_Cancelled" xml:space="preserve">
+    <value>Stopped waiting</value>
+  </data>
+  <data name="Still_DidNotExit" xml:space="preserve">
+    <value>Did not exit in time</value>
+  </data>
+  <data name="Report_Summary" xml:space="preserve">
+    <value>{0} of {1} app(s) closed, about {2} released</value>
+  </data>
+  <data name="Report_StillRunningSuffix" xml:space="preserve">
+    <value>, {0} still running</value>
+  </data>
+  <data name="Op_NotEligible" xml:space="preserve">
+    <value>{0} is not eligible for closing.</value>
+  </data>
+  <data name="Op_CouldNotInspect" xml:space="preserve">
+    <value>{0} (PID {1}) could not be inspected and is left alone.</value>
+  </data>
+  <data name="Op_SkippedRefused" xml:space="preserve">
+    <value>Skipped: the safety checks refused this app. Nothing was done.</value>
+  </data>
+  <data name="Op_AlreadyExited" xml:space="preserve">
+    <value>The app had already exited.</value>
+  </data>
+  <data name="Op_NothingSafe" xml:space="preserve">
+    <value>Nothing could be acted on safely.</value>
+  </data>
+  <data name="Op_Closed" xml:space="preserve">
+    <value>Closed.</value>
+  </data>
+  <data name="Op_RestartManagerNote" xml:space="preserve">
+    <value>Restart Manager: {0}</value>
+  </data>
+  <data name="Op_CouldNotInspectForce" xml:space="preserve">
+    <value>{0} (PID {1}) could not be inspected; not terminated.</value>
+  </data>
+  <data name="Op_SomeNotTerminated" xml:space="preserve">
+    <value>Some processes could not be terminated.</value>
+  </data>
+  <data name="Op_StillRunningCount" xml:space="preserve">
+    <value>Processes still running: {0}.</value>
+  </data>
+  <data name="Op_DryNotEligible" xml:space="preserve">
+    <value>Not eligible for closing.</value>
+  </data>
+  <data name="Op_DryLeftAlone" xml:space="preserve">
+    <value>Left alone.</value>
+  </data>
+  <data name="Op_DryCouldNotInspect" xml:space="preserve">
+    <value>Could not inspect: {0}</value>
+  </data>
+  <data name="Guard_Allowed" xml:space="preserve">
+    <value>Allowed</value>
+  </data>
+  <data name="Guard_NotPartOfItem" xml:space="preserve">
+    <value>{0} (PID {1}) is not an actionable part of {2}.</value>
+  </data>
+  <data name="Guard_NeverTouched" xml:space="preserve">
+    <value>PID {0} is never touched.</value>
+  </data>
+  <data name="Guard_Exited" xml:space="preserve">
+    <value>{0} (PID {1}) has already exited.</value>
+  </data>
+  <data name="Guard_PidReused" xml:space="preserve">
+    <value>PID {0} now belongs to a different process; the original has exited.</value>
+  </data>
+  <data name="Guard_PathChanged" xml:space="preserve">
+    <value>The executable of PID {0} no longer matches {1}.</value>
+  </data>
+  <data name="Guard_ProtectedNow" xml:space="preserve">
+    <value>{0} (PID {1}) is protected: {2}.</value>
+  </data>
+  <data name="Guard_NotAuthorized" xml:space="preserve">
+    <value>Force-termination of {0} (PID {1}) was not confirmed by the user.</value>
+  </data>
+  <data name="Guard_AuthExpired" xml:space="preserve">
+    <value>The confirmation for force-termination has expired. Please confirm again.</value>
+  </data>
+  <data name="Guard_GracefulFirst" xml:space="preserve">
+    <value>{0} (PID {1}) must first be asked to close normally.</value>
+  </data>
+  <data name="Baseline_NewerVersion" xml:space="preserve">
+    <value>The baseline was created by a newer version of SnapBack.</value>
+  </data>
+  <data name="Baseline_OtherUser" xml:space="preserve">
+    <value>The baseline belongs to a different user account.</value>
+  </data>
+  <data name="Unit_B" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="Unit_KB" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="Unit_MB" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="Unit_GB" xml:space="preserve">
+    <value>GB</value>
+  </data>
+  <data name="Act_NoVisibleWindows" xml:space="preserve">
+    <value>The process has no visible windows.</value>
+  </data>
+  <data name="Act_CloseSent" xml:space="preserve">
+    <value>Close request sent (windows: {0}).</value>
+  </data>
+  <data name="Act_CloseBlocked" xml:space="preserve">
+    <value>Windows blocked the close request.</value>
+  </data>
+  <data name="Act_CloseFailed" xml:space="preserve">
+    <value>The close request could not be sent (error {0}).</value>
+  </data>
+  <data name="Act_CtrlCFromConsole" xml:space="preserve">
+    <value>Ctrl+C can only be sent from the SnapBack window, not from a console.</value>
+  </data>
+  <data name="Act_NoConsole" xml:space="preserve">
+    <value>The process has no console.</value>
+  </data>
+  <data name="Act_AttachFailed" xml:space="preserve">
+    <value>Could not attach to its console (error {0}).</value>
+  </data>
+  <data name="Act_ConsoleShared" xml:space="preserve">
+    <value>Its console is shared with {0}, which is not being closed.</value>
+  </data>
+  <data name="Act_CtrlCFailed" xml:space="preserve">
+    <value>Ctrl+C could not be sent (error {0}).</value>
+  </data>
+  <data name="Act_CtrlCSent" xml:space="preserve">
+    <value>Ctrl+C sent.</value>
+  </data>
+  <data name="Act_NothingLeft" xml:space="preserve">
+    <value>Nothing left to close.</value>
+  </data>
+  <data name="Act_RmUnavailable" xml:space="preserve">
+    <value>Restart Manager is unavailable (error {0}).</value>
+  </data>
+  <data name="Act_RmRegisterFailed" xml:space="preserve">
+    <value>Restart Manager registration failed (error {0}).</value>
+  </data>
+  <data name="Act_Cancelled" xml:space="preserve">
+    <value>Cancelled.</value>
+  </data>
+  <data name="Act_RmAgreed" xml:space="preserve">
+    <value>The app agreed to exit.</value>
+  </data>
+  <data name="Act_RmDeclined" xml:space="preserve">
+    <value>The app did not agree to exit.</value>
+  </data>
+  <data name="Act_RmFailed" xml:space="preserve">
+    <value>Restart Manager failed (error {0}).</value>
+  </data>
+  <data name="Act_RmNothing" xml:space="preserve">
+    <value>Restart Manager found nothing it could close politely.</value>
+  </data>
+  <data name="Act_RmQueryFailed" xml:space="preserve">
+    <value>Restart Manager query failed (error {0}).</value>
+  </data>
+  <data name="Act_RmExtraPid" xml:space="preserve">
+    <value>Restart Manager would also affect PID {0}; nothing was done.</value>
+  </data>
+  <data name="Act_RmOtherSession" xml:space="preserve">
+    <value>PID {0} is in another session; nothing was done.</value>
+  </data>
+  <data name="Act_RmType_Service" xml:space="preserve">
+    <value>a service</value>
+  </data>
+  <data name="Act_RmType_Explorer" xml:space="preserve">
+    <value>Windows Explorer</value>
+  </data>
+  <data name="Act_RmType_Console" xml:space="preserve">
+    <value>a console program</value>
+  </data>
+  <data name="Act_RmType_Critical" xml:space="preserve">
+    <value>a critical process</value>
+  </data>
+  <data name="Act_RmType_Other" xml:space="preserve">
+    <value>not a window application</value>
+  </data>
+  <data name="Act_RmNotEligible" xml:space="preserve">
+    <value>Restart Manager reports PID {0} as {1}; it was not asked to exit.</value>
+  </data>
+  <data name="Act_TerminateDenied" xml:space="preserve">
+    <value>Windows denied the termination.</value>
+  </data>
+  <data name="Act_TerminateFailed" xml:space="preserve">
+    <value>Termination failed (error {0}).</value>
+  </data>
+  <data name="Act_Terminated" xml:space="preserve">
+    <value>Terminated.</value>
+  </data>
+  <data name="Act_TerminateNoExit" xml:space="preserve">
+    <value>The process did not exit after termination was requested.</value>
+  </data>
+  <data name="Verify_NeverTouched" xml:space="preserve">
+    <value>This process is never touched.</value>
+  </data>
+  <data name="Verify_Exited" xml:space="preserve">
+    <value>The process has exited.</value>
+  </data>
+  <data name="Verify_AccessDenied" xml:space="preserve">
+    <value>Access denied.</value>
+  </data>
+  <data name="Verify_OpenFailed" xml:space="preserve">
+    <value>Could not open the process (error {0}).</value>
+  </data>
+  <data name="Verify_PidReused" xml:space="preserve">
+    <value>The PID now belongs to a different process.</value>
+  </data>
+  <data name="Verify_PathUnverified" xml:space="preserve">
+    <value>The executable could not be verified.</value>
+  </data>
+  <data name="Verify_PathMismatch" xml:space="preserve">
+    <value>The executable does not match.</value>
+  </data>
+  <data name="Verify_WindowsComponent" xml:space="preserve">
+    <value>Windows components are never touched.</value>
+  </data>
+  <data name="Verify_Critical" xml:space="preserve">
+    <value>Critical (or unverifiable) process.</value>
+  </data>
+  <data name="Verify_Protected" xml:space="preserve">
+    <value>Protected (or unverifiable) process.</value>
+  </data>
+  <data name="Verify_OtherSession" xml:space="preserve">
+    <value>The process belongs to another session.</value>
+  </data>
+  <data name="Verify_OtherUser" xml:space="preserve">
+    <value>The process belongs to another (or unknown) user.</value>
+  </data>
+  <data name="Verify_Elevated" xml:space="preserve">
+    <value>The process runs with administrator rights.</value>
+  </data>
+  <data name="Advice_Healthy_Title" xml:space="preserve">
+    <value>Plenty of memory available</value>
+  </data>
+  <data name="Advice_Healthy_Text" xml:space="preserve">
+    <value>Windows keeps recently used data in a cache (standby memory) and hands it to apps instantly when they need memory. That cache already counts as available, so no cleanup is needed.</value>
+  </data>
+  <data name="Advice_Moderate_Title" xml:space="preserve">
+    <value>Memory is moderately used</value>
+  </data>
+  <data name="Advice_Moderate_Text" xml:space="preserve">
+    <value>If you need more memory, close apps you are not using — for example with Return to baseline. Clearing the cache does not increase available memory: cached memory is already available.</value>
+  </data>
+  <data name="Advice_Low_Title" xml:space="preserve">
+    <value>Memory is low</value>
+  </data>
+  <data name="Advice_Low_Text" xml:space="preserve">
+    <value>Apps are using most of the memory. Closing apps (Return to baseline) is what helps. Deep Memory Cleanup will not fix this, because it only drops cache that Windows would reuse anyway.</value>
+  </data>
+  <data name="Advice_Unknown_Title" xml:space="preserve">
+    <value>Memory status unavailable</value>
+  </data>
+  <data name="Advice_Unknown_Text" xml:space="preserve">
+    <value>Windows did not report memory statistics.</value>
+  </data>
+  <data name="Deep_Mode_Standby" xml:space="preserve">
+    <value>Entire standby cache</value>
+  </data>
+  <data name="Deep_Mode_LowPriorityStandby" xml:space="preserve">
+    <value>Low-priority standby cache only</value>
+  </data>
+  <data name="Deep_Completed" xml:space="preserve">
+    <value>The cache was cleared.</value>
+  </data>
+  <data name="Deep_CancelledByUser" xml:space="preserve">
+    <value>Administrator permission was not granted. Nothing was changed.</value>
+  </data>
+  <data name="Deep_NotElevated" xml:space="preserve">
+    <value>This operation needs administrator rights.</value>
+  </data>
+  <data name="Deep_PrivilegeMissing" xml:space="preserve">
+    <value>The required system privilege is not available.</value>
+  </data>
+  <data name="Deep_Failed" xml:space="preserve">
+    <value>The cache could not be cleared (error {0}).</value>
+  </data>
+  <data name="Deep_BadRequest" xml:space="preserve">
+    <value>Invalid request.</value>
+  </data>
+  <data name="Deep_LaunchFailed" xml:space="preserve">
+    <value>The elevated helper could not be started: {0}</value>
+  </data>
+  <data name="Deep_UnknownExit" xml:space="preserve">
+    <value>The elevated helper reported an unexpected result ({0}).</value>
+  </data>
+  <data name="Cmp_Apps" xml:space="preserve">
+    <value>Apps</value>
+  </data>
+  <data name="Cmp_Processes" xml:space="preserve">
+    <value>Processes</value>
+  </data>
+  <data name="Cmp_InUse" xml:space="preserve">
+    <value>RAM in use</value>
+  </data>
+  <data name="Cmp_Available" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Cmp_Cached" xml:space="preserve">
+    <value>Cached (standby + modified)</value>
+  </data>
+  <data name="Cmp_Free" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="Cmp_ReleasedByApps" xml:space="preserve">
+    <value>Memory released by closing apps</value>
+  </data>
+  <data name="Cmp_ReclaimedByCleanup" xml:space="preserve">
+    <value>Cache reclaimed by Deep Memory Cleanup</value>
+  </data>
+  <data name="Cmp_Total" xml:space="preserve">
+    <value>Installed memory</value>
+  </data>
+  <data name="Cmp_Standby" xml:space="preserve">
+    <value>Standby (cache)</value>
+  </data>
+  <data name="Cmp_Modified" xml:space="preserve">
+    <value>Modified (waiting to be written)</value>
+  </data>
+  <data name="Cmp_Commit" xml:space="preserve">
+    <value>Committed</value>
+  </data>
+</root>

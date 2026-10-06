@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.Logging;
+using SnapBack.App.Localization;
 using SnapBack.App.Services;
 using SnapBack.App.ViewModels;
 using SnapBack.App.Views;
@@ -17,6 +18,15 @@ public partial class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Elevated helper for Deep Memory Cleanup: no window, no single-instance lock, exit code only.
+        if (Core.Memory.DeepCleanupHelper.IsHelperInvocation(e.Args))
+        {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            Shutdown(AppServices.RunDeepCleanupHelper(e.Args));
+            return;
+        }
+
         var autoBaseline = e.Args.Contains(AutostartRegistration.AutoBaselineArgument, StringComparer.OrdinalIgnoreCase);
 
         _instance = new SingleInstance();
@@ -37,12 +47,13 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            MessageBox.Show("SnapBack could not start:\n\n" + ex.Message, "SnapBack", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(Tr.Format("Error_Startup", ex.Message), Tr.Get("App_Name"), MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
             return;
         }
 
         _log = _services.Loggers.CreateLogger("App");
+        LanguageManager.Apply(_services.Engine.Settings.Language);
         ErrorReporter.Log = _log;
         ErrorReporter.LogDirectory = _services.Paths.Logs;
         DispatcherUnhandledException += OnDispatcherUnhandledException;
@@ -53,8 +64,8 @@ public partial class App : Application
             args.SetObserved();
         };
 
-        _log.LogInformation("SnapBack {Version} started (elevated: {Elevated}, auto-baseline: {Auto})",
-            typeof(App).Assembly.GetName().Version, _services.Probe.BaseContext.SelfElevated, autoBaseline);
+        _log.LogInformation("SnapBack {Version} started (elevated: {Elevated}, auto-baseline: {Auto}, language: {Language})",
+            typeof(App).Assembly.GetName().Version, _services.Probe.BaseContext.SelfElevated, autoBaseline, Core.Localization.Loc.Culture.Name);
 
         if (autoBaseline)
         {
@@ -73,7 +84,7 @@ public partial class App : Application
         }
 
         var dialogs = new DialogService(() => MainWindow);
-        var window = new MainWindow(new MainViewModel(_services.Engine, dialogs, _log));
+        var window = new MainWindow(new MainViewModel(_services.Engine, _services.DeepCleanup, dialogs, _log));
         MainWindow = window;
         _instance.ListenForActivation(() => Dispatcher.BeginInvoke(window.BringToFront));
         window.Show();

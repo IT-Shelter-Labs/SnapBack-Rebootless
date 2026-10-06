@@ -1,4 +1,5 @@
 using SnapBack.Core.Grouping;
+using SnapBack.Core.Localization;
 using SnapBack.Core.Model;
 
 namespace SnapBack.Core.Baselines;
@@ -52,12 +53,12 @@ public static class BaselineFactory
     {
         if (baseline.SchemaVersion > Baseline.CurrentSchemaVersion)
         {
-            return "The baseline was created by a newer version of SnapBack.";
+            return Loc.Get("Baseline_NewerVersion");
         }
 
         if (!string.Equals(baseline.UserSid, ctx.UserSid, StringComparison.OrdinalIgnoreCase))
         {
-            return "The baseline belongs to a different user account.";
+            return Loc.Get("Baseline_OtherUser");
         }
 
         return null;

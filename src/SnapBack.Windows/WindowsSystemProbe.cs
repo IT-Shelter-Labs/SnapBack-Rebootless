@@ -18,6 +18,7 @@ public sealed class WindowsSystemProbe : ISystemProbe
     private readonly ILogger _log;
     private readonly SessionContext _baseContext;
     private readonly FileMetadataCache _metadata = new();
+    private readonly MemoryInfoReader _memory;
     private readonly object _serviceGate = new();
     private (HashSet<int> Pids, bool Ok, DateTime At) _services;
 
@@ -25,6 +26,7 @@ public sealed class WindowsSystemProbe : ISystemProbe
     {
         _log = log;
         _baseContext = WindowsSessionInfo.Create();
+        _memory = new MemoryInfoReader(log);
     }
 
     public SessionContext BaseContext => _baseContext;
@@ -66,13 +68,7 @@ public sealed class WindowsSystemProbe : ISystemProbe
         return raw.SessionId == _baseContext.SessionId ? Enrich(raw, services, windows) : Minimal(raw, services);
     }
 
-    public MemoryStatus GetMemoryStatus()
-    {
-        var status = new MEMORYSTATUSEX { dwLength = (uint)System.Runtime.InteropServices.Marshal.SizeOf<MEMORYSTATUSEX>() };
-        return Kernel32.GlobalMemoryStatusEx(ref status)
-            ? new MemoryStatus((long)status.ullTotalPhys, (long)status.ullAvailPhys)
-            : MemoryStatus.Unknown;
-    }
+    public MemoryStatus GetMemoryStatus() => _memory.Read();
 
     private static ProcessInfo Minimal(RawProcess r, HashSet<int> services) => new()
     {

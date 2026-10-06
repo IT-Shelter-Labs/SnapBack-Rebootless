@@ -1,6 +1,7 @@
 using SnapBack.Core.Baselines;
 using SnapBack.Core.Classification;
 using SnapBack.Core.Grouping;
+using SnapBack.Core.Localization;
 
 namespace SnapBack.Core.Planning;
 
@@ -58,20 +59,20 @@ public sealed class PlanItem
                 case PlanCategory.Kept:
                     return KeepReason switch
                     {
-                        KeepReason.InBaseline => "Was present in baseline",
-                        KeepReason.RestartedSinceBaseline => "Was present in baseline (restarted since)",
-                        KeepReason.UserKeepList => "In your keep list",
-                        _ => "Kept",
+                        KeepReason.InBaseline => Loc.Get("Plan_Kept_InBaseline"),
+                        KeepReason.RestartedSinceBaseline => Loc.Get("Plan_Kept_Restarted"),
+                        KeepReason.UserKeepList => Loc.Get("Plan_Kept_UserList"),
+                        _ => Loc.Get("Plan_Kept"),
                     };
                 case PlanCategory.Protected:
-                    return Reasons.Count > 0 ? RiskReasons.Label(Reasons.OrderByDescending(RiskReasons.LevelOf).First()) : "Protected";
+                    return Reasons.Count > 0 ? RiskReasons.Label(Reasons.OrderByDescending(RiskReasons.LevelOf).First()) : Loc.Get("Plan_Protected");
             }
 
             var start = Comparison?.Status switch
             {
-                GroupStatus.NewInstanceOfBaselineApp => "Extra instance since baseline",
-                _ when Comparison?.StartedByBaselineApp is { } p => $"Started by {p} after baseline",
-                _ => "Started after baseline",
+                GroupStatus.NewInstanceOfBaselineApp => Loc.Get("Plan_ExtraInstance"),
+                _ when Comparison?.StartedByBaselineApp is { } p => Loc.Format("Plan_StartedBy", p),
+                _ => Loc.Get("Plan_StartedAfter"),
             };
 
             var concern = Reasons

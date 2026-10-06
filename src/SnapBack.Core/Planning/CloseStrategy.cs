@@ -1,5 +1,6 @@
 using SnapBack.Core.Classification;
 using SnapBack.Core.Grouping;
+using SnapBack.Core.Localization;
 using SnapBack.Core.Model;
 
 namespace SnapBack.Core.Planning;
@@ -57,14 +58,13 @@ public static class CloseStrategy
 
         foreach (var m in closeWindows)
         {
-            var n = m.Windows.VisibleMainWindows;
-            steps.Add(Step(m, StepKind.CloseWindows, $"Send a close request to {n} window{(n == 1 ? "" : "s")} of {m.ImageName} (PID {m.Pid}), like clicking X."));
+            steps.Add(Step(m, StepKind.CloseWindows, Loc.Format("Step_CloseWindows", m.ImageName, m.Pid, m.Windows.VisibleMainWindows)));
             directlyAsked.Add(m.Pid);
         }
 
         foreach (var m in console)
         {
-            steps.Add(Step(m, StepKind.ConsoleInterrupt, $"Send Ctrl+C to the console of {m.ImageName} (PID {m.Pid}), only if no unrelated program shares that console."));
+            steps.Add(Step(m, StepKind.ConsoleInterrupt, Loc.Format("Step_ConsoleInterrupt", m.ImageName, m.Pid)));
             directlyAsked.Add(m.Pid);
         }
 
@@ -73,29 +73,29 @@ public static class CloseStrategy
             var rm = actionable.Where(IsRestartManagerCandidate).ToList();
             foreach (var m in rm)
             {
-                steps.Add(Step(m, StepKind.RestartManager, $"Ask {m.ImageName} (PID {m.Pid}) to exit through Windows Restart Manager, the way installers do (never forced)."));
+                steps.Add(Step(m, StepKind.RestartManager, Loc.Format("Step_RestartManager", m.ImageName, m.Pid)));
                 directlyAsked.Add(m.Pid);
             }
 
             if (rm.Count == 0 && actionable.Any(m => m.Pid == group.Root.Pid))
             {
                 var r = group.Root;
-                steps.Add(Step(r, StepKind.NoGracefulMethod, $"{r.ImageName} (PID {r.Pid}) has no window to close politely; it will only be reported as still running."));
+                steps.Add(Step(r, StepKind.NoGracefulMethod, Loc.Format("Step_NoGracefulMethod", r.ImageName, r.Pid)));
                 directlyAsked.Add(r.Pid);
             }
         }
 
         foreach (var m in actionable.Where(m => !directlyAsked.Contains(m.Pid)))
         {
-            steps.Add(Step(m, StepKind.ExitsWithApp, $"{m.ImageName} (PID {m.Pid}) is expected to exit together with the app."));
+            steps.Add(Step(m, StepKind.ExitsWithApp, Loc.Format("Step_ExitsWithApp", m.ImageName, m.Pid)));
         }
 
         foreach (var m in group.ProtectedMembers)
         {
             var reason = group.MemberAssessments.TryGetValue(m.Pid, out var a) && a.PrimaryReason is { } pr
                 ? RiskReasons.Label(pr)
-                : "protected";
-            steps.Add(Step(m, StepKind.LeftAlone, $"{m.ImageName} (PID {m.Pid}) is left alone ({reason})."));
+                : Loc.Get("Step_ProtectedFallback");
+            steps.Add(Step(m, StepKind.LeftAlone, Loc.Format("Step_LeftAlone", m.ImageName, m.Pid, reason)));
         }
 
         return steps;
@@ -108,11 +108,11 @@ public static class CloseStrategy
         var actionable = group.ActionableMembers.ToList();
         if (actionable.Any(ShouldCloseWindows))
         {
-            notes.Add("If the app hides to the tray instead of exiting, it is asked again through Windows Restart Manager.");
-            notes.Add("If the app asks to save changes, SnapBack waits for your answer and does not continue on its own.");
+            notes.Add(Loc.Get("Note_TrayRetry"));
+            notes.Add(Loc.Get("Note_WaitsForUser"));
         }
 
-        notes.Add("Nothing is force-terminated without your separate confirmation.");
+        notes.Add(Loc.Get("Note_NoForce"));
         return notes;
     }
 

@@ -5,6 +5,7 @@ using SnapBack.Core.Baselines;
 using SnapBack.Core.Classification;
 using SnapBack.Core.Execution;
 using SnapBack.Core.Logging;
+using SnapBack.Core.Memory;
 using SnapBack.Core.Persistence;
 using SnapBack.Core.Planning;
 using SnapBack.Core.Text;
@@ -62,6 +63,7 @@ internal static class Program
                 "preview" => Preview(engine, a),
                 "restore" => await Restore(engine, a),
                 "history" => History(engine, a),
+                "memory" => Memory(engine, a),
                 _ => Usage($"Unknown command '{a.Command}'."),
             };
         }
@@ -307,6 +309,41 @@ internal static class Program
         return ExitOk;
     }
 
+    /// <summary>Read-only memory report. The CLI never runs Deep Memory Cleanup (it needs a UAC prompt; use the window).</summary>
+    private static int Memory(SnapBackEngine engine, Args a)
+    {
+        var m = engine.ReadMemory();
+        var advice = MemoryAdvisor.Advise(m);
+        if (a.Has("--json"))
+        {
+            Console.WriteLine(JsonSerializer.Serialize(new
+            {
+                totalBytes = m.TotalPhysicalBytes,
+                inUseBytes = m.UsedPhysicalBytes,
+                availableBytes = m.AvailablePhysicalBytes,
+                standbyBytes = m.StandbyBytes,
+                modifiedBytes = m.ModifiedBytes,
+                freeBytes = m.FreeBytes,
+                commitBytes = m.CommitTotalBytes,
+                commitLimitBytes = m.CommitLimitBytes,
+                pressure = advice.Pressure,
+            }, Json));
+            return ExitOk;
+        }
+
+        static string Opt(long? v) => v is { } x ? ByteSize.Format(x) : "n/a";
+        Console.WriteLine($"Installed:           {ByteSize.Format(m.TotalPhysicalBytes)}");
+        Console.WriteLine($"In use:              {ByteSize.Format(m.UsedPhysicalBytes)} ({m.UsedPercent:0}%)");
+        Console.WriteLine($"Available:           {ByteSize.Format(m.AvailablePhysicalBytes)} ({m.AvailablePercent:0}%)");
+        Console.WriteLine($"  Standby (cache):   {Opt(m.StandbyBytes)}");
+        Console.WriteLine($"  Free:              {Opt(m.FreeBytes)}");
+        Console.WriteLine($"Modified:            {Opt(m.ModifiedBytes)}");
+        Console.WriteLine($"Committed:           {ByteSize.Format(m.CommitTotalBytes)} of {ByteSize.Format(m.CommitLimitBytes)}");
+        Console.WriteLine();
+        Console.WriteLine(advice.Title + ". " + advice.Text);
+        return ExitOk;
+    }
+
     /// <summary>Default selection = what the GUI pre-selects; --app filters by name; --include-* widen it.</summary>
     private static List<PlanItem> Select(CleanupPlan plan, Args a)
     {
@@ -403,6 +440,7 @@ internal static class Program
           snapback-cli restore [selection] [--yes]
                                                    Ask the selected apps to close (never forced)
           snapback-cli history [--json]
+          snapback-cli memory [--json]             Memory in use vs. reusable cache, with advice
 
         Selection (default: the apps the GUI pre-selects, i.e. those marked safe):
           --app <name>          Only apps whose name or executable matches (repeatable)

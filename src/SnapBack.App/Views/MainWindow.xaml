@@ -4,11 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SnapBack.App.ViewModels"
+        xmlns:l="clr-namespace:SnapBack.App.Localization"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
-        Title="SnapBack" Icon="/Assets/snapback.png"
-        Width="1120" Height="760" MinWidth="880" MinHeight="560"
-        WindowStartupLocation="CenterScreen">
+        Title="{l:Tr App_Name}" Icon="/Assets/snapback.png"
+        FontFamily="{Binding UiFont, Source={x:Static l:Tr.Instance}}"
+        Width="1160" Height="780" MinWidth="900" MinHeight="580"
+        WindowStartupLocation="CenterScreen"
+        AutomationProperties.AutomationId="MainWindow">
 
     <Window.Resources>
         <ResourceDictionary Source="AppListTemplates.xaml" />
@@ -27,30 +30,38 @@
         <!-- Header -->
         <DockPanel Grid.Row="0" Margin="0,0,0,12">
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Command="{Binding RefreshCommand}" Style="{StaticResource ToolbarButton}" ToolTip="Re-analyze running applications (F5)">
+                <Button Command="{Binding RefreshCommand}" Style="{StaticResource ToolbarButton}" ToolTip="{l:Tr Main_Refresh_Tooltip}"
+                        AutomationProperties.AutomationId="RefreshButton">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource Icon}" Text="&#xE72C;" Margin="0,0,6,0" />
-                        <TextBlock Text="Refresh" />
+                        <TextBlock Text="{l:Tr Main_Refresh}" />
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding OpenHistoryCommand}" Style="{StaticResource ToolbarButton}">
+                <Button Command="{Binding OpenMemoryCommand}" Style="{StaticResource ToolbarButton}" ToolTip="{l:Tr Main_Memory_Tooltip}"
+                        AutomationProperties.AutomationId="MemoryButton">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" Text="&#xE964;" Margin="0,0,6,0" />
+                        <TextBlock Text="{l:Tr Main_Memory}" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding OpenHistoryCommand}" Style="{StaticResource ToolbarButton}" AutomationProperties.AutomationId="HistoryButton">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource Icon}" Text="&#xE81C;" Margin="0,0,6,0" />
-                        <TextBlock Text="History" />
+                        <TextBlock Text="{l:Tr Main_History}" />
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding OpenSettingsCommand}" Style="{StaticResource ToolbarButton}">
+                <Button Command="{Binding OpenSettingsCommand}" Style="{StaticResource ToolbarButton}" AutomationProperties.AutomationId="SettingsButton">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource Icon}" Text="&#xE713;" Margin="0,0,6,0" />
-                        <TextBlock Text="Settings" />
+                        <TextBlock Text="{l:Tr Main_Settings}" />
                     </StackPanel>
                 </Button>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Image Source="/Assets/snapback.png" Width="40" Height="40" Margin="0,0,12,0" RenderOptions.BitmapScalingMode="HighQuality" />
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="SnapBack" FontSize="24" FontWeight="SemiBold" />
-                    <TextBlock Text="Return your session to its fresh-start state — without rebooting." Style="{StaticResource Secondary}" FontSize="13" />
+                    <TextBlock Text="{l:Tr App_Name}" FontSize="24" FontWeight="SemiBold" />
+                    <TextBlock Text="{l:Tr App_Tagline}" Style="{StaticResource Secondary}" FontSize="13" />
                 </StackPanel>
             </StackPanel>
         </DockPanel>
@@ -68,37 +79,37 @@
         <UniformGrid Grid.Row="2" Rows="1" Columns="5" Margin="-6,0,-6,12">
             <Border Style="{StaticResource Card}" Margin="6,0">
                 <StackPanel>
-                    <TextBlock Text="Baseline" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{l:Tr Card_Baseline}" Style="{StaticResource CardLabel}" />
                     <TextBlock Text="{Binding BaselineText}" Style="{StaticResource CardValue}" />
                     <TextBlock Text="{Binding BaselineHint}" Style="{StaticResource CardHint}" ToolTip="{Binding BaselineHint}" />
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource Card}" Margin="6,0">
                 <StackPanel>
-                    <TextBlock Text="Apps running" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{l:Tr Card_AppsRunning}" Style="{StaticResource CardLabel}" />
                     <TextBlock Text="{Binding AppsRunningText}" Style="{StaticResource CardValue}" />
                     <TextBlock Text="{Binding AppsRunningHint}" Style="{StaticResource CardHint}" />
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource Card}" Margin="6,0">
                 <StackPanel>
-                    <TextBlock Text="Memory in use" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{l:Tr Card_Memory}" Style="{StaticResource CardLabel}" />
                     <TextBlock Text="{Binding MemoryText}" Style="{StaticResource CardValue}" />
-                    <TextBlock Text="{Binding MemoryHint}" Style="{StaticResource CardHint}" />
+                    <TextBlock Text="{Binding MemoryHint}" Style="{StaticResource CardHint}" ToolTip="{Binding MemoryHint}" />
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource Card}" Margin="6,0">
                 <StackPanel>
-                    <TextBlock Text="New since baseline" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{l:Tr Card_NewSince}" Style="{StaticResource CardLabel}" />
                     <TextBlock Text="{Binding NewSinceText}" Style="{StaticResource CardValue}" />
-                    <TextBlock Text="{Binding NewSinceHint}" Style="{StaticResource CardHint}" />
+                    <TextBlock Text="{Binding NewSinceHint}" Style="{StaticResource CardHint}" ToolTip="{Binding NewSinceHint}" />
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource Card}" Margin="6,0">
                 <StackPanel>
-                    <TextBlock Text="Can be freed" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{l:Tr Card_Freeable}" Style="{StaticResource CardLabel}" />
                     <TextBlock Text="{Binding FreeableText}" Style="{StaticResource CardValue}" />
-                    <TextBlock Text="{Binding FreeableHint}" Style="{StaticResource CardHint}" />
+                    <TextBlock Text="{l:Tr Card_FreeableHint}" Style="{StaticResource CardHint}" />
                 </StackPanel>
             </Border>
         </UniformGrid>
@@ -106,60 +117,71 @@
         <!-- Toolbar -->
         <DockPanel Grid.Row="3" Margin="0,0,0,8">
             <Button DockPanel.Dock="Left" Command="{Binding CreateBaselineCommand}" Padding="12,6"
-                    ToolTip="Everything running right now becomes the 'clean' state SnapBack returns to.">
+                    ToolTip="{l:Tr Main_MakeBaseline_Tooltip}" AutomationProperties.AutomationId="MakeBaselineButton">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource Icon}" Text="&#xE735;" Margin="0,0,6,0" />
-                    <TextBlock Text="Make current state the baseline" />
+                    <TextBlock Text="{l:Tr Main_MakeBaseline}" />
                 </StackPanel>
             </Button>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Select suggested" Command="{Binding SelectSafeCommand}" Style="{StaticResource ToolbarButton}"
-                        ToolTip="Select the apps marked Safe" />
-                <Button Content="Clear selection" Command="{Binding ClearSelectionCommand}" Style="{StaticResource ToolbarButton}" />
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button Content="{l:Tr Main_SelectSuggested}" Command="{Binding SelectSafeCommand}" Style="{StaticResource ToolbarButton}"
+                        ToolTip="{l:Tr Main_SelectSuggested_Tooltip}" />
+                <Button Content="{l:Tr Main_ClearSelection}" Command="{Binding ClearSelectionCommand}" Style="{StaticResource ToolbarButton}" />
             </StackPanel>
+            <!-- Search -->
+            <Grid Margin="12,0,0,0" MaxWidth="360" HorizontalAlignment="Left" Width="320">
+                <TextBox x:Name="SearchBox" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Padding="30,6,30,6" VerticalContentAlignment="Center"
+                         AutomationProperties.AutomationId="SearchBox" AutomationProperties.Name="{l:Tr Main_Search}" />
+                <TextBlock Style="{StaticResource Icon}" Text="&#xE721;" Margin="10,0,0,0" HorizontalAlignment="Left" Opacity="0.6" IsHitTestVisible="False" />
+                <TextBlock Text="{l:Tr Main_Search}" Margin="32,0,0,0" VerticalAlignment="Center" Style="{StaticResource Secondary}" IsHitTestVisible="False"
+                           Visibility="{Binding SearchText, Converter={StaticResource NoValueToVisibility}}" />
+                <Button HorizontalAlignment="Right" Margin="0,0,4,0" Padding="6,2" Command="{Binding ClearSearchCommand}" Style="{StaticResource SortHeaderButton}"
+                        Visibility="{Binding SearchText, Converter={StaticResource HasValueToVisibility}}" ToolTip="{l:Tr Main_ClearSearch}">
+                    <TextBlock Style="{StaticResource Icon}" Text="&#xE711;" FontSize="10" />
+                </Button>
+            </Grid>
         </DockPanel>
 
         <!-- Lists -->
         <TabControl Grid.Row="4" Margin="0,0,0,12">
-            <TabItem Header="{Binding CandidatesHeader}">
+            <TabItem Header="{Binding CandidatesHeader}" AutomationProperties.AutomationId="TabNew">
                 <Grid Margin="0,8,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <ContentControl ContentTemplate="{StaticResource AppListHeader}" />
+                    <ContentControl Content="{Binding}" ContentTemplate="{StaticResource AppListHeader}" Focusable="False" />
                     <ListView Grid.Row="1" ItemsSource="{Binding Candidates}" ItemTemplate="{StaticResource AppRowTemplate}"
                               ItemContainerStyle="{StaticResource AppListItem}" SelectionMode="Single"
-                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True" />
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True"
+                              AutomationProperties.AutomationId="CandidatesList" />
                     <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Style="{StaticResource Secondary}" FontSize="14"
-                               Visibility="{Binding HasNoCandidates, Converter={StaticResource BoolToVisibility}}"
-                               Text="Nothing new since the baseline. Your session is already in its clean state." />
+                               TextWrapping="Wrap" Visibility="{Binding HasNoVisibleCandidates, Converter={StaticResource BoolToVisibility}}" Text="{Binding EmptyText}" />
                 </Grid>
             </TabItem>
-            <TabItem Header="{Binding KeptHeader}">
+            <TabItem Header="{Binding KeptHeader}" AutomationProperties.AutomationId="TabKept">
                 <Grid Margin="0,8,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <TextBlock Text="Apps that were part of the baseline (or are in your keep list). SnapBack never suggests closing them; new windows or child processes they open are fine."
-                               Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="8,0,8,8" />
-                    <ContentControl Grid.Row="1" ContentTemplate="{StaticResource AppListHeader}" />
+                    <TextBlock Text="{l:Tr Tab_Kept_Description}" Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="8,0,8,8" />
+                    <ContentControl Grid.Row="1" Content="{Binding}" ContentTemplate="{StaticResource AppListHeader}" Focusable="False" />
                     <ListView Grid.Row="2" ItemsSource="{Binding Kept}" ItemTemplate="{StaticResource AppRowTemplate}"
-                              ItemContainerStyle="{StaticResource AppListItem}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+                              ItemContainerStyle="{StaticResource AppListItem}" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              VirtualizingPanel.IsVirtualizing="True" />
                 </Grid>
             </TabItem>
-            <TabItem Header="{Binding ProtectedHeader}">
+            <TabItem Header="{Binding ProtectedHeader}" AutomationProperties.AutomationId="TabProtected">
                 <Grid Margin="0,8,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <TextBlock Text="Windows components, services, elevated programs and anything SnapBack cannot fully verify. These are never closed, no matter what is selected."
-                               Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="8,0,8,8" />
-                    <ContentControl Grid.Row="1" ContentTemplate="{StaticResource AppListHeader}" />
+                    <TextBlock Text="{l:Tr Tab_Protected_Description}" Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="8,0,8,8" />
+                    <ContentControl Grid.Row="1" Content="{Binding}" ContentTemplate="{StaticResource AppListHeader}" Focusable="False" />
                     <ListView Grid.Row="2" ItemsSource="{Binding Protected}" ItemTemplate="{StaticResource AppRowTemplate}"
                               ItemContainerStyle="{StaticResource AppListItem}" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               VirtualizingPanel.IsVirtualizing="True" />
@@ -170,9 +192,10 @@
         <!-- Footer -->
         <DockPanel Grid.Row="5">
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                <Button Content="Always keep selected" Command="{Binding KeepSelectedCommand}" Padding="12,8" Margin="0,0,8,0"
-                        ToolTip="Never suggest these apps again (your keep list)" />
-                <Button Command="{Binding RestoreCommand}" Style="{DynamicResource AccentButtonStyle}" Padding="18,8" MinWidth="220">
+                <Button Content="{l:Tr Main_AlwaysKeep}" Command="{Binding KeepSelectedCommand}" Padding="12,8" Margin="0,0,8,0"
+                        ToolTip="{l:Tr Main_AlwaysKeep_Tooltip}" />
+                <Button Command="{Binding RestoreCommand}" Style="{DynamicResource AccentButtonStyle}" Padding="18,8" MinWidth="230"
+                        AutomationProperties.AutomationId="RestoreButton">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource Icon}" Text="&#xE7A7;" Margin="0,0,8,0" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
                         <TextBlock Text="{Binding RestoreButtonText}" FontWeight="SemiBold" />
@@ -180,7 +203,7 @@
                 </Button>
             </StackPanel>
             <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="{Binding SelectionText}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding SelectionText}" FontWeight="SemiBold" AutomationProperties.AutomationId="SelectionText" />
                 <TextBlock Text="{Binding Status}" Style="{StaticResource Secondary}" />
             </StackPanel>
         </DockPanel>

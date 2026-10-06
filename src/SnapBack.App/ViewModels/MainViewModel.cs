@@ -2,11 +2,14 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
+using SnapBack.App.Localization;
 using SnapBack.App.Mvvm;
 using SnapBack.Core;
 using SnapBack.Core.Baselines;
-using SnapBack.Core.Model;
+using SnapBack.Core.Localization;
+using SnapBack.Core.Memory;
 using SnapBack.Core.Planning;
+using SnapBack.Core.Presentation;
 using SnapBack.Core.Text;
 
 namespace SnapBack.App.ViewModels;
@@ -14,17 +17,25 @@ namespace SnapBack.App.ViewModels;
 public sealed class MainViewModel : ObservableObject
 {
     private readonly SnapBackEngine _engine;
+    private readonly DeepCleanupService _deepCleanup;
     private readonly IDialogService _dialogs;
     private readonly ILogger _log;
-    private readonly Dictionary<ProcessIdentity, bool> _userChoices = new();
+    private readonly SelectionState _selection = new();
+    private List<AppRowViewModel> _allCandidates = [];
+    private List<AppRowViewModel> _allKept = [];
+    private List<AppRowViewModel> _allProtected = [];
     private Analysis? _analysis;
     private bool _isBusy;
     private string _status = "";
+    private string _searchText = "";
+    private AppSortKey _sortKey = AppSortKey.Default;
+    private bool _sortDescending;
     private DateTime _lastRefreshUtc;
 
-    public MainViewModel(SnapBackEngine engine, IDialogService dialogs, ILogger log)
+    public MainViewModel(SnapBackEngine engine, DeepCleanupService deepCleanup, IDialogService dialogs, ILogger log)
     {
         _engine = engine;
+        _deepCleanup = deepCleanup;
         _dialogs = dialogs;
         _log = log;
 
@@ -32,10 +43,26 @@ public sealed class MainViewModel : ObservableObject
         CreateBaselineCommand = new AsyncRelayCommand(CreateBaselineAsync, () => !IsBusy);
         RestoreCommand = new AsyncRelayCommand(RestoreAsync, () => !IsBusy && SelectedCount > 0);
         KeepSelectedCommand = new RelayCommand(KeepSelected, () => !IsBusy && SelectedCount > 0);
-        SelectSafeCommand = new RelayCommand(SelectSafe, () => Candidates.Count > 0);
+        SelectSafeCommand = new RelayCommand(SelectSuggested, () => _allCandidates.Count > 0);
         ClearSelectionCommand = new RelayCommand(ClearSelection, () => SelectedCount > 0);
         OpenSettingsCommand = new AsyncRelayCommand(OpenSettingsAsync, () => !IsBusy);
         OpenHistoryCommand = new RelayCommand(() => _dialogs.ShowHistory(new HistoryViewModel(_engine, _dialogs)));
+        OpenMemoryCommand = new RelayCommand(() => _dialogs.ShowMemory(new MemoryViewModel(_engine, _deepCleanup, _dialogs)));
+        SortCommand = new RelayCommand(p => SortBy(p as string));
+        ClearSearchCommand = new RelayCommand(() => SearchText = "", () => SearchText.Length > 0);
+
+        Loc.CultureChanged += async (_, _) =>
+        {
+            try
+            {
+                OnPropertyChanged(string.Empty);
+                await RefreshAsync(); // re-plans, so step descriptions and summaries use the new language
+            }
+            catch (Exception ex)
+            {
+                Services.ErrorReporter.Report(ex);
+            }
+        };
     }
 
     public ObservableCollection<AppRowViewModel> Candidates { get; } = [];
@@ -60,6 +87,12 @@ public sealed class MainViewModel : ObservableObject
 
     public ICommand OpenHistoryCommand { get; }
 
+    public ICommand OpenMemoryCommand { get; }
+
+    public ICommand SortCommand { get; }
+
+    public ICommand ClearSearchCommand { get; }
+
     public bool IsBusy
     {
         get => _isBusy;
@@ -78,33 +111,126 @@ public sealed class MainViewModel : ObservableObject
         private set => Set(ref _status, value);
     }
 
+    // ---- Search and sorting -------------------------------------------------------------------
+
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            if (Set(ref _searchText, value ?? ""))
+            {
+                ApplyView();
+            }
+        }
+    }
+
+    public AppSortKey SortKey => _sortKey;
+
+    public bool SortDescending => _sortDescending;
+
+    public string NameHeader => Header("Col_Application", AppSortKey.Name);
+
+    public string MemoryHeader => Header("Col_Memory", AppSortKey.Memory);
+
+    public string ProcessesHeader => Header("Col_Processes", AppSortKey.Processes);
+
+    public string RiskHeader => Header("Col_Assessment", AppSortKey.Risk);
+
+    private string Header(string key, AppSortKey column) =>
+        Tr.Get(key) + (_sortKey == column ? (_sortDescending ? " ↓" : " ↑") : "");
+
+    /// <summary>Clicking a column sorts by it; clicking it again reverses the direction.</summary>
+    public void SortBy(string? column)
+    {
+        if (!Enum.TryParse<AppSortKey>(column, out var key))
+        {
+            return;
+        }
+
+        if (_sortKey == key)
+        {
+            _sortDescending = !_sortDescending;
+        }
+        else
+        {
+            _sortKey = key;
+            _sortDescending = key is AppSortKey.Memory or AppSortKey.Processes;
+        }
+
+        OnPropertyChanged(nameof(NameHeader));
+        OnPropertyChanged(nameof(MemoryHeader));
+        OnPropertyChanged(nameof(ProcessesHeader));
+        OnPropertyChanged(nameof(RiskHeader));
+        ApplyView();
+    }
+
+    private void ApplyView()
+    {
+        Fill(Candidates, _allCandidates);
+        Fill(Kept, _allKept);
+        Fill(Protected, _allProtected);
+        OnPropertyChanged(nameof(CandidatesHeader));
+        OnPropertyChanged(nameof(KeptHeader));
+        OnPropertyChanged(nameof(ProtectedHeader));
+        OnPropertyChanged(nameof(EmptyText));
+        OnPropertyChanged(nameof(HasNoVisibleCandidates));
+        RaiseSelection();
+    }
+
+    private void Fill(ObservableCollection<AppRowViewModel> target, List<AppRowViewModel> all)
+    {
+        var byItem = all.ToDictionary(r => r.Item);
+        var visible = AppListOrdering.Sort(AppListOrdering.Filter(all.Select(r => r.Item), _searchText), _sortKey, _sortDescending);
+        target.Clear();
+        foreach (var item in visible)
+        {
+            target.Add(byItem[item]);
+        }
+    }
+
+    private static string Count(int visible, int total) =>
+        visible == total ? total.ToString(Loc.Culture) : $"{visible.ToString(Loc.Culture)}/{total.ToString(Loc.Culture)}";
+
+    public string CandidatesHeader => Tr.Format("Tab_New", Count(Candidates.Count, _allCandidates.Count));
+
+    public string KeptHeader => Tr.Format("Tab_Kept", Count(Kept.Count, _allKept.Count));
+
+    public string ProtectedHeader => Tr.Format("Tab_Protected", Count(Protected.Count, _allProtected.Count));
+
+    public bool HasNoVisibleCandidates => _analysis?.HasUsableBaseline == true && Candidates.Count == 0;
+
+    public string EmptyText => _allCandidates.Count > 0 && Candidates.Count == 0
+        ? Tr.Format("Main_NoSearchResults", _searchText)
+        : Tr.Get("Main_NothingNew");
+
     // ---- Stat cards ---------------------------------------------------------------------------
 
-    public string BaselineText => _engine.Baseline is { } b ? Relative(b.CreatedAtUtc) : "Not created";
+    public string BaselineText => _engine.Baseline is { } b ? Relative(b.CreatedAtUtc) : Tr.Get("Main_BaselineNone");
 
     public string BaselineHint => _engine.Baseline is { } b
-        ? $"{b.CreatedAtUtc.ToLocalTime():g} · {(b.Origin == BaselineOrigin.Automatic ? "automatic" : "manual")} · {b.Apps.Count(a => !a.WasProtected)} apps"
-        : "Make the current state the baseline";
+        ? Tr.Format("Main_BaselineHint", b.CreatedAtUtc.ToLocalTime().ToString("g", Loc.Culture),
+            Tr.Get(b.Origin == BaselineOrigin.Automatic ? "Origin_Automatic" : "Origin_Manual"),
+            b.Apps.Count(a => !a.WasProtected))
+        : Tr.Get("Main_BaselineHintNone");
 
-    public string AppsRunningText => _analysis?.RunningAppCount.ToString(CultureInfo.CurrentCulture) ?? "–";
+    public string AppsRunningText => _analysis?.RunningAppCount.ToString(Loc.Culture) ?? "–";
 
-    public string AppsRunningHint => _analysis is null ? "" : $"{_analysis.Snapshot.Processes.Count} processes in total";
+    public string AppsRunningHint => _analysis is null ? "" : Tr.Format("Main_ProcessesTotal", _analysis.Snapshot.Processes.Count);
 
-    public string MemoryText => _analysis is { Memory.TotalPhysicalBytes: > 0 } a ? $"{a.Memory.UsedPercent:0}%" : "–";
+    public string MemoryText => _analysis is { Memory.IsKnown: true } a ? a.Memory.UsedPercent.ToString("0", Loc.Culture) + " %" : "–";
 
-    public string MemoryHint => _analysis is { Memory.TotalPhysicalBytes: > 0 } a
-        ? $"{ByteSize.Format(a.Memory.UsedPhysicalBytes)} of {ByteSize.Format(a.Memory.TotalPhysicalBytes)} in use"
+    public string MemoryHint => _analysis is { Memory.IsKnown: true } a
+        ? Tr.Format("Main_MemoryHint", ByteSize.Format(a.Memory.UsedPhysicalBytes), ByteSize.Format(a.Memory.TotalPhysicalBytes))
         : "";
 
-    public string NewSinceText => _analysis?.HasUsableBaseline == true ? _analysis.NewAppCount.ToString(CultureInfo.CurrentCulture) : "–";
+    public string NewSinceText => _analysis?.HasUsableBaseline == true ? _analysis.NewAppCount.ToString(Loc.Culture) : "–";
 
     public string NewSinceHint => _analysis?.Comparison is { } c && c.ClosedSinceBaseline.Count > 0
-        ? $"{c.ClosedSinceBaseline.Count} baseline app(s) closed since"
-        : "apps started after the baseline";
+        ? Tr.Format("Main_ClosedSince", c.ClosedSinceBaseline.Count)
+        : Tr.Get("Main_NewSinceHint");
 
     public string FreeableText => _analysis?.HasUsableBaseline == true ? "≈ " + ByteSize.Format(_analysis.FreeableBytes) : "–";
-
-    public string FreeableHint => "memory used by those apps";
 
     // ---- Banner ------------------------------------------------------------------------------
 
@@ -119,26 +245,20 @@ public sealed class MainViewModel : ObservableObject
 
             if (_analysis.Baseline is null)
             {
-                return "No baseline yet. When your computer is in the state you consider \"clean\" (for example shortly after starting Windows), click \"Make current state the baseline\".";
+                return Tr.Get("Banner_NoBaseline");
             }
 
             if (_analysis.BaselineProblem is { } problem)
             {
-                return problem + " Create a new baseline.";
+                return problem + " " + Tr.Get("Banner_CreateNew");
             }
 
             if (_analysis.Comparison is { IsSameBoot: false })
             {
-                return "The baseline was created before the last restart, so apps are matched by name and location only. Consider creating a fresh baseline.";
+                return Tr.Get("Banner_PreviousBoot");
             }
 
-            if (_analysis.Snapshot.Context.SelfElevated)
-            {
-                return "SnapBack is running as administrator. This is not needed, and apps that run as administrator are never closed. "
-                    + "If User Account Control is turned off, all your apps run elevated and SnapBack will show them as protected.";
-            }
-
-            return null;
+            return _analysis.Snapshot.Context.SelfElevated ? Tr.Get("Banner_Elevated") : null;
         }
     }
 
@@ -146,28 +266,25 @@ public sealed class MainViewModel : ObservableObject
 
     // ---- Selection ---------------------------------------------------------------------------
 
-    public int SelectedCount => Candidates.Count(c => c.IsSelected);
+    public int SelectedCount => _allCandidates.Count(c => c.IsSelected);
 
     public string SelectionText
     {
         get
         {
-            var selected = Candidates.Where(c => c.IsSelected).ToList();
-            return selected.Count == 0
-                ? "Nothing selected"
-                : $"{selected.Count} app{(selected.Count == 1 ? "" : "s")} selected · ≈ {ByteSize.Format(selected.Sum(s => s.MemoryBytes))}";
+            var selected = _allCandidates.Where(c => c.IsSelected).ToList();
+            if (selected.Count == 0)
+            {
+                return Tr.Get("Main_NothingSelected");
+            }
+
+            var text = Tr.Format("Main_Selected", selected.Count, ByteSize.Format(selected.Sum(s => s.MemoryBytes)));
+            var hidden = selected.Count(s => !Candidates.Contains(s));
+            return hidden > 0 ? text + Tr.Format("Main_SelectedHidden", hidden) : text;
         }
     }
 
-    public string RestoreButtonText => SelectedCount > 0 ? $"Return to baseline ({SelectedCount})…" : "Return to baseline…";
-
-    public string CandidatesHeader => $"New since baseline ({Candidates.Count})";
-
-    public string KeptHeader => $"Kept ({Kept.Count})";
-
-    public string ProtectedHeader => $"Protected ({Protected.Count})";
-
-    public bool HasNoCandidates => _analysis?.HasUsableBaseline == true && Candidates.Count == 0;
+    public string RestoreButtonText => SelectedCount > 0 ? Tr.Format("Main_RestoreCount", SelectedCount) : Tr.Get("Main_Restore");
 
     public async Task RefreshIfStaleAsync()
     {
@@ -179,13 +296,18 @@ public sealed class MainViewModel : ObservableObject
 
     public async Task RefreshAsync()
     {
+        if (IsBusy)
+        {
+            return;
+        }
+
         IsBusy = true;
-        Status = "Analyzing running applications…";
+        Status = Tr.Get("Status_Analyzing");
         try
         {
             var analysis = await Task.Run(_engine.Analyze);
             Apply(analysis);
-            Status = $"Updated {DateTime.Now:T}";
+            Status = Tr.Format("Status_Updated", DateTime.Now.ToString("T", Loc.Culture));
         }
         finally
         {
@@ -197,37 +319,17 @@ public sealed class MainViewModel : ObservableObject
     private void Apply(Analysis analysis)
     {
         _analysis = analysis;
-        Fill(Candidates, analysis.Plan?.Candidates ?? []);
-        Fill(Kept, analysis.Plan?.Kept ?? []);
-        Fill(Protected, analysis.Plan?.Protected ?? []);
-
-        // Forget choices for apps that are gone.
-        var live = Candidates.Select(c => c.Id).ToHashSet();
-        foreach (var gone in _userChoices.Keys.Where(k => !live.Contains(k)).ToList())
-        {
-            _userChoices.Remove(gone);
-        }
-
+        var plan = analysis.Plan;
+        _allCandidates = Rows(plan?.Candidates);
+        _allKept = Rows(plan?.Kept);
+        _allProtected = Rows(plan?.Protected);
+        _selection.Prune(_allCandidates.Select(c => c.Id));
+        ApplyView();
         OnPropertyChanged(string.Empty);
     }
 
-    private void Fill(ObservableCollection<AppRowViewModel> target, IEnumerable<PlanItem> items)
-    {
-        target.Clear();
-        foreach (var item in items)
-        {
-            var selected = _userChoices.TryGetValue(item.Group.Id, out var choice) ? choice : item.DefaultSelected;
-            AppRowViewModel? row = null;
-            row = new AppRowViewModel(item, selected, () => OnSelectionChanged(row!));
-            target.Add(row);
-        }
-    }
-
-    private void OnSelectionChanged(AppRowViewModel row)
-    {
-        _userChoices[row.Id] = row.IsSelected;
-        RaiseSelection();
-    }
+    private List<AppRowViewModel> Rows(IReadOnlyList<PlanItem>? items) =>
+        (items ?? []).Select(i => new AppRowViewModel(i, _selection, RaiseSelection)).ToList();
 
     private void RaiseSelection()
     {
@@ -239,18 +341,17 @@ public sealed class MainViewModel : ObservableObject
 
     private async Task CreateBaselineAsync()
     {
-        if (_engine.Baseline is not null && !_dialogs.Confirm("Replace baseline",
-                "Make the current state the new baseline?\n\nEverything that is running right now will be considered part of the clean state."))
+        if (_engine.Baseline is not null && !_dialogs.Confirm(Tr.Get("Confirm_ReplaceBaseline_Title"), Tr.Get("Confirm_ReplaceBaseline_Text")))
         {
             return;
         }
 
         IsBusy = true;
-        Status = "Creating baseline…";
+        Status = Tr.Get("Status_CreatingBaseline");
         try
         {
             await Task.Run(() => _engine.CreateBaseline(BaselineOrigin.Manual));
-            _userChoices.Clear();
+            _selection.Clear();
         }
         finally
         {
@@ -258,7 +359,7 @@ public sealed class MainViewModel : ObservableObject
         }
 
         await RefreshAsync();
-        Status = "Baseline created.";
+        Status = Tr.Get("Status_BaselineCreated");
     }
 
     private async Task RestoreAsync()
@@ -268,7 +369,7 @@ public sealed class MainViewModel : ObservableObject
             return;
         }
 
-        var selected = Candidates.Where(c => c.IsSelected && c.IsSelectable).Select(c => c.Item).ToList();
+        var selected = _allCandidates.Where(c => c.IsSelected && c.IsSelectable).Select(c => c.Item).ToList();
         if (selected.Count == 0)
         {
             return;
@@ -281,22 +382,24 @@ public sealed class MainViewModel : ObservableObject
         }
 
         _log.LogInformation("User confirmed closing {Count} app(s)", selected.Count);
-        var operation = new OperationViewModel(_engine, _engine.StartOperation(_analysis, selected), _dialogs);
+        var before = SessionStatistics.From(_analysis);
+        var operation = new OperationViewModel(_engine, _engine.StartOperation(_analysis, selected), before,
+            async () => SessionStatistics.From(await Task.Run(_engine.Analyze)), _deepCleanup, _dialogs);
         _dialogs.ShowOperation(operation);
-        _userChoices.Clear();
+        _selection.Clear();
         await RefreshAsync();
     }
 
     private void KeepSelected()
     {
-        var selected = Candidates.Where(c => c.IsSelected).ToList();
+        var selected = _allCandidates.Where(c => c.IsSelected).ToList();
         if (selected.Count == 0)
         {
             return;
         }
 
         var names = string.Join("\n", selected.Select(s => "• " + s.Name).Distinct());
-        if (!_dialogs.Confirm("Always keep", $"Always keep these apps? They will never be suggested for closing:\n\n{names}\n\nYou can undo this in Settings."))
+        if (!_dialogs.Confirm(Tr.Get("Confirm_Keep_Title"), Tr.Format("Confirm_Keep_Text", names)))
         {
             return;
         }
@@ -305,20 +408,26 @@ public sealed class MainViewModel : ObservableObject
         _ = RefreshAsync();
     }
 
-    private void SelectSafe()
+    private void SelectSuggested()
     {
-        foreach (var c in Candidates)
+        foreach (var c in _allCandidates)
         {
-            c.IsSelected = c.Item.DefaultSelected;
+            _selection.Set(c.Item, c.Item.DefaultSelected);
+            c.RefreshSelection();
         }
+
+        RaiseSelection();
     }
 
     private void ClearSelection()
     {
-        foreach (var c in Candidates)
+        foreach (var c in _allCandidates)
         {
-            c.IsSelected = false;
+            _selection.Set(c.Item, false);
+            c.RefreshSelection();
         }
+
+        RaiseSelection();
     }
 
     private async Task OpenSettingsAsync()
@@ -334,10 +443,10 @@ public sealed class MainViewModel : ObservableObject
         var age = DateTime.UtcNow - utc;
         return age.TotalMinutes switch
         {
-            < 1 => "Just now",
-            < 60 => $"{(int)age.TotalMinutes} min ago",
-            < 60 * 24 => $"{(int)age.TotalHours} h {age.Minutes} min ago",
-            _ => $"{(int)age.TotalDays} day(s) ago",
+            < 1 => Tr.Get("Time_JustNow"),
+            < 60 => Tr.Format("Time_Minutes", (int)age.TotalMinutes),
+            < 60 * 24 => Tr.Format("Time_HoursMinutes", (int)age.TotalHours, age.Minutes),
+            _ => Tr.Format("Time_Days", (int)age.TotalDays),
         };
     }
 }

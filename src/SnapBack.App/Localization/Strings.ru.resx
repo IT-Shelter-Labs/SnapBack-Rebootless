@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>SnapBack</value>
+  </data>
+  <data name="App_Tagline" xml:space="preserve">
+    <value>Верните сеанс к состоянию после запуска — без перезагрузки.</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Common_Remove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="Main_Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Main_Refresh_Tooltip" xml:space="preserve">
+    <value>Заново проанализировать запущенные приложения (F5)</value>
+  </data>
+  <data name="Main_Memory" xml:space="preserve">
+    <value>Память</value>
+  </data>
+  <data name="Main_Memory_Tooltip" xml:space="preserve">
+    <value>Подробности о памяти и необязательная глубокая очистка</value>
+  </data>
+  <data name="Main_History" xml:space="preserve">
+    <value>История</value>
+  </data>
+  <data name="Main_Settings" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Card_Baseline" xml:space="preserve">
+    <value>Baseline</value>
+  </data>
+  <data name="Card_AppsRunning" xml:space="preserve">
+    <value>Запущено приложений</value>
+  </data>
+  <data name="Card_Memory" xml:space="preserve">
+    <value>Используется памяти</value>
+  </data>
+  <data name="Card_NewSince" xml:space="preserve">
+    <value>Новых после baseline</value>
+  </data>
+  <data name="Card_Freeable" xml:space="preserve">
+    <value>Можно освободить</value>
+  </data>
+  <data name="Card_FreeableHint" xml:space="preserve">
+    <value>память, занятая этими приложениями</value>
+  </data>
+  <data name="Main_BaselineNone" xml:space="preserve">
+    <value>Не создан</value>
+  </data>
+  <data name="Main_BaselineHint" xml:space="preserve">
+    <value>{0} · {1} · приложений: {2}</value>
+  </data>
+  <data name="Main_BaselineHintNone" xml:space="preserve">
+    <value>Сделайте текущее состояние базовым</value>
+  </data>
+  <data name="Origin_Manual" xml:space="preserve">
+    <value>вручную</value>
+  </data>
+  <data name="Origin_Automatic" xml:space="preserve">
+    <value>автоматически</value>
+  </data>
+  <data name="Main_ProcessesTotal" xml:space="preserve">
+    <value>всего процессов: {0}</value>
+  </data>
+  <data name="Main_MemoryHint" xml:space="preserve">
+    <value>занято {0} из {1}</value>
+  </data>
+  <data name="Main_NewSinceHint" xml:space="preserve">
+    <value>приложения, запущенные после baseline</value>
+  </data>
+  <data name="Main_ClosedSince" xml:space="preserve">
+    <value>закрыто приложений из baseline: {0}</value>
+  </data>
+  <data name="Banner_NoBaseline" xml:space="preserve">
+    <value>Baseline ещё не создан. Когда компьютер будет в состоянии, которое вы считаете чистым (например, вскоре после запуска Windows), нажмите «Сделать текущее состояние базовым».</value>
+  </data>
+  <data name="Banner_CreateNew" xml:space="preserve">
+    <value>Создайте новый baseline.</value>
+  </data>
+  <data name="Banner_PreviousBoot" xml:space="preserve">
+    <value>Baseline создан до последней перезагрузки, поэтому приложения сопоставляются только по имени и расположению. Рекомендуется создать новый baseline.</value>
+  </data>
+  <data name="Banner_Elevated" xml:space="preserve">
+    <value>SnapBack запущен от имени администратора. Это не требуется, а приложения с правами администратора никогда не закрываются. Если контроль учётных записей (UAC) отключён, все ваши приложения работают с повышенными правами, и SnapBack показывает их как защищённые.</value>
+  </data>
+  <data name="Main_MakeBaseline" xml:space="preserve">
+    <value>Сделать текущее состояние базовым</value>
+  </data>
+  <data name="Main_MakeBaseline_Tooltip" xml:space="preserve">
+    <value>Всё, что запущено сейчас, станет чистым состоянием, к которому возвращается SnapBack.</value>
+  </data>
+  <data name="Main_SelectSuggested" xml:space="preserve">
+    <value>Выбрать рекомендуемые</value>
+  </data>
+  <data name="Main_SelectSuggested_Tooltip" xml:space="preserve">
+    <value>Выбрать приложения с отметкой «Безопасно»</value>
+  </data>
+  <data name="Main_ClearSelection" xml:space="preserve">
+    <value>Снять выбор</value>
+  </data>
+  <data name="Main_Search" xml:space="preserve">
+    <value>Поиск приложений или процессов</value>
+  </data>
+  <data name="Main_ClearSearch" xml:space="preserve">
+    <value>Очистить поиск</value>
+  </data>
+  <data name="Tab_New" xml:space="preserve">
+    <value>Новые после baseline ({0})</value>
+  </data>
+  <data name="Tab_Kept" xml:space="preserve">
+    <value>Оставлены ({0})</value>
+  </data>
+  <data name="Tab_Protected" xml:space="preserve">
+    <value>Защищены ({0})</value>
+  </data>
+  <data name="Tab_Kept_Description" xml:space="preserve">
+    <value>Приложения, которые были в baseline (или в списке «Всегда оставлять»). SnapBack никогда не предлагает их закрыть; новые окна и дочерние процессы этих приложений не являются причиной для закрытия.</value>
+  </data>
+  <data name="Tab_Protected_Description" xml:space="preserve">
+    <value>Компоненты Windows, службы, программы с правами администратора и всё, что SnapBack не может полностью проверить. Они никогда не закрываются, что бы ни было выбрано.</value>
+  </data>
+  <data name="Main_NothingNew" xml:space="preserve">
+    <value>После baseline ничего нового не появилось. Сеанс уже в чистом состоянии.</value>
+  </data>
+  <data name="Main_NoSearchResults" xml:space="preserve">
+    <value>Нет приложений, соответствующих «{0}».</value>
+  </data>
+  <data name="Col_Application" xml:space="preserve">
+    <value>Приложение</value>
+  </data>
+  <data name="Col_Memory" xml:space="preserve">
+    <value>Память</value>
+  </data>
+  <data name="Col_Processes" xml:space="preserve">
+    <value>Процессы</value>
+  </data>
+  <data name="Col_Assessment" xml:space="preserve">
+    <value>Оценка</value>
+  </data>
+  <data name="Sort_Tooltip" xml:space="preserve">
+    <value>Сортировать по этому столбцу (повторный щелчок меняет порядок)</value>
+  </data>
+  <data name="Main_NothingSelected" xml:space="preserve">
+    <value>Ничего не выбрано</value>
+  </data>
+  <data name="Main_Selected" xml:space="preserve">
+    <value>Выбрано: {0} · ≈ {1}</value>
+  </data>
+  <data name="Main_SelectedHidden" xml:space="preserve">
+    <value> (скрыто поиском: {0})</value>
+  </data>
+  <data name="Main_AlwaysKeep" xml:space="preserve">
+    <value>Всегда оставлять выбранные</value>
+  </data>
+  <data name="Main_AlwaysKeep_Tooltip" xml:space="preserve">
+    <value>Больше никогда не предлагать эти приложения (список «Всегда оставлять»)</value>
+  </data>
+  <data name="Main_Restore" xml:space="preserve">
+    <value>Вернуть к baseline…</value>
+  </data>
+  <data name="Main_RestoreCount" xml:space="preserve">
+    <value>Вернуть к baseline ({0})…</value>
+  </data>
+  <data name="Badge_Safe" xml:space="preserve">
+    <value>Безопасно</value>
+  </data>
+  <data name="Badge_Caution" xml:space="preserve">
+    <value>Осторожно</value>
+  </data>
+  <data name="Badge_ManualReview" xml:space="preserve">
+    <value>Требует проверки</value>
+  </data>
+  <data name="Badge_Protected" xml:space="preserve">
+    <value>Защищено</value>
+  </data>
+  <data name="Row_StartedBy" xml:space="preserve">
+    <value>Запущено: {0}</value>
+  </data>
+  <data name="Row_ProcessesMemory" xml:space="preserve">
+    <value>Процессов: {0}, память: {1}</value>
+  </data>
+  <data name="Row_Window" xml:space="preserve">
+    <value>Окно: {0}</value>
+  </data>
+  <data name="Status_Analyzing" xml:space="preserve">
+    <value>Анализ запущенных приложений…</value>
+  </data>
+  <data name="Status_Updated" xml:space="preserve">
+    <value>Обновлено в {0}</value>
+  </data>
+  <data name="Status_CreatingBaseline" xml:space="preserve">
+    <value>Создание baseline…</value>
+  </data>
+  <data name="Status_BaselineCreated" xml:space="preserve">
+    <value>Baseline создан.</value>
+  </data>
+  <data name="Time_JustNow" xml:space="preserve">
+    <value>Только что</value>
+  </data>
+  <data name="Time_Minutes" xml:space="preserve">
+    <value>{0} мин назад</value>
+  </data>
+  <data name="Time_HoursMinutes" xml:space="preserve">
+    <value>{0} ч {1} мин назад</value>
+  </data>
+  <data name="Time_Days" xml:space="preserve">
+    <value>{0} дн. назад</value>
+  </data>
+  <data name="Confirm_ReplaceBaseline_Title" xml:space="preserve">
+    <value>Заменить baseline</value>
+  </data>
+  <data name="Confirm_ReplaceBaseline_Text" xml:space="preserve">
+    <value>Сделать текущее состояние новым baseline?
+
+Всё, что запущено сейчас, будет считаться частью чистого состояния.</value>
+  </data>
+  <data name="Confirm_Keep_Title" xml:space="preserve">
+    <value>Всегда оставлять</value>
+  </data>
+  <data name="Confirm_Keep_Text" xml:space="preserve">
+    <value>Всегда оставлять эти приложения? Они больше не будут предлагаться к закрытию:
+
+{0}
+
+Это можно отменить в настройках.</value>
+  </data>
+  <data name="Preview_Title" xml:space="preserve">
+    <value>Предварительный просмотр — SnapBack</value>
+  </data>
+  <data name="Preview_Header" xml:space="preserve">
+    <value>Закрыть выбранные приложения ({0})?</value>
+  </data>
+  <data name="Preview_SubHeader" xml:space="preserve">
+    <value>Предварительный просмотр — пока ничего не изменено. Вот что именно сделает SnapBack:</value>
+  </data>
+  <data name="Preview_Memory" xml:space="preserve">
+    <value>Эти приложения занимают около {0} памяти.</value>
+  </data>
+  <data name="Preview_Timeout" xml:space="preserve">
+    <value>Каждое приложение получает обычный запрос на закрытие и до {0} с. на завершение. Приложения могут предложить сохранить работу. Ничего не завершается принудительно: если приложение не закроется, решение примете вы.</value>
+  </data>
+  <data name="Preview_NotTouched" xml:space="preserve">
+    <value>Не затрагиваются: приложения из baseline или списка «Всегда оставлять» — {0}; новые приложения, которые вы не выбрали, — {1}; системные, служебные, запущенные от имени администратора и другие защищённые процессы — {2}.</value>
+  </data>
+  <data name="Preview_Confirm" xml:space="preserve">
+    <value>Закрыть приложения ({0})</value>
+  </data>
+  <data name="Preview_DryRun" xml:space="preserve">
+    <value>Пробный прогон (только проверка)</value>
+  </data>
+  <data name="Preview_DryRun_Tooltip" xml:space="preserve">
+    <value>Выполнить все проверки безопасности на текущей системе, ничего не меняя</value>
+  </data>
+  <data name="Preview_Checking" xml:space="preserve">
+    <value>Проверка…</value>
+  </data>
+  <data name="Preview_DryRunResult" xml:space="preserve">
+    <value>Пробный прогон: запрос на закрытие получили бы {0} из {1} приложений. Ничего не изменено.</value>
+  </data>
+  <data name="Preview_CheckPassed" xml:space="preserve">
+    <value>проходит проверки безопасности</value>
+  </data>
+  <data name="Preview_WouldSkip" xml:space="preserve">
+    <value>Будет пропущено: {0}</value>
+  </data>
+  <data name="Op_Title" xml:space="preserve">
+    <value>Возврат к baseline — SnapBack</value>
+  </data>
+  <data name="Op_Header_Closing" xml:space="preserve">
+    <value>Приложениям отправлен запрос на закрытие…</value>
+  </data>
+  <data name="Op_Header_Done" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="Op_Header_Forcing" xml:space="preserve">
+    <value>Принудительное завершение…</value>
+  </data>
+  <data name="Op_ForceCheckbox" xml:space="preserve">
+    <value>Завершить принудительно</value>
+  </data>
+  <data name="Op_RowExited" xml:space="preserve">
+    <value>Завершено процессов: {0}, освобождено ≈ {1}</value>
+  </data>
+  <data name="Op_RowRemaining" xml:space="preserve">
+    <value>Ещё работают: {0}</value>
+  </data>
+  <data name="Op_Summary" xml:space="preserve">
+    <value>Закрыто приложений: {0} из {1}.</value>
+  </data>
+  <data name="Op_SummaryStillRunning" xml:space="preserve">
+    <value>Ещё работают: {0}. Ничего не было завершено принудительно. Можно переключиться на них и нажать «Проверить снова» — или выбрать их и завершить принудительно.</value>
+  </data>
+  <data name="Op_BeforeAfter" xml:space="preserve">
+    <value>До → После</value>
+  </data>
+  <data name="Op_Measuring" xml:space="preserve">
+    <value>Измерение памяти…</value>
+  </data>
+  <data name="Op_ReleasedByApps" xml:space="preserve">
+    <value>Освобождено закрытием приложений: {0}</value>
+  </data>
+  <data name="Op_DeepCleanupReclaimed" xml:space="preserve">
+    <value>Кэш, сброшенный глубокой очисткой: {0} (учитывается отдельно)</value>
+  </data>
+  <data name="Op_StopWaiting" xml:space="preserve">
+    <value>Не ждать</value>
+  </data>
+  <data name="Op_StopWaiting_Tooltip" xml:space="preserve">
+    <value>Перестать ждать закрытия приложений. Ничего не завершается принудительно.</value>
+  </data>
+  <data name="Op_CheckAgain" xml:space="preserve">
+    <value>Проверить снова</value>
+  </data>
+  <data name="Op_CheckAgain_Tooltip" xml:space="preserve">
+    <value>Если вы ответили на вопрос приложения о сохранении, проверить, закрылось ли оно</value>
+  </data>
+  <data name="Op_ForceSelected" xml:space="preserve">
+    <value>Завершить выбранные принудительно…</value>
+  </data>
+  <data name="Op_DeepCleanup" xml:space="preserve">
+    <value>Глубокая очистка памяти…</value>
+  </data>
+  <data name="Op_DeepCleanup_Tooltip" xml:space="preserve">
+    <value>Необязательно: очистить кэш standby. Не является частью возврата к baseline.</value>
+  </data>
+  <data name="Force_Title" xml:space="preserve">
+    <value>Завершить приложения принудительно?</value>
+  </data>
+  <data name="Force_Item" xml:space="preserve">
+    <value>• {0} (процессов: {1})</value>
+  </data>
+  <data name="Force_Text" xml:space="preserve">
+    <value>Эти приложения не закрылись по запросу:
+
+{0}
+
+Принудительное завершение остановит их немедленно. Несохранённые данные в них будут потеряны, и они не смогут корректно завершить работу.
+
+Защищённые и системные процессы не затрагиваются.
+
+Завершить их принудительно сейчас?</value>
+  </data>
+  <data name="Memory_WindowTitle" xml:space="preserve">
+    <value>Память — SnapBack</value>
+  </data>
+  <data name="Memory_Title" xml:space="preserve">
+    <value>Память</value>
+  </data>
+  <data name="Memory_StandbyHint" xml:space="preserve">
+    <value>кэш, который Windows мгновенно отдаёт приложениям; считается доступным</value>
+  </data>
+  <data name="Memory_ModifiedHint" xml:space="preserve">
+    <value>изменённые данные, ожидающие записи на диск; SnapBack их не очищает</value>
+  </data>
+  <data name="Memory_OfLimit" xml:space="preserve">
+    <value>{0} из {1}</value>
+  </data>
+  <data name="Memory_DeepTitle" xml:space="preserve">
+    <value>Глубокая очистка памяти (необязательно)</value>
+  </data>
+  <data name="Memory_DeepWhat" xml:space="preserve">
+    <value>Очищает кэш standby — данные, которые Windows держит в памяти на случай повторного использования. Эти страницы сразу становятся свободной памятью.</value>
+  </data>
+  <data name="Memory_DeepNot" xml:space="preserve">
+    <value>Не затрагивает память, которую используют приложения (working set не урезается), не трогает данные, ожидающие записи на диск (modified), и не меняет никаких настроек.</value>
+  </data>
+  <data name="Memory_DeepCost" xml:space="preserve">
+    <value>Доступная память почти не меняется, потому что этот кэш уже считается доступным. Windows снова наполнит кэш по мере работы, поэтому какое-то время приложения и файлы могут открываться чуть медленнее. Обычно эта функция не нужна.</value>
+  </data>
+  <data name="Memory_ModeStandbyHint" xml:space="preserve">
+    <value>Сбрасывает все неиспользуемые кэшированные данные.</value>
+  </data>
+  <data name="Memory_ModeLowHint" xml:space="preserve">
+    <value>Сбрасывает только наименее ценный кэш; мягче, освобождает меньше.</value>
+  </data>
+  <data name="Memory_UacNote" xml:space="preserve">
+    <value>Windows запросит разрешение администратора только для этой операции. Сам SnapBack продолжит работать без прав администратора.</value>
+  </data>
+  <data name="Memory_AlreadyElevated" xml:space="preserve">
+    <value>SnapBack запущен от имени администратора, поэтому запрос разрешения не появится.</value>
+  </data>
+  <data name="Memory_Run" xml:space="preserve">
+    <value>Выполнить глубокую очистку…</value>
+  </data>
+  <data name="Memory_Running" xml:space="preserve">
+    <value>Очистка кэша…</value>
+  </data>
+  <data name="Memory_Confirm_Title" xml:space="preserve">
+    <value>Глубокая очистка памяти</value>
+  </data>
+  <data name="Memory_Confirm_Text" xml:space="preserve">
+    <value>Будет очищено: {0}.
+
+Ни одно приложение не закрывается, данные не теряются; Windows со временем заново наполнит кэш. Доступная память почти не изменится, потому что этот кэш уже считается доступным.
+
+Продолжить?</value>
+  </data>
+  <data name="Memory_Result" xml:space="preserve">
+    <value>Сброшено кэша: {0}.</value>
+  </data>
+  <data name="Memory_ResultExplain" xml:space="preserve">
+    <value>Сброшенный кэш стал свободной памятью. Он и раньше считался доступным, поэтому показатель «Доступно» меняется мало — это нормально.</value>
+  </data>
+  <data name="Settings_WindowTitle" xml:space="preserve">
+    <value>Настройки — SnapBack</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>Как в системе ({0})</value>
+  </data>
+  <data name="Settings_LanguageHint" xml:space="preserve">
+    <value>Язык меняется сразу. Если язык системы не поддерживается, используется английский.</value>
+  </data>
+  <data name="Settings_Closing" xml:space="preserve">
+    <value>Закрытие приложений</value>
+  </data>
+  <data name="Settings_Timeout" xml:space="preserve">
+    <value>Сколько секунд ждать закрытия каждого приложения (5–120)</value>
+  </data>
+  <data name="Settings_PreselectCaution" xml:space="preserve">
+    <value>Также заранее отмечать приложения с предупреждением (возможны несохранённые данные, браузеры и т. п.)</value>
+  </data>
+  <data name="Settings_ClosingHint" xml:space="preserve">
+    <value>Приложения, требующие проверки (скрипты, консоли, фоновые процессы), никогда не отмечаются заранее, и ничего не завершается принудительно без вашего согласия.</value>
+  </data>
+  <data name="Settings_AutoBaseline" xml:space="preserve">
+    <value>Автоматический baseline</value>
+  </data>
+  <data name="Settings_AutoBaselineEnable" xml:space="preserve">
+    <value>Создавать baseline автоматически после входа в Windows</value>
+  </data>
+  <data name="Settings_AutoBaselineHint" xml:space="preserve">
+    <value>SnapBack ненадолго запускается при входе, ждёт, пока программы автозагрузки закончат запуск, сохраняет baseline и завершается. Добавляется одна запись в автозагрузку; больше ничего не меняется.</value>
+  </data>
+  <data name="Settings_MinDelay" xml:space="preserve">
+    <value>Ждать не меньше стольких секунд после входа</value>
+  </data>
+  <data name="Settings_Quiet" xml:space="preserve">
+    <value>…и пока столько секунд не запускаются новые приложения</value>
+  </data>
+  <data name="Settings_KeepList" xml:space="preserve">
+    <value>Всегда оставлять (whitelist)</value>
+  </data>
+  <data name="Settings_KeepListHint" xml:space="preserve">
+    <value>Эти приложения считаются частью чистого состояния и никогда не предлагаются к закрытию. Добавить их можно кнопкой «Всегда оставлять выбранные» в главном окне.</value>
+  </data>
+  <data name="Settings_KeepListEmpty" xml:space="preserve">
+    <value>Список пуст.</value>
+  </data>
+  <data name="Settings_Data" xml:space="preserve">
+    <value>Данные</value>
+  </data>
+  <data name="Settings_HistoryLimit" xml:space="preserve">
+    <value>Сколько операций хранить в истории</value>
+  </data>
+  <data name="Settings_DataFolder" xml:space="preserve">
+    <value>Настройки, baseline, история и логи хранятся в папке:</value>
+  </data>
+  <data name="Settings_OpenDataFolder" xml:space="preserve">
+    <value>Открыть папку данных</value>
+  </data>
+  <data name="Settings_DeleteBaseline" xml:space="preserve">
+    <value>Удалить baseline…</value>
+  </data>
+  <data name="Settings_SaveFailed" xml:space="preserve">
+    <value>Не удалось сохранить настройки: {0}</value>
+  </data>
+  <data name="Confirm_DeleteBaseline_Title" xml:space="preserve">
+    <value>Удалить baseline</value>
+  </data>
+  <data name="Confirm_DeleteBaseline_Text" xml:space="preserve">
+    <value>Удалить текущий baseline? SnapBack не будет ничего предлагать закрыть, пока вы не создадите новый.</value>
+  </data>
+  <data name="History_WindowTitle" xml:space="preserve">
+    <value>История — SnapBack</value>
+  </data>
+  <data name="History_Title" xml:space="preserve">
+    <value>Последние операции</value>
+  </data>
+  <data name="History_Empty" xml:space="preserve">
+    <value>Операций пока нет.</value>
+  </data>
+  <data name="History_Clear" xml:space="preserve">
+    <value>Очистить историю…</value>
+  </data>
+  <data name="History_Restore" xml:space="preserve">
+    <value>Возврат к baseline</value>
+  </data>
+  <data name="History_Force" xml:space="preserve">
+    <value>Принудительное завершение</value>
+  </data>
+  <data name="History_Summary" xml:space="preserve">
+    <value>закрыто {0} из {1} · ≈ {2}</value>
+  </data>
+  <data name="History_StillRunning" xml:space="preserve">
+    <value> · ещё работают: {0}</value>
+  </data>
+  <data name="History_Available" xml:space="preserve">
+    <value>Доступная память: {0} → {1}</value>
+  </data>
+  <data name="Confirm_ClearHistory_Title" xml:space="preserve">
+    <value>Очистить историю</value>
+  </data>
+  <data name="Confirm_ClearHistory_Text" xml:space="preserve">
+    <value>Удалить историю выполненных операций?</value>
+  </data>
+  <data name="Error_Text" xml:space="preserve">
+    <value>Что-то пошло не так:
+
+{0}
+
+Из-за этой ошибки ничего не было закрыто. Подробности в логе:
+{1}</value>
+  </data>
+  <data name="Error_Startup" xml:space="preserve">
+    <value>Не удалось запустить SnapBack:
+
+{0}</value>
+  </data>
+</root>

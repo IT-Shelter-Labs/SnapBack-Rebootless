@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using SnapBack.Core.Classification;
+using SnapBack.Core.Localization;
 using SnapBack.Core.Model;
 using SnapBack.Core.Planning;
 using SnapBack.Core.Safety;
@@ -140,7 +141,7 @@ public sealed class CleanupOperation
         var item = run.Item;
         if (!item.IsSelectable)
         {
-            run.Complete(ItemOutcome.Skipped, StillRunningReason.None, $"{item.Group.DisplayName} is not eligible for closing.");
+            run.Complete(ItemOutcome.Skipped, StillRunningReason.None, Loc.Format("Op_NotEligible", item.Group.DisplayName));
             _log.LogWarning("Refused ineligible item {App} ({Category}/{Level})", item.Group.DisplayName, item.Category, item.Level);
             return;
         }
@@ -155,7 +156,7 @@ public sealed class CleanupOperation
             catch (Exception ex)
             {
                 _log.LogWarning(ex, "Could not inspect {Process}", member.Identity);
-                run.Notes.Add($"{member.ImageName} (PID {member.Pid}) could not be inspected and is left alone.");
+                run.Notes.Add(Loc.Format("Op_CouldNotInspect", member.ImageName, member.Pid));
                 continue;
             }
 
@@ -184,14 +185,14 @@ public sealed class CleanupOperation
         if (run.RootRefused)
         {
             run.Targets.Clear();
-            run.Complete(ItemOutcome.Skipped, StillRunningReason.None, "Skipped: the safety checks refused this app. Nothing was done.");
+            run.Complete(ItemOutcome.Skipped, StillRunningReason.None, Loc.Get("Op_SkippedRefused"));
             return;
         }
 
         if (run.Targets.Count == 0)
         {
             run.Complete(run.ExitedBeforeStart > 0 ? ItemOutcome.AlreadyExited : ItemOutcome.Skipped, StillRunningReason.None,
-                run.ExitedBeforeStart > 0 ? "The app had already exited." : "Nothing could be acted on safely.");
+                Loc.Get(run.ExitedBeforeStart > 0 ? "Op_AlreadyExited" : "Op_NothingSafe"));
             return;
         }
 
@@ -257,7 +258,7 @@ public sealed class CleanupOperation
         var alive = run.Targets.Where(t => !t.Exited).ToList();
         if (alive.Count == 0)
         {
-            run.Complete(ItemOutcome.Closed, StillRunningReason.None, "Closed.");
+            run.Complete(ItemOutcome.Closed, StillRunningReason.None, Loc.Get("Op_Closed"));
             return;
         }
 
@@ -325,7 +326,7 @@ public sealed class CleanupOperation
         }
         catch (OperationCanceledException)
         {
-            return new ActionResult(ActionStatus.Cancelled, "Cancelled.");
+            return new ActionResult(ActionStatus.Cancelled, Loc.Get("Act_Cancelled"));
         }
         catch (Exception ex)
         {
@@ -361,7 +362,7 @@ public sealed class CleanupOperation
         var alive = run.Targets.Where(t => !t.Exited).ToList();
         if (alive.Count == 0)
         {
-            run.Complete(ItemOutcome.Closed, StillRunningReason.None, "Closed.");
+            run.Complete(ItemOutcome.Closed, StillRunningReason.None, Loc.Get("Op_Closed"));
             return;
         }
 
@@ -402,7 +403,7 @@ public sealed class CleanupOperation
         run.Complete(outcome, reason, ItemResult.Describe(outcome, reason));
         if (run.RmResult is { Succeeded: false } rm && rm.Status != ActionStatus.Cancelled)
         {
-            run.Notes.Add("Restart Manager: " + rm.Message);
+            run.Notes.Add(Loc.Format("Op_RestartManagerNote", rm.Message));
         }
     }
 
@@ -434,7 +435,7 @@ public sealed class CleanupOperation
             if (run.Targets.All(t => t.Exited))
             {
                 var forced = run.Targets.Any(t => t.Terminated);
-                run.Complete(forced ? ItemOutcome.Terminated : ItemOutcome.Closed, StillRunningReason.None, forced ? "Force-terminated" : "Closed.");
+                run.Complete(forced ? ItemOutcome.Terminated : ItemOutcome.Closed, StillRunningReason.None, forced ? Loc.Get("Outcome_Terminated") : Loc.Get("Op_Closed"));
             }
             else if (run.Outcome == ItemOutcome.StillRunning && run.Targets.Any(t => t.Exited && t.Planned.Pid == run.Item.Group.Root.Pid))
             {
@@ -504,7 +505,7 @@ public sealed class CleanupOperation
             catch (Exception ex)
             {
                 _log.LogWarning(ex, "Could not inspect {Process} before forced termination", t.Planned.Identity);
-                run.Notes.Add($"{t.Planned.ImageName} (PID {t.Planned.Pid}) could not be inspected; not terminated.");
+                run.Notes.Add(Loc.Format("Op_CouldNotInspectForce", t.Planned.ImageName, t.Planned.Pid));
                 refused = true;
                 continue;
             }
@@ -552,7 +553,7 @@ public sealed class CleanupOperation
         else
         {
             run.Complete(ItemOutcome.Failed, StillRunningReason.None,
-                refused ? "Some processes could not be terminated." : $"{remaining} process(es) are still running.");
+                refused ? Loc.Get("Op_SomeNotTerminated") : Loc.Format("Op_StillRunningCount", remaining));
         }
     }
 
@@ -568,7 +569,7 @@ public sealed class CleanupOperation
         {
             if (!item.IsSelectable)
             {
-                result.Add(new DryRunItem(item, new GuardDecision(GuardVerdict.ItemNotEligible, "Not eligible for closing."), []));
+                result.Add(new DryRunItem(item, new GuardDecision(GuardVerdict.ItemNotEligible, Loc.Get("Op_DryNotEligible")), []));
                 continue;
             }
 
@@ -577,7 +578,7 @@ public sealed class CleanupOperation
             {
                 if (step.Kind == StepKind.LeftAlone)
                 {
-                    steps.Add(new DryRunStep(step, new GuardDecision(GuardVerdict.ProtectedNow, "Left alone.")));
+                    steps.Add(new DryRunStep(step, new GuardDecision(GuardVerdict.ProtectedNow, Loc.Get("Op_DryLeftAlone"))));
                     continue;
                 }
 
@@ -589,7 +590,7 @@ public sealed class CleanupOperation
                 }
                 catch (Exception ex)
                 {
-                    decision = new GuardDecision(GuardVerdict.ItemNotEligible, "Could not inspect: " + ex.Message);
+                    decision = new GuardDecision(GuardVerdict.ItemNotEligible, Loc.Format("Op_DryCouldNotInspect", ex.Message));
                 }
 
                 steps.Add(new DryRunStep(step, decision));
@@ -687,7 +688,7 @@ public sealed class CleanupOperation
 
         public StillRunningReason Reason { get; private set; }
 
-        public string Message { get; private set; } = "Waiting";
+        public string Message { get; private set; } = Loc.Get("Outcome_Pending");
 
         public int ExitedBeforeStart { get; set; }
 

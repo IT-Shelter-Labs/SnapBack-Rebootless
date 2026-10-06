@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using System.Windows.Media;
+using SnapBack.App.Localization;
 using SnapBack.App.Mvvm;
 using SnapBack.App.Services;
 using SnapBack.Core;
@@ -36,15 +37,13 @@ public sealed class PreviewViewModel : ObservableObject
 
     public ICommand DryRunCommand { get; }
 
-    public string Header => $"Close {Selected.Count} app{(Selected.Count == 1 ? "" : "s")}?";
+    public string Header => Tr.Format("Preview_Header", Selected.Count);
 
-    public string SubHeader => "Preview — nothing has been changed yet. This is exactly what SnapBack will do:";
+    public string SubHeader => Tr.Get("Preview_SubHeader");
 
-    public string MemoryText => "These apps use about " + ByteSize.Format(Selected.Sum(s => s.Group.ActionablePrivateWorkingSet)) + " of memory.";
+    public string MemoryText => Tr.Format("Preview_Memory", ByteSize.Format(Selected.Sum(s => s.Group.ActionablePrivateWorkingSet)));
 
-    public string TimeoutText =>
-        $"Each app is asked to close the normal way and gets up to {_engine.Settings.GracefulTimeoutSeconds} seconds. "
-        + "Apps can ask you to save your work. Nothing is force-terminated: if an app does not close, you decide afterwards.";
+    public string TimeoutText => Tr.Format("Preview_Timeout", _engine.Settings.GracefulTimeoutSeconds);
 
     public string NotTouchedText
     {
@@ -54,12 +53,11 @@ public sealed class PreviewViewModel : ObservableObject
             var unselected = plan.Candidates.Count - Selected.Count;
             var protectedProcesses = _analysis.Snapshot.Processes.Count
                 - plan.Candidates.Concat(plan.Kept).Sum(i => i.Group.ActionableMembers.Count());
-            return $"Not touched: {plan.Kept.Count} app(s) from your baseline or keep list, {unselected} new app(s) you did not select, "
-                + $"and {Math.Max(0, protectedProcesses)} system, service, elevated or other protected processes.";
+            return Tr.Format("Preview_NotTouched", plan.Kept.Count, unselected, Math.Max(0, protectedProcesses));
         }
     }
 
-    public string ConfirmText => $"Close {Selected.Count} app{(Selected.Count == 1 ? "" : "s")}";
+    public string ConfirmText => Tr.Format("Preview_Confirm", Selected.Count);
 
     public string DryRunSummary
     {
@@ -70,7 +68,7 @@ public sealed class PreviewViewModel : ObservableObject
     private async Task DryRunAsync()
     {
         _isChecking = true;
-        DryRunSummary = "Checking…";
+        DryRunSummary = Tr.Get("Preview_Checking");
         try
         {
             var report = await Task.Run(() => _engine.DryRun(_analysis, Selected));
@@ -79,7 +77,7 @@ public sealed class PreviewViewModel : ObservableObject
                 Items.FirstOrDefault(i => i.Item.Group.Id == item.Item.Group.Id)?.ApplyDryRun(item);
             }
 
-            DryRunSummary = $"Dry run: {report.WouldActOn} of {report.Items.Count} app(s) would be asked to close. Nothing was changed.";
+            DryRunSummary = Tr.Format("Preview_DryRunResult", report.WouldActOn, report.Items.Count);
         }
         finally
         {
@@ -124,7 +122,7 @@ public sealed class PreviewItemViewModel : ObservableObject
 
     public void ApplyDryRun(DryRunItem result)
     {
-        DryRunText = result.ItemDecision.Allowed ? null : "Would be skipped: " + result.ItemDecision.Message;
+        DryRunText = result.ItemDecision.Allowed ? null : Tr.Format("Preview_WouldSkip", result.ItemDecision.Message);
         foreach (var step in result.Steps)
         {
             Steps.FirstOrDefault(s => s.Step == step.Step)?.Apply(step.Decision);
@@ -164,5 +162,5 @@ public sealed class PreviewStepViewModel : ObservableObject
     public void Apply(GuardDecision decision) =>
         Check = Step.Kind == StepKind.LeftAlone
             ? ""
-            : decision.Allowed ? "✓ passes the live safety checks" : "✗ " + decision.Message;
+            : decision.Allowed ? "✓ " + Tr.Get("Preview_CheckPassed") : "✗ " + decision.Message;
 }

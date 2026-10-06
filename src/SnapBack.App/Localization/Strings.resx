@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>SnapBack</value>
+  </data>
+  <data name="App_Tagline" xml:space="preserve">
+    <value>Return your session to its fresh-start state — without rebooting.</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Common_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Main_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Main_Refresh_Tooltip" xml:space="preserve">
+    <value>Re-analyze running applications (F5)</value>
+  </data>
+  <data name="Main_Memory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="Main_Memory_Tooltip" xml:space="preserve">
+    <value>Memory details and the optional Deep Memory Cleanup</value>
+  </data>
+  <data name="Main_History" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="Main_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Card_Baseline" xml:space="preserve">
+    <value>Baseline</value>
+  </data>
+  <data name="Card_AppsRunning" xml:space="preserve">
+    <value>Apps running</value>
+  </data>
+  <data name="Card_Memory" xml:space="preserve">
+    <value>Memory in use</value>
+  </data>
+  <data name="Card_NewSince" xml:space="preserve">
+    <value>New since baseline</value>
+  </data>
+  <data name="Card_Freeable" xml:space="preserve">
+    <value>Can be freed</value>
+  </data>
+  <data name="Card_FreeableHint" xml:space="preserve">
+    <value>memory used by those apps</value>
+  </data>
+  <data name="Main_BaselineNone" xml:space="preserve">
+    <value>Not created</value>
+  </data>
+  <data name="Main_BaselineHint" xml:space="preserve">
+    <value>{0} · {1} · apps: {2}</value>
+  </data>
+  <data name="Main_BaselineHintNone" xml:space="preserve">
+    <value>Make the current state the baseline</value>
+  </data>
+  <data name="Origin_Manual" xml:space="preserve">
+    <value>manual</value>
+  </data>
+  <data name="Origin_Automatic" xml:space="preserve">
+    <value>automatic</value>
+  </data>
+  <data name="Main_ProcessesTotal" xml:space="preserve">
+    <value>processes in total: {0}</value>
+  </data>
+  <data name="Main_MemoryHint" xml:space="preserve">
+    <value>{0} of {1} in use</value>
+  </data>
+  <data name="Main_NewSinceHint" xml:space="preserve">
+    <value>apps started after the baseline</value>
+  </data>
+  <data name="Main_ClosedSince" xml:space="preserve">
+    <value>baseline apps closed since: {0}</value>
+  </data>
+  <data name="Banner_NoBaseline" xml:space="preserve">
+    <value>No baseline yet. When your computer is in the state you consider clean (for example shortly after starting Windows), click “Make current state the baseline”.</value>
+  </data>
+  <data name="Banner_CreateNew" xml:space="preserve">
+    <value>Create a new baseline.</value>
+  </data>
+  <data name="Banner_PreviousBoot" xml:space="preserve">
+    <value>The baseline was created before the last restart, so apps are matched by name and location only. Consider creating a fresh baseline.</value>
+  </data>
+  <data name="Banner_Elevated" xml:space="preserve">
+    <value>SnapBack is running as administrator. This is not needed, and apps that run as administrator are never closed. If User Account Control is turned off, all your apps run elevated and SnapBack shows them as protected.</value>
+  </data>
+  <data name="Main_MakeBaseline" xml:space="preserve">
+    <value>Make current state the baseline</value>
+  </data>
+  <data name="Main_MakeBaseline_Tooltip" xml:space="preserve">
+    <value>Everything running right now becomes the clean state SnapBack returns to.</value>
+  </data>
+  <data name="Main_SelectSuggested" xml:space="preserve">
+    <value>Select suggested</value>
+  </data>
+  <data name="Main_SelectSuggested_Tooltip" xml:space="preserve">
+    <value>Select the apps marked Safe</value>
+  </data>
+  <data name="Main_ClearSelection" xml:space="preserve">
+    <value>Clear selection</value>
+  </data>
+  <data name="Main_Search" xml:space="preserve">
+    <value>Search apps or processes</value>
+  </data>
+  <data name="Main_ClearSearch" xml:space="preserve">
+    <value>Clear search</value>
+  </data>
+  <data name="Tab_New" xml:space="preserve">
+    <value>New since baseline ({0})</value>
+  </data>
+  <data name="Tab_Kept" xml:space="preserve">
+    <value>Kept ({0})</value>
+  </data>
+  <data name="Tab_Protected" xml:space="preserve">
+    <value>Protected ({0})</value>
+  </data>
+  <data name="Tab_Kept_Description" xml:space="preserve">
+    <value>Apps that were part of the baseline (or are in your keep list). SnapBack never suggests closing them; new windows or child processes they open are fine.</value>
+  </data>
+  <data name="Tab_Protected_Description" xml:space="preserve">
+    <value>Windows components, services, elevated programs and anything SnapBack cannot fully verify. These are never closed, no matter what is selected.</value>
+  </data>
+  <data name="Main_NothingNew" xml:space="preserve">
+    <value>Nothing new since the baseline. Your session is already in its clean state.</value>
+  </data>
+  <data name="Main_NoSearchResults" xml:space="preserve">
+    <value>No apps match “{0}”.</value>
+  </data>
+  <data name="Col_Application" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="Col_Memory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="Col_Processes" xml:space="preserve">
+    <value>Processes</value>
+  </data>
+  <data name="Col_Assessment" xml:space="preserve">
+    <value>Assessment</value>
+  </data>
+  <data name="Sort_Tooltip" xml:space="preserve">
+    <value>Sort by this column (click again to reverse)</value>
+  </data>
+  <data name="Main_NothingSelected" xml:space="preserve">
+    <value>Nothing selected</value>
+  </data>
+  <data name="Main_Selected" xml:space="preserve">
+    <value>Selected: {0} · ≈ {1}</value>
+  </data>
+  <data name="Main_SelectedHidden" xml:space="preserve">
+    <value> (hidden by search: {0})</value>
+  </data>
+  <data name="Main_AlwaysKeep" xml:space="preserve">
+    <value>Always keep selected</value>
+  </data>
+  <data name="Main_AlwaysKeep_Tooltip" xml:space="preserve">
+    <value>Never suggest these apps again (your keep list)</value>
+  </data>
+  <data name="Main_Restore" xml:space="preserve">
+    <value>Return to baseline…</value>
+  </data>
+  <data name="Main_RestoreCount" xml:space="preserve">
+    <value>Return to baseline ({0})…</value>
+  </data>
+  <data name="Badge_Safe" xml:space="preserve">
+    <value>Safe</value>
+  </data>
+  <data name="Badge_Caution" xml:space="preserve">
+    <value>Caution</value>
+  </data>
+  <data name="Badge_ManualReview" xml:space="preserve">
+    <value>Manual review</value>
+  </data>
+  <data name="Badge_Protected" xml:space="preserve">
+    <value>Protected</value>
+  </data>
+  <data name="Row_StartedBy" xml:space="preserve">
+    <value>Started by: {0}</value>
+  </data>
+  <data name="Row_ProcessesMemory" xml:space="preserve">
+    <value>Processes: {0}, memory: {1}</value>
+  </data>
+  <data name="Row_Window" xml:space="preserve">
+    <value>Window: {0}</value>
+  </data>
+  <data name="Status_Analyzing" xml:space="preserve">
+    <value>Analyzing running applications…</value>
+  </data>
+  <data name="Status_Updated" xml:space="preserve">
+    <value>Updated {0}</value>
+  </data>
+  <data name="Status_CreatingBaseline" xml:space="preserve">
+    <value>Creating baseline…</value>
+  </data>
+  <data name="Status_BaselineCreated" xml:space="preserve">
+    <value>Baseline created.</value>
+  </data>
+  <data name="Time_JustNow" xml:space="preserve">
+    <value>Just now</value>
+  </data>
+  <data name="Time_Minutes" xml:space="preserve">
+    <value>{0} min ago</value>
+  </data>
+  <data name="Time_HoursMinutes" xml:space="preserve">
+    <value>{0} h {1} min ago</value>
+  </data>
+  <data name="Time_Days" xml:space="preserve">
+    <value>{0} d ago</value>
+  </data>
+  <data name="Confirm_ReplaceBaseline_Title" xml:space="preserve">
+    <value>Replace baseline</value>
+  </data>
+  <data name="Confirm_ReplaceBaseline_Text" xml:space="preserve">
+    <value>Make the current state the new baseline?
+
+Everything that is running right now will be considered part of the clean state.</value>
+  </data>
+  <data name="Confirm_Keep_Title" xml:space="preserve">
+    <value>Always keep</value>
+  </data>
+  <data name="Confirm_Keep_Text" xml:space="preserve">
+    <value>Always keep these apps? They will never be suggested for closing:
+
+{0}
+
+You can undo this in Settings.</value>
+  </data>
+  <data name="Preview_Title" xml:space="preserve">
+    <value>Preview — SnapBack</value>
+  </data>
+  <data name="Preview_Header" xml:space="preserve">
+    <value>Close the selected apps ({0})?</value>
+  </data>
+  <data name="Preview_SubHeader" xml:space="preserve">
+    <value>Preview — nothing has been changed yet. This is exactly what SnapBack will do:</value>
+  </data>
+  <data name="Preview_Memory" xml:space="preserve">
+    <value>These apps use about {0} of memory.</value>
+  </data>
+  <data name="Preview_Timeout" xml:space="preserve">
+    <value>Each app is asked to close the normal way and gets up to {0} seconds. Apps can ask you to save your work. Nothing is force-terminated: if an app does not close, you decide afterwards.</value>
+  </data>
+  <data name="Preview_NotTouched" xml:space="preserve">
+    <value>Not touched: apps from your baseline or keep list — {0}; new apps you did not select — {1}; system, service, elevated or other protected processes — {2}.</value>
+  </data>
+  <data name="Preview_Confirm" xml:space="preserve">
+    <value>Close apps ({0})</value>
+  </data>
+  <data name="Preview_DryRun" xml:space="preserve">
+    <value>Dry run (check only)</value>
+  </data>
+  <data name="Preview_DryRun_Tooltip" xml:space="preserve">
+    <value>Run every safety check against the live system without changing anything</value>
+  </data>
+  <data name="Preview_Checking" xml:space="preserve">
+    <value>Checking…</value>
+  </data>
+  <data name="Preview_DryRunResult" xml:space="preserve">
+    <value>Dry run: apps that would be asked to close — {0} of {1}. Nothing was changed.</value>
+  </data>
+  <data name="Preview_CheckPassed" xml:space="preserve">
+    <value>passes the live safety checks</value>
+  </data>
+  <data name="Preview_WouldSkip" xml:space="preserve">
+    <value>Would be skipped: {0}</value>
+  </data>
+  <data name="Op_Title" xml:space="preserve">
+    <value>Returning to baseline — SnapBack</value>
+  </data>
+  <data name="Op_Header_Closing" xml:space="preserve">
+    <value>Asking apps to close…</value>
+  </data>
+  <data name="Op_Header_Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Op_Header_Forcing" xml:space="preserve">
+    <value>Force-terminating…</value>
+  </data>
+  <data name="Op_ForceCheckbox" xml:space="preserve">
+    <value>Force-terminate</value>
+  </data>
+  <data name="Op_RowExited" xml:space="preserve">
+    <value>Processes exited: {0}, ≈ {1} released</value>
+  </data>
+  <data name="Op_RowRemaining" xml:space="preserve">
+    <value>Still running: {0}</value>
+  </data>
+  <data name="Op_Summary" xml:space="preserve">
+    <value>Apps closed: {0} of {1}.</value>
+  </data>
+  <data name="Op_SummaryStillRunning" xml:space="preserve">
+    <value>Still running: {0}. Nothing was forced. You can switch to them and press “Check again” — or select them and choose force-termination.</value>
+  </data>
+  <data name="Op_BeforeAfter" xml:space="preserve">
+    <value>Before → After</value>
+  </data>
+  <data name="Op_Measuring" xml:space="preserve">
+    <value>Measuring memory…</value>
+  </data>
+  <data name="Op_ReleasedByApps" xml:space="preserve">
+    <value>Memory released by closing apps: {0}</value>
+  </data>
+  <data name="Op_DeepCleanupReclaimed" xml:space="preserve">
+    <value>Cache reclaimed by Deep Memory Cleanup: {0} (counted separately)</value>
+  </data>
+  <data name="Op_StopWaiting" xml:space="preserve">
+    <value>Stop waiting</value>
+  </data>
+  <data name="Op_StopWaiting_Tooltip" xml:space="preserve">
+    <value>Stop waiting for apps to close. Nothing is forced.</value>
+  </data>
+  <data name="Op_CheckAgain" xml:space="preserve">
+    <value>Check again</value>
+  </data>
+  <data name="Op_CheckAgain_Tooltip" xml:space="preserve">
+    <value>If you answered an app's save prompt, check whether it has closed now</value>
+  </data>
+  <data name="Op_ForceSelected" xml:space="preserve">
+    <value>Force-terminate selected…</value>
+  </data>
+  <data name="Op_DeepCleanup" xml:space="preserve">
+    <value>Deep Memory Cleanup…</value>
+  </data>
+  <data name="Op_DeepCleanup_Tooltip" xml:space="preserve">
+    <value>Optional: clear the standby cache. Separate from returning to baseline.</value>
+  </data>
+  <data name="Force_Title" xml:space="preserve">
+    <value>Force-terminate apps?</value>
+  </data>
+  <data name="Force_Item" xml:space="preserve">
+    <value>• {0} (processes: {1})</value>
+  </data>
+  <data name="Force_Text" xml:space="preserve">
+    <value>These apps did not close when asked:
+
+{0}
+
+Force-terminating ends them immediately. Any unsaved work in them will be lost, and they cannot clean up.
+
+Protected and system processes are never affected.
+
+Force-terminate them now?</value>
+  </data>
+  <data name="Memory_WindowTitle" xml:space="preserve">
+    <value>Memory — SnapBack</value>
+  </data>
+  <data name="Memory_Title" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="Memory_StandbyHint" xml:space="preserve">
+    <value>cache that Windows hands to apps instantly; counts as available</value>
+  </data>
+  <data name="Memory_ModifiedHint" xml:space="preserve">
+    <value>changed data waiting to be written to disk; never cleared by SnapBack</value>
+  </data>
+  <data name="Memory_OfLimit" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="Memory_DeepTitle" xml:space="preserve">
+    <value>Deep Memory Cleanup (optional)</value>
+  </data>
+  <data name="Memory_DeepWhat" xml:space="preserve">
+    <value>Clears the standby cache: data Windows keeps in memory in case it is needed again. The pages become free memory immediately.</value>
+  </data>
+  <data name="Memory_DeepNot" xml:space="preserve">
+    <value>It does not touch memory that apps are using (no working-set trimming), does not touch data waiting to be written to disk (modified pages), and does not change any setting.</value>
+  </data>
+  <data name="Memory_DeepCost" xml:space="preserve">
+    <value>Available memory barely changes, because this cache already counts as available. Windows rebuilds the cache as you work, so apps and files may open a little slower for a while. Usually you do not need this.</value>
+  </data>
+  <data name="Memory_ModeStandbyHint" xml:space="preserve">
+    <value>Drops all cached data that is not in use.</value>
+  </data>
+  <data name="Memory_ModeLowHint" xml:space="preserve">
+    <value>Drops only the least valuable cache; gentler, frees less.</value>
+  </data>
+  <data name="Memory_UacNote" xml:space="preserve">
+    <value>Windows will ask for administrator permission for this one operation. SnapBack itself keeps running without administrator rights.</value>
+  </data>
+  <data name="Memory_AlreadyElevated" xml:space="preserve">
+    <value>SnapBack is running as administrator, so no permission prompt will appear.</value>
+  </data>
+  <data name="Memory_Run" xml:space="preserve">
+    <value>Run Deep Memory Cleanup…</value>
+  </data>
+  <data name="Memory_Running" xml:space="preserve">
+    <value>Cleaning the cache…</value>
+  </data>
+  <data name="Memory_Confirm_Title" xml:space="preserve">
+    <value>Deep Memory Cleanup</value>
+  </data>
+  <data name="Memory_Confirm_Text" xml:space="preserve">
+    <value>Clear: {0}.
+
+No app is closed and no data is lost; Windows will rebuild the cache over time. Available memory will barely change, because this cache already counts as available.
+
+Continue?</value>
+  </data>
+  <data name="Memory_Result" xml:space="preserve">
+    <value>Cache reclaimed: {0}.</value>
+  </data>
+  <data name="Memory_ResultExplain" xml:space="preserve">
+    <value>The reclaimed cache moved to free memory. It was already counted as available, so “Available” changes little — that is expected.</value>
+  </data>
+  <data name="Settings_WindowTitle" xml:space="preserve">
+    <value>Settings — SnapBack</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>System default ({0})</value>
+  </data>
+  <data name="Settings_LanguageHint" xml:space="preserve">
+    <value>The language changes immediately. Unsupported system languages fall back to English.</value>
+  </data>
+  <data name="Settings_Closing" xml:space="preserve">
+    <value>Closing apps</value>
+  </data>
+  <data name="Settings_Timeout" xml:space="preserve">
+    <value>Seconds to wait for each app to close (5–120)</value>
+  </data>
+  <data name="Settings_PreselectCaution" xml:space="preserve">
+    <value>Also pre-select apps marked with a caution (possible unsaved data, browsers, …)</value>
+  </data>
+  <data name="Settings_ClosingHint" xml:space="preserve">
+    <value>Apps that need manual review (scripts, consoles, background processes) are never pre-selected, and nothing is ever force-terminated without asking.</value>
+  </data>
+  <data name="Settings_AutoBaseline" xml:space="preserve">
+    <value>Automatic baseline</value>
+  </data>
+  <data name="Settings_AutoBaselineEnable" xml:space="preserve">
+    <value>Create a baseline automatically after I sign in to Windows</value>
+  </data>
+  <data name="Settings_AutoBaselineHint" xml:space="preserve">
+    <value>SnapBack starts briefly at sign-in, waits until startup apps have finished launching, saves the baseline and exits. It adds one entry to your Startup apps; nothing else is changed.</value>
+  </data>
+  <data name="Settings_MinDelay" xml:space="preserve">
+    <value>Wait at least this many seconds after sign-in</value>
+  </data>
+  <data name="Settings_Quiet" xml:space="preserve">
+    <value>…and until no new apps have started for this many seconds</value>
+  </data>
+  <data name="Settings_KeepList" xml:space="preserve">
+    <value>Always keep (whitelist)</value>
+  </data>
+  <data name="Settings_KeepListHint" xml:space="preserve">
+    <value>These apps are treated as part of your clean state and are never suggested for closing. Add apps with “Always keep selected” in the main window.</value>
+  </data>
+  <data name="Settings_KeepListEmpty" xml:space="preserve">
+    <value>Your keep list is empty.</value>
+  </data>
+  <data name="Settings_Data" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="Settings_HistoryLimit" xml:space="preserve">
+    <value>Operations kept in history</value>
+  </data>
+  <data name="Settings_DataFolder" xml:space="preserve">
+    <value>Settings, baseline, history and logs are stored in:</value>
+  </data>
+  <data name="Settings_OpenDataFolder" xml:space="preserve">
+    <value>Open data folder</value>
+  </data>
+  <data name="Settings_DeleteBaseline" xml:space="preserve">
+    <value>Delete baseline…</value>
+  </data>
+  <data name="Settings_SaveFailed" xml:space="preserve">
+    <value>The settings could not be saved: {0}</value>
+  </data>
+  <data name="Confirm_DeleteBaseline_Title" xml:space="preserve">
+    <value>Delete baseline</value>
+  </data>
+  <data name="Confirm_DeleteBaseline_Text" xml:space="preserve">
+    <value>Delete the current baseline? SnapBack will not suggest closing anything until you create a new one.</value>
+  </data>
+  <data name="History_WindowTitle" xml:space="preserve">
+    <value>History — SnapBack</value>
+  </data>
+  <data name="History_Title" xml:space="preserve">
+    <value>Recent operations</value>
+  </data>
+  <data name="History_Empty" xml:space="preserve">
+    <value>No operations yet.</value>
+  </data>
+  <data name="History_Clear" xml:space="preserve">
+    <value>Clear history…</value>
+  </data>
+  <data name="History_Restore" xml:space="preserve">
+    <value>Return to baseline</value>
+  </data>
+  <data name="History_Force" xml:space="preserve">
+    <value>Force-terminate</value>
+  </data>
+  <data name="History_Summary" xml:space="preserve">
+    <value>closed {0} of {1} · ≈ {2}</value>
+  </data>
+  <data name="History_StillRunning" xml:space="preserve">
+    <value> · still running: {0}</value>
+  </data>
+  <data name="History_Available" xml:space="preserve">
+    <value>Available memory: {0} → {1}</value>
+  </data>
+  <data name="Confirm_ClearHistory_Title" xml:space="preserve">
+    <value>Clear history</value>
+  </data>
+  <data name="Confirm_ClearHistory_Text" xml:space="preserve">
+    <value>Delete the history of past operations?</value>
+  </data>
+  <data name="Error_Text" xml:space="preserve">
+    <value>Something went wrong:
+
+{0}
+
+Nothing was closed because of this error. Details are in the log:
+{1}</value>
+  </data>
+  <data name="Error_Startup" xml:space="preserve">
+    <value>SnapBack could not start:
+
+{0}</value>
+  </data>
+</root>

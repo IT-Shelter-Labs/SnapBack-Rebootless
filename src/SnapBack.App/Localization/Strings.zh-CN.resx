@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>SnapBack</value>
+  </data>
+  <data name="App_Tagline" xml:space="preserve">
+    <value>无需重启，让会话回到刚开机时的状态。</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Common_Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Main_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Main_Refresh_Tooltip" xml:space="preserve">
+    <value>重新分析正在运行的应用（F5）</value>
+  </data>
+  <data name="Main_Memory" xml:space="preserve">
+    <value>内存</value>
+  </data>
+  <data name="Main_Memory_Tooltip" xml:space="preserve">
+    <value>内存详情和可选的深度内存清理</value>
+  </data>
+  <data name="Main_History" xml:space="preserve">
+    <value>历史</value>
+  </data>
+  <data name="Main_Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Card_Baseline" xml:space="preserve">
+    <value>基线</value>
+  </data>
+  <data name="Card_AppsRunning" xml:space="preserve">
+    <value>正在运行的应用</value>
+  </data>
+  <data name="Card_Memory" xml:space="preserve">
+    <value>已用内存</value>
+  </data>
+  <data name="Card_NewSince" xml:space="preserve">
+    <value>基线之后新增</value>
+  </data>
+  <data name="Card_Freeable" xml:space="preserve">
+    <value>可释放</value>
+  </data>
+  <data name="Card_FreeableHint" xml:space="preserve">
+    <value>这些应用占用的内存</value>
+  </data>
+  <data name="Main_BaselineNone" xml:space="preserve">
+    <value>尚未创建</value>
+  </data>
+  <data name="Main_BaselineHint" xml:space="preserve">
+    <value>{0} · {1} · 应用：{2}</value>
+  </data>
+  <data name="Main_BaselineHintNone" xml:space="preserve">
+    <value>将当前状态设为基线</value>
+  </data>
+  <data name="Origin_Manual" xml:space="preserve">
+    <value>手动</value>
+  </data>
+  <data name="Origin_Automatic" xml:space="preserve">
+    <value>自动</value>
+  </data>
+  <data name="Main_ProcessesTotal" xml:space="preserve">
+    <value>进程总数：{0}</value>
+  </data>
+  <data name="Main_MemoryHint" xml:space="preserve">
+    <value>已用 {0} / 共 {1}</value>
+  </data>
+  <data name="Main_NewSinceHint" xml:space="preserve">
+    <value>基线之后启动的应用</value>
+  </data>
+  <data name="Main_ClosedSince" xml:space="preserve">
+    <value>已关闭的基线应用：{0}</value>
+  </data>
+  <data name="Banner_NoBaseline" xml:space="preserve">
+    <value>尚未创建基线。当电脑处于你认为干净的状态时（例如刚启动 Windows 不久），请点击“将当前状态设为基线”。</value>
+  </data>
+  <data name="Banner_CreateNew" xml:space="preserve">
+    <value>请创建新的基线。</value>
+  </data>
+  <data name="Banner_PreviousBoot" xml:space="preserve">
+    <value>基线是在上次重启之前创建的，因此只能按名称和位置匹配应用。建议重新创建基线。</value>
+  </data>
+  <data name="Banner_Elevated" xml:space="preserve">
+    <value>SnapBack 正以管理员身份运行。这不是必需的，而且以管理员身份运行的应用永远不会被关闭。如果关闭了用户帐户控制（UAC），你的所有应用都会以提升的权限运行，SnapBack 会将它们显示为受保护。</value>
+  </data>
+  <data name="Main_MakeBaseline" xml:space="preserve">
+    <value>将当前状态设为基线</value>
+  </data>
+  <data name="Main_MakeBaseline_Tooltip" xml:space="preserve">
+    <value>当前运行的所有内容都将成为 SnapBack 要恢复到的干净状态。</value>
+  </data>
+  <data name="Main_SelectSuggested" xml:space="preserve">
+    <value>选择建议项</value>
+  </data>
+  <data name="Main_SelectSuggested_Tooltip" xml:space="preserve">
+    <value>选择标记为“安全”的应用</value>
+  </data>
+  <data name="Main_ClearSelection" xml:space="preserve">
+    <value>清除选择</value>
+  </data>
+  <data name="Main_Search" xml:space="preserve">
+    <value>搜索应用或进程</value>
+  </data>
+  <data name="Main_ClearSearch" xml:space="preserve">
+    <value>清除搜索</value>
+  </data>
+  <data name="Tab_New" xml:space="preserve">
+    <value>基线之后新增（{0}）</value>
+  </data>
+  <data name="Tab_Kept" xml:space="preserve">
+    <value>保留（{0}）</value>
+  </data>
+  <data name="Tab_Protected" xml:space="preserve">
+    <value>受保护（{0}）</value>
+  </data>
+  <data name="Tab_Kept_Description" xml:space="preserve">
+    <value>属于基线（或在保留列表中）的应用。SnapBack 永远不会建议关闭它们；它们打开的新窗口或子进程也没有问题。</value>
+  </data>
+  <data name="Tab_Protected_Description" xml:space="preserve">
+    <value>Windows 组件、服务、提升权限的程序以及 SnapBack 无法完全验证的任何内容。无论选择了什么，这些都永远不会被关闭。</value>
+  </data>
+  <data name="Main_NothingNew" xml:space="preserve">
+    <value>基线之后没有新增内容。你的会话已处于干净状态。</value>
+  </data>
+  <data name="Main_NoSearchResults" xml:space="preserve">
+    <value>没有与“{0}”匹配的应用。</value>
+  </data>
+  <data name="Col_Application" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="Col_Memory" xml:space="preserve">
+    <value>内存</value>
+  </data>
+  <data name="Col_Processes" xml:space="preserve">
+    <value>进程</value>
+  </data>
+  <data name="Col_Assessment" xml:space="preserve">
+    <value>评估</value>
+  </data>
+  <data name="Sort_Tooltip" xml:space="preserve">
+    <value>按此列排序（再次点击可反向排序）</value>
+  </data>
+  <data name="Main_NothingSelected" xml:space="preserve">
+    <value>未选择任何内容</value>
+  </data>
+  <data name="Main_Selected" xml:space="preserve">
+    <value>已选择：{0} · ≈ {1}</value>
+  </data>
+  <data name="Main_SelectedHidden" xml:space="preserve">
+    <value>（被搜索隐藏：{0}）</value>
+  </data>
+  <data name="Main_AlwaysKeep" xml:space="preserve">
+    <value>始终保留所选应用</value>
+  </data>
+  <data name="Main_AlwaysKeep_Tooltip" xml:space="preserve">
+    <value>不再建议关闭这些应用（保留列表）</value>
+  </data>
+  <data name="Main_Restore" xml:space="preserve">
+    <value>返回基线…</value>
+  </data>
+  <data name="Main_RestoreCount" xml:space="preserve">
+    <value>返回基线（{0}）…</value>
+  </data>
+  <data name="Badge_Safe" xml:space="preserve">
+    <value>安全</value>
+  </data>
+  <data name="Badge_Caution" xml:space="preserve">
+    <value>注意</value>
+  </data>
+  <data name="Badge_ManualReview" xml:space="preserve">
+    <value>需人工确认</value>
+  </data>
+  <data name="Badge_Protected" xml:space="preserve">
+    <value>受保护</value>
+  </data>
+  <data name="Row_StartedBy" xml:space="preserve">
+    <value>启动者：{0}</value>
+  </data>
+  <data name="Row_ProcessesMemory" xml:space="preserve">
+    <value>进程：{0}，内存：{1}</value>
+  </data>
+  <data name="Row_Window" xml:space="preserve">
+    <value>窗口：{0}</value>
+  </data>
+  <data name="Status_Analyzing" xml:space="preserve">
+    <value>正在分析运行中的应用…</value>
+  </data>
+  <data name="Status_Updated" xml:space="preserve">
+    <value>更新于 {0}</value>
+  </data>
+  <data name="Status_CreatingBaseline" xml:space="preserve">
+    <value>正在创建基线…</value>
+  </data>
+  <data name="Status_BaselineCreated" xml:space="preserve">
+    <value>基线已创建。</value>
+  </data>
+  <data name="Time_JustNow" xml:space="preserve">
+    <value>刚刚</value>
+  </data>
+  <data name="Time_Minutes" xml:space="preserve">
+    <value>{0} 分钟前</value>
+  </data>
+  <data name="Time_HoursMinutes" xml:space="preserve">
+    <value>{0} 小时 {1} 分钟前</value>
+  </data>
+  <data name="Time_Days" xml:space="preserve">
+    <value>{0} 天前</value>
+  </data>
+  <data name="Confirm_ReplaceBaseline_Title" xml:space="preserve">
+    <value>替换基线</value>
+  </data>
+  <data name="Confirm_ReplaceBaseline_Text" xml:space="preserve">
+    <value>将当前状态设为新的基线？
+
+当前运行的所有内容都将被视为干净状态的一部分。</value>
+  </data>
+  <data name="Confirm_Keep_Title" xml:space="preserve">
+    <value>始终保留</value>
+  </data>
+  <data name="Confirm_Keep_Text" xml:space="preserve">
+    <value>始终保留这些应用？它们将不再被建议关闭：
+
+{0}
+
+你可以在设置中撤销此操作。</value>
+  </data>
+  <data name="Preview_Title" xml:space="preserve">
+    <value>预览 — SnapBack</value>
+  </data>
+  <data name="Preview_Header" xml:space="preserve">
+    <value>关闭所选应用（{0} 个）？</value>
+  </data>
+  <data name="Preview_SubHeader" xml:space="preserve">
+    <value>预览——尚未做任何更改。SnapBack 将执行以下操作：</value>
+  </data>
+  <data name="Preview_Memory" xml:space="preserve">
+    <value>这些应用大约占用 {0} 内存。</value>
+  </data>
+  <data name="Preview_Timeout" xml:space="preserve">
+    <value>每个应用都会以正常方式收到关闭请求，最多等待 {0} 秒。应用可以提示你保存工作。不会强制结束任何程序：如果应用没有关闭，之后由你决定。</value>
+  </data>
+  <data name="Preview_NotTouched" xml:space="preserve">
+    <value>不会触及：基线或保留列表中的应用——{0} 个；你未选择的新应用——{1} 个；系统、服务、提升权限或其他受保护的进程——{2} 个。</value>
+  </data>
+  <data name="Preview_Confirm" xml:space="preserve">
+    <value>关闭应用（{0}）</value>
+  </data>
+  <data name="Preview_DryRun" xml:space="preserve">
+    <value>试运行（仅检查）</value>
+  </data>
+  <data name="Preview_DryRun_Tooltip" xml:space="preserve">
+    <value>在不做任何更改的情况下，对当前系统执行全部安全检查</value>
+  </data>
+  <data name="Preview_Checking" xml:space="preserve">
+    <value>正在检查…</value>
+  </data>
+  <data name="Preview_DryRunResult" xml:space="preserve">
+    <value>试运行：将被请求关闭的应用——{0}/{1} 个。未做任何更改。</value>
+  </data>
+  <data name="Preview_CheckPassed" xml:space="preserve">
+    <value>通过实时安全检查</value>
+  </data>
+  <data name="Preview_WouldSkip" xml:space="preserve">
+    <value>将被跳过：{0}</value>
+  </data>
+  <data name="Op_Title" xml:space="preserve">
+    <value>正在返回基线 — SnapBack</value>
+  </data>
+  <data name="Op_Header_Closing" xml:space="preserve">
+    <value>正在请求应用关闭…</value>
+  </data>
+  <data name="Op_Header_Done" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="Op_Header_Forcing" xml:space="preserve">
+    <value>正在强制结束…</value>
+  </data>
+  <data name="Op_ForceCheckbox" xml:space="preserve">
+    <value>强制结束</value>
+  </data>
+  <data name="Op_RowExited" xml:space="preserve">
+    <value>已退出进程：{0}，释放约 {1}</value>
+  </data>
+  <data name="Op_RowRemaining" xml:space="preserve">
+    <value>仍在运行：{0}</value>
+  </data>
+  <data name="Op_Summary" xml:space="preserve">
+    <value>已关闭应用：{0}/{1}。</value>
+  </data>
+  <data name="Op_SummaryStillRunning" xml:space="preserve">
+    <value>仍在运行：{0}。没有强制结束任何程序。你可以切换到这些应用后点击“重新检查”，或选中它们并选择强制结束。</value>
+  </data>
+  <data name="Op_BeforeAfter" xml:space="preserve">
+    <value>之前 → 之后</value>
+  </data>
+  <data name="Op_Measuring" xml:space="preserve">
+    <value>正在测量内存…</value>
+  </data>
+  <data name="Op_ReleasedByApps" xml:space="preserve">
+    <value>关闭应用释放的内存：{0}</value>
+  </data>
+  <data name="Op_DeepCleanupReclaimed" xml:space="preserve">
+    <value>深度内存清理回收的缓存：{0}（单独计算）</value>
+  </data>
+  <data name="Op_StopWaiting" xml:space="preserve">
+    <value>停止等待</value>
+  </data>
+  <data name="Op_StopWaiting_Tooltip" xml:space="preserve">
+    <value>停止等待应用关闭。不会强制结束任何程序。</value>
+  </data>
+  <data name="Op_CheckAgain" xml:space="preserve">
+    <value>重新检查</value>
+  </data>
+  <data name="Op_CheckAgain_Tooltip" xml:space="preserve">
+    <value>如果你已回答应用的保存提示，检查它现在是否已关闭</value>
+  </data>
+  <data name="Op_ForceSelected" xml:space="preserve">
+    <value>强制结束所选应用…</value>
+  </data>
+  <data name="Op_DeepCleanup" xml:space="preserve">
+    <value>深度内存清理…</value>
+  </data>
+  <data name="Op_DeepCleanup_Tooltip" xml:space="preserve">
+    <value>可选：清除备用缓存。与返回基线是分开的操作。</value>
+  </data>
+  <data name="Force_Title" xml:space="preserve">
+    <value>强制结束应用？</value>
+  </data>
+  <data name="Force_Item" xml:space="preserve">
+    <value>• {0}（进程：{1}）</value>
+  </data>
+  <data name="Force_Text" xml:space="preserve">
+    <value>这些应用未按请求关闭：
+
+{0}
+
+强制结束会立即终止它们。其中所有未保存的工作都将丢失，它们也无法正常清理。
+
+受保护进程和系统进程永远不会受影响。
+
+现在强制结束它们吗？</value>
+  </data>
+  <data name="Memory_WindowTitle" xml:space="preserve">
+    <value>内存 — SnapBack</value>
+  </data>
+  <data name="Memory_Title" xml:space="preserve">
+    <value>内存</value>
+  </data>
+  <data name="Memory_StandbyHint" xml:space="preserve">
+    <value>Windows 可立即分配给应用的缓存；计入可用内存</value>
+  </data>
+  <data name="Memory_ModifiedHint" xml:space="preserve">
+    <value>等待写入磁盘的已更改数据；SnapBack 不会清除</value>
+  </data>
+  <data name="Memory_OfLimit" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="Memory_DeepTitle" xml:space="preserve">
+    <value>深度内存清理（可选）</value>
+  </data>
+  <data name="Memory_DeepWhat" xml:space="preserve">
+    <value>清除备用缓存：Windows 为可能再次使用而保留在内存中的数据。这些页面会立即变为空闲内存。</value>
+  </data>
+  <data name="Memory_DeepNot" xml:space="preserve">
+    <value>它不会触及应用正在使用的内存（不会裁剪工作集），不会触及等待写入磁盘的数据（已修改页），也不会更改任何设置。</value>
+  </data>
+  <data name="Memory_DeepCost" xml:space="preserve">
+    <value>可用内存几乎不会变化，因为这些缓存本来就算作可用内存。Windows 会在你使用过程中重建缓存，因此一段时间内应用和文件的打开速度可能会稍慢。通常你不需要这样做。</value>
+  </data>
+  <data name="Memory_ModeStandbyHint" xml:space="preserve">
+    <value>丢弃所有未在使用的缓存数据。</value>
+  </data>
+  <data name="Memory_ModeLowHint" xml:space="preserve">
+    <value>只丢弃价值最低的缓存；更温和，释放的较少。</value>
+  </data>
+  <data name="Memory_UacNote" xml:space="preserve">
+    <value>Windows 只会为这一项操作请求管理员权限。SnapBack 本身仍以非管理员权限运行。</value>
+  </data>
+  <data name="Memory_AlreadyElevated" xml:space="preserve">
+    <value>SnapBack 正以管理员身份运行，因此不会出现权限提示。</value>
+  </data>
+  <data name="Memory_Run" xml:space="preserve">
+    <value>运行深度内存清理…</value>
+  </data>
+  <data name="Memory_Running" xml:space="preserve">
+    <value>正在清理缓存…</value>
+  </data>
+  <data name="Memory_Confirm_Title" xml:space="preserve">
+    <value>深度内存清理</value>
+  </data>
+  <data name="Memory_Confirm_Text" xml:space="preserve">
+    <value>将清除：{0}。
+
+不会关闭任何应用，也不会丢失数据；Windows 会逐渐重建缓存。可用内存几乎不会变化，因为这些缓存本来就算作可用内存。
+
+要继续吗？</value>
+  </data>
+  <data name="Memory_Result" xml:space="preserve">
+    <value>已回收缓存：{0}。</value>
+  </data>
+  <data name="Memory_ResultExplain" xml:space="preserve">
+    <value>回收的缓存已变为空闲内存。它之前就已计入可用内存，因此“可用”变化不大——这是正常的。</value>
+  </data>
+  <data name="Settings_WindowTitle" xml:space="preserve">
+    <value>设置 — SnapBack</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>跟随系统（{0}）</value>
+  </data>
+  <data name="Settings_LanguageHint" xml:space="preserve">
+    <value>语言会立即切换。如果系统语言不受支持，将使用英语。</value>
+  </data>
+  <data name="Settings_Closing" xml:space="preserve">
+    <value>关闭应用</value>
+  </data>
+  <data name="Settings_Timeout" xml:space="preserve">
+    <value>等待每个应用关闭的秒数（5–120）</value>
+  </data>
+  <data name="Settings_PreselectCaution" xml:space="preserve">
+    <value>同时预先选中带有提醒的应用（可能有未保存的数据、浏览器等）</value>
+  </data>
+  <data name="Settings_ClosingHint" xml:space="preserve">
+    <value>需要人工确认的应用（脚本、控制台、后台进程）永远不会被预先选中，未经询问也绝不会强制结束任何程序。</value>
+  </data>
+  <data name="Settings_AutoBaseline" xml:space="preserve">
+    <value>自动基线</value>
+  </data>
+  <data name="Settings_AutoBaselineEnable" xml:space="preserve">
+    <value>登录 Windows 后自动创建基线</value>
+  </data>
+  <data name="Settings_AutoBaselineHint" xml:space="preserve">
+    <value>SnapBack 会在登录时短暂启动，等待启动应用全部启动完毕后保存基线并退出。它只会在你的启动应用中添加一项，不会更改其他任何内容。</value>
+  </data>
+  <data name="Settings_MinDelay" xml:space="preserve">
+    <value>登录后至少等待的秒数</value>
+  </data>
+  <data name="Settings_Quiet" xml:space="preserve">
+    <value>…并且直到这么多秒内没有新应用启动</value>
+  </data>
+  <data name="Settings_KeepList" xml:space="preserve">
+    <value>始终保留（白名单）</value>
+  </data>
+  <data name="Settings_KeepListHint" xml:space="preserve">
+    <value>这些应用被视为干净状态的一部分，永远不会被建议关闭。可在主窗口中使用“始终保留所选应用”添加。</value>
+  </data>
+  <data name="Settings_KeepListEmpty" xml:space="preserve">
+    <value>保留列表为空。</value>
+  </data>
+  <data name="Settings_Data" xml:space="preserve">
+    <value>数据</value>
+  </data>
+  <data name="Settings_HistoryLimit" xml:space="preserve">
+    <value>历史记录中保留的操作数</value>
+  </data>
+  <data name="Settings_DataFolder" xml:space="preserve">
+    <value>设置、基线、历史记录和日志存储在：</value>
+  </data>
+  <data name="Settings_OpenDataFolder" xml:space="preserve">
+    <value>打开数据文件夹</value>
+  </data>
+  <data name="Settings_DeleteBaseline" xml:space="preserve">
+    <value>删除基线…</value>
+  </data>
+  <data name="Settings_SaveFailed" xml:space="preserve">
+    <value>无法保存设置：{0}</value>
+  </data>
+  <data name="Confirm_DeleteBaseline_Title" xml:space="preserve">
+    <value>删除基线</value>
+  </data>
+  <data name="Confirm_DeleteBaseline_Text" xml:space="preserve">
+    <value>删除当前基线？在你创建新基线之前，SnapBack 不会建议关闭任何内容。</value>
+  </data>
+  <data name="History_WindowTitle" xml:space="preserve">
+    <value>历史记录 — SnapBack</value>
+  </data>
+  <data name="History_Title" xml:space="preserve">
+    <value>最近的操作</value>
+  </data>
+  <data name="History_Empty" xml:space="preserve">
+    <value>暂无操作。</value>
+  </data>
+  <data name="History_Clear" xml:space="preserve">
+    <value>清除历史记录…</value>
+  </data>
+  <data name="History_Restore" xml:space="preserve">
+    <value>返回基线</value>
+  </data>
+  <data name="History_Force" xml:space="preserve">
+    <value>强制结束</value>
+  </data>
+  <data name="History_Summary" xml:space="preserve">
+    <value>已关闭 {0}/{1} · ≈ {2}</value>
+  </data>
+  <data name="History_StillRunning" xml:space="preserve">
+    <value> · 仍在运行：{0}</value>
+  </data>
+  <data name="History_Available" xml:space="preserve">
+    <value>可用内存：{0} → {1}</value>
+  </data>
+  <data name="Confirm_ClearHistory_Title" xml:space="preserve">
+    <value>清除历史记录</value>
+  </data>
+  <data name="Confirm_ClearHistory_Text" xml:space="preserve">
+    <value>删除过往操作的历史记录？</value>
+  </data>
+  <data name="Error_Text" xml:space="preserve">
+    <value>出现了问题：
+
+{0}
+
+此错误未导致任何程序被关闭。详细信息见日志：
+{1}</value>
+  </data>
+  <data name="Error_Startup" xml:space="preserve">
+    <value>SnapBack 无法启动：
+
+{0}</value>
+  </data>
+</root>

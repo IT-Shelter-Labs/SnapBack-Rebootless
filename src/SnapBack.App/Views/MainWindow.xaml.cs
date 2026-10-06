@@ -16,6 +16,7 @@ public partial class MainWindow : Window
         Loaded += async (_, _) => await SafeRefresh(() => _vm.RefreshAsync());
         Activated += async (_, _) => await SafeRefresh(() => _vm.RefreshIfStaleAsync());
         InputBindings.Add(new KeyBinding(vm.RefreshCommand, Key.F5, ModifierKeys.None));
+        InputBindings.Add(new KeyBinding(new Mvvm.RelayCommand(() => SearchBox.Focus()), Key.F, ModifierKeys.Control));
     }
 
     private static async Task SafeRefresh(Func<Task> refresh)

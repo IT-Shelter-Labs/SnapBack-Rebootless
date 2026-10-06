@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Reason_KernelOrSystemProcess_Label" xml:space="preserve">
+    <value>Процесс ядра Windows</value>
+  </data>
+  <data name="Reason_KernelOrSystemProcess_Explain" xml:space="preserve">
+    <value>Часть ядра Windows. SnapBack никогда его не трогает.</value>
+  </data>
+  <data name="Reason_SnapBackItself_Label" xml:space="preserve">
+    <value>Сам SnapBack</value>
+  </data>
+  <data name="Reason_SnapBackItself_Explain" xml:space="preserve">
+    <value>Это SnapBack.</value>
+  </data>
+  <data name="Reason_OtherSession_Label" xml:space="preserve">
+    <value>Другой сеанс</value>
+  </data>
+  <data name="Reason_OtherSession_Explain" xml:space="preserve">
+    <value>Работает в другом сеансе Windows (системные службы или другой вошедший пользователь).</value>
+  </data>
+  <data name="Reason_OtherUser_Label" xml:space="preserve">
+    <value>Другой пользователь</value>
+  </data>
+  <data name="Reason_OtherUser_Explain" xml:space="preserve">
+    <value>Работает от имени другой учётной записи.</value>
+  </data>
+  <data name="Reason_CriticalProcess_Label" xml:space="preserve">
+    <value>Критический системный процесс</value>
+  </data>
+  <data name="Reason_CriticalProcess_Explain" xml:space="preserve">
+    <value>Windows помечает этот процесс как критический: его завершение приведёт к сбою компьютера.</value>
+  </data>
+  <data name="Reason_ProtectedProcess_Label" xml:space="preserve">
+    <value>Защищённый процесс</value>
+  </data>
+  <data name="Reason_ProtectedProcess_Explain" xml:space="preserve">
+    <value>Windows защищает этот процесс (например, антивирус или DRM).</value>
+  </data>
+  <data name="Reason_ServiceHost_Label" xml:space="preserve">
+    <value>Служба Windows</value>
+  </data>
+  <data name="Reason_ServiceHost_Explain" xml:space="preserve">
+    <value>Содержит службу Windows. SnapBack не управляет службами.</value>
+  </data>
+  <data name="Reason_ShellComponent_Label" xml:space="preserve">
+    <value>Компонент Windows</value>
+  </data>
+  <data name="Reason_ShellComponent_Explain" xml:space="preserve">
+    <value>Важная часть рабочего стола, сеанса или защиты Windows.</value>
+  </data>
+  <data name="Reason_WindowsComponent_Label" xml:space="preserve">
+    <value>Компонент Windows</value>
+  </data>
+  <data name="Reason_WindowsComponent_Explain" xml:space="preserve">
+    <value>Запущен из папки Windows.</value>
+  </data>
+  <data name="Reason_Elevated_Label" xml:space="preserve">
+    <value>Запущен от имени администратора</value>
+  </data>
+  <data name="Reason_Elevated_Explain" xml:space="preserve">
+    <value>Работает с правами администратора. SnapBack никогда не трогает программы с повышенными правами.</value>
+  </data>
+  <data name="Reason_AccessDenied_Label" xml:space="preserve">
+    <value>Доступ запрещён</value>
+  </data>
+  <data name="Reason_AccessDenied_Explain" xml:space="preserve">
+    <value>Windows не позволяет SnapBack проверить этот процесс.</value>
+  </data>
+  <data name="Reason_OwnerUnknown_Label" xml:space="preserve">
+    <value>Владелец неизвестен</value>
+  </data>
+  <data name="Reason_OwnerUnknown_Explain" xml:space="preserve">
+    <value>Не удалось проверить владельца этого процесса.</value>
+  </data>
+  <data name="Reason_ImagePathUnknown_Label" xml:space="preserve">
+    <value>Неизвестный исполняемый файл</value>
+  </data>
+  <data name="Reason_ImagePathUnknown_Explain" xml:space="preserve">
+    <value>Не удалось проверить исполняемый файл этого процесса.</value>
+  </data>
+  <data name="Reason_CannotVerify_Label" xml:space="preserve">
+    <value>Не удалось проверить</value>
+  </data>
+  <data name="Reason_CannotVerify_Explain" xml:space="preserve">
+    <value>Не удалось проверить некоторые параметры безопасности этого процесса.</value>
+  </data>
+  <data name="Reason_ConsoleProgram_Label" xml:space="preserve">
+    <value>Консольная программа</value>
+  </data>
+  <data name="Reason_ConsoleProgram_Explain" xml:space="preserve">
+    <value>Может выполнять задачу; её остановка прервёт текущую работу.</value>
+  </data>
+  <data name="Reason_ScriptOrRuntime_Label" xml:space="preserve">
+    <value>Скрипт или среда выполнения</value>
+  </data>
+  <data name="Reason_ScriptOrRuntime_Explain" xml:space="preserve">
+    <value>Python, Node.js и подобные среды могут быть в процессе выполнения задачи.</value>
+  </data>
+  <data name="Reason_NoWindow_Label" xml:space="preserve">
+    <value>Фоновый процесс</value>
+  </data>
+  <data name="Reason_NoWindow_Explain" xml:space="preserve">
+    <value>Не имеет окна, поэтому его нельзя вежливо попросить закрыться.</value>
+  </data>
+  <data name="Reason_VirtualMachine_Label" xml:space="preserve">
+    <value>Виртуальная машина</value>
+  </data>
+  <data name="Reason_VirtualMachine_Explain" xml:space="preserve">
+    <value>Закрытие может остановить виртуальную машину и потерять её несохранённое состояние.</value>
+  </data>
+  <data name="Reason_InstallerOrUpdater_Label" xml:space="preserve">
+    <value>Установщик или обновление</value>
+  </data>
+  <data name="Reason_InstallerOrUpdater_Explain" xml:space="preserve">
+    <value>Прерывание может оставить установку повреждённой.</value>
+  </data>
+  <data name="Reason_LaunchedSnapBack_Label" xml:space="preserve">
+    <value>Запустил SnapBack</value>
+  </data>
+  <data name="Reason_LaunchedSnapBack_Explain" xml:space="preserve">
+    <value>SnapBack запущен из этой программы; её закрытие может закрыть и SnapBack.</value>
+  </data>
+  <data name="Reason_WindowsUserTool_Label" xml:space="preserve">
+    <value>Инструмент Windows</value>
+  </data>
+  <data name="Reason_WindowsUserTool_Explain" xml:space="preserve">
+    <value>Инструмент, входящий в состав Windows.</value>
+  </data>
+  <data name="Reason_PossibleUnsavedWork_Label" xml:space="preserve">
+    <value>Возможны несохранённые данные</value>
+  </data>
+  <data name="Reason_PossibleUnsavedWork_Explain" xml:space="preserve">
+    <value>Редакторы, IDE и офисные приложения могут содержать несохранённые документы. Им отправляется обычный запрос на закрытие, чтобы они могли спросить вас.</value>
+  </data>
+  <data name="Reason_UnsavedChangesInTitle_Label" xml:space="preserve">
+    <value>Несохранённые изменения</value>
+  </data>
+  <data name="Reason_UnsavedChangesInTitle_Explain" xml:space="preserve">
+    <value>Заголовок окна указывает на несохранённые изменения.</value>
+  </data>
+  <data name="Reason_Browser_Label" xml:space="preserve">
+    <value>Веб-браузер</value>
+  </data>
+  <data name="Reason_Browser_Explain" xml:space="preserve">
+    <value>Вкладки обычно восстанавливаются, но текущие загрузки и неотправленные формы могут быть потеряны.</value>
+  </data>
+  <data name="Reason_Terminal_Label" xml:space="preserve">
+    <value>Терминал</value>
+  </data>
+  <data name="Reason_Terminal_Explain" xml:space="preserve">
+    <value>Закрытие терминала завершает все оболочки и команды в нём.</value>
+  </data>
+  <data name="Reason_SyncOrTransfer_Label" xml:space="preserve">
+    <value>Может передавать файлы</value>
+  </data>
+  <data name="Reason_SyncOrTransfer_Explain" xml:space="preserve">
+    <value>Программы синхронизации, торрент-клиенты и загрузчики могут быть в процессе передачи.</value>
+  </data>
+  <data name="Reason_Launcher_Label" xml:space="preserve">
+    <value>Лаунчер</value>
+  </data>
+  <data name="Reason_Launcher_Explain" xml:space="preserve">
+    <value>Игровые лаунчеры могут загружать или устанавливать обновления.</value>
+  </data>
+  <data name="Reason_Recording_Label" xml:space="preserve">
+    <value>Запись или трансляция</value>
+  </data>
+  <data name="Reason_Recording_Explain" xml:space="preserve">
+    <value>Возможно, сейчас идёт запись или трансляция.</value>
+  </data>
+  <data name="Reason_NotResponding_Label" xml:space="preserve">
+    <value>Не отвечает</value>
+  </data>
+  <data name="Reason_NotResponding_Explain" xml:space="preserve">
+    <value>Приложение сейчас не отвечает.</value>
+  </data>
+  <data name="Reason_NewInstanceOfBaselineApp_Label" xml:space="preserve">
+    <value>Дополнительный экземпляр</value>
+  </data>
+  <data name="Reason_NewInstanceOfBaselineApp_Explain" xml:space="preserve">
+    <value>Другой экземпляр этого приложения уже работал на момент baseline.</value>
+  </data>
+  <data name="Reason_StartedByBaselineApp_Label" xml:space="preserve">
+    <value>Запущено приложением из baseline</value>
+  </data>
+  <data name="Reason_StartedByBaselineApp_Explain" xml:space="preserve">
+    <value>Запущено приложением, которое работало на момент baseline; возможно, оно ему ещё нужно.</value>
+  </data>
+  <data name="Reason_RunsInBackground_Label" xml:space="preserve">
+    <value>Работает в фоне</value>
+  </data>
+  <data name="Reason_RunsInBackground_Explain" xml:space="preserve">
+    <value>Нет видимого окна (например, свёрнуто в трей).</value>
+  </data>
+  <data name="Plan_Kept_InBaseline" xml:space="preserve">
+    <value>Был в baseline</value>
+  </data>
+  <data name="Plan_Kept_Restarted" xml:space="preserve">
+    <value>Был в baseline (с тех пор перезапущен)</value>
+  </data>
+  <data name="Plan_Kept_UserList" xml:space="preserve">
+    <value>В списке «Всегда оставлять»</value>
+  </data>
+  <data name="Plan_Kept" xml:space="preserve">
+    <value>Оставлено</value>
+  </data>
+  <data name="Plan_Protected" xml:space="preserve">
+    <value>Защищено</value>
+  </data>
+  <data name="Plan_ExtraInstance" xml:space="preserve">
+    <value>Дополнительный экземпляр после baseline</value>
+  </data>
+  <data name="Plan_StartedBy" xml:space="preserve">
+    <value>Запущено {0} после baseline</value>
+  </data>
+  <data name="Plan_StartedAfter" xml:space="preserve">
+    <value>Запущено после baseline</value>
+  </data>
+  <data name="Step_CloseWindows" xml:space="preserve">
+    <value>Отправить запрос на закрытие {0} (PID {1}), окон: {2} — как нажатие ✕.</value>
+  </data>
+  <data name="Step_ConsoleInterrupt" xml:space="preserve">
+    <value>Отправить Ctrl+C в консоль {0} (PID {1}), только если этой консолью не пользуется посторонняя программа.</value>
+  </data>
+  <data name="Step_RestartManager" xml:space="preserve">
+    <value>Попросить {0} (PID {1}) завершиться через Windows Restart Manager, как это делают установщики (без принуждения).</value>
+  </data>
+  <data name="Step_NoGracefulMethod" xml:space="preserve">
+    <value>У {0} (PID {1}) нет окна для вежливого закрытия; он будет только отмечен как работающий.</value>
+  </data>
+  <data name="Step_ExitsWithApp" xml:space="preserve">
+    <value>{0} (PID {1}) должен завершиться вместе с приложением.</value>
+  </data>
+  <data name="Step_LeftAlone" xml:space="preserve">
+    <value>{0} (PID {1}) не трогается ({2}).</value>
+  </data>
+  <data name="Step_ProtectedFallback" xml:space="preserve">
+    <value>защищён</value>
+  </data>
+  <data name="Note_TrayRetry" xml:space="preserve">
+    <value>Если приложение вместо выхода сворачивается в трей, запрос повторяется через Windows Restart Manager.</value>
+  </data>
+  <data name="Note_WaitsForUser" xml:space="preserve">
+    <value>Если приложение спросит о сохранении изменений, SnapBack дождётся вашего ответа и ничего не будет делать сам.</value>
+  </data>
+  <data name="Note_NoForce" xml:space="preserve">
+    <value>Ничего не завершается принудительно без вашего отдельного подтверждения.</value>
+  </data>
+  <data name="Outcome_Pending" xml:space="preserve">
+    <value>Ожидание</value>
+  </data>
+  <data name="Outcome_Closing" xml:space="preserve">
+    <value>Запрос на закрытие…</value>
+  </data>
+  <data name="Outcome_Closed" xml:space="preserve">
+    <value>Закрыто</value>
+  </data>
+  <data name="Outcome_PartiallyClosed" xml:space="preserve">
+    <value>Закрыто; некоторые фоновые процессы остались</value>
+  </data>
+  <data name="Outcome_Terminated" xml:space="preserve">
+    <value>Завершено принудительно</value>
+  </data>
+  <data name="Outcome_Skipped" xml:space="preserve">
+    <value>Пропущено проверками безопасности</value>
+  </data>
+  <data name="Outcome_Failed" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="Outcome_AlreadyExited" xml:space="preserve">
+    <value>Уже было закрыто</value>
+  </data>
+  <data name="Still_WaitingForUser" xml:space="preserve">
+    <value>Ещё открыто — возможно, спрашивает о сохранении изменений</value>
+  </data>
+  <data name="Still_NotResponding" xml:space="preserve">
+    <value>Не отвечает</value>
+  </data>
+  <data name="Still_Declined" xml:space="preserve">
+    <value>Приложение отказалось завершаться</value>
+  </data>
+  <data name="Still_NoGracefulMethod" xml:space="preserve">
+    <value>Нельзя закрыть вежливо (нет окна)</value>
+  </data>
+  <data name="Still_SharedConsole" xml:space="preserve">
+    <value>Его консоль используется другими программами</value>
+  </data>
+  <data name="Still_Cancelled" xml:space="preserve">
+    <value>Ожидание остановлено</value>
+  </data>
+  <data name="Still_DidNotExit" xml:space="preserve">
+    <value>Не завершилось вовремя</value>
+  </data>
+  <data name="Report_Summary" xml:space="preserve">
+    <value>Закрыто приложений: {0} из {1}, освобождено около {2}</value>
+  </data>
+  <data name="Report_StillRunningSuffix" xml:space="preserve">
+    <value>, ещё работают: {0}</value>
+  </data>
+  <data name="Op_NotEligible" xml:space="preserve">
+    <value>{0} нельзя закрыть.</value>
+  </data>
+  <data name="Op_CouldNotInspect" xml:space="preserve">
+    <value>Не удалось проверить {0} (PID {1}); процесс не тронут.</value>
+  </data>
+  <data name="Op_SkippedRefused" xml:space="preserve">
+    <value>Пропущено: проверки безопасности запретили действия с этим приложением. Ничего не сделано.</value>
+  </data>
+  <data name="Op_AlreadyExited" xml:space="preserve">
+    <value>Приложение уже было закрыто.</value>
+  </data>
+  <data name="Op_NothingSafe" xml:space="preserve">
+    <value>Нет ничего, с чем можно безопасно работать.</value>
+  </data>
+  <data name="Op_Closed" xml:space="preserve">
+    <value>Закрыто.</value>
+  </data>
+  <data name="Op_RestartManagerNote" xml:space="preserve">
+    <value>Restart Manager: {0}</value>
+  </data>
+  <data name="Op_CouldNotInspectForce" xml:space="preserve">
+    <value>Не удалось проверить {0} (PID {1}); процесс не завершён.</value>
+  </data>
+  <data name="Op_SomeNotTerminated" xml:space="preserve">
+    <value>Некоторые процессы не удалось завершить.</value>
+  </data>
+  <data name="Op_StillRunningCount" xml:space="preserve">
+    <value>Ещё работают процессов: {0}.</value>
+  </data>
+  <data name="Op_DryNotEligible" xml:space="preserve">
+    <value>Нельзя закрыть.</value>
+  </data>
+  <data name="Op_DryLeftAlone" xml:space="preserve">
+    <value>Не трогается.</value>
+  </data>
+  <data name="Op_DryCouldNotInspect" xml:space="preserve">
+    <value>Не удалось проверить: {0}</value>
+  </data>
+  <data name="Guard_Allowed" xml:space="preserve">
+    <value>Разрешено</value>
+  </data>
+  <data name="Guard_NotPartOfItem" xml:space="preserve">
+    <value>{0} (PID {1}) не входит в число процессов {2}, с которыми можно работать.</value>
+  </data>
+  <data name="Guard_NeverTouched" xml:space="preserve">
+    <value>PID {0} никогда не трогается.</value>
+  </data>
+  <data name="Guard_Exited" xml:space="preserve">
+    <value>{0} (PID {1}) уже завершился.</value>
+  </data>
+  <data name="Guard_PidReused" xml:space="preserve">
+    <value>PID {0} теперь принадлежит другому процессу; исходный уже завершился.</value>
+  </data>
+  <data name="Guard_PathChanged" xml:space="preserve">
+    <value>Исполняемый файл PID {0} больше не совпадает с {1}.</value>
+  </data>
+  <data name="Guard_ProtectedNow" xml:space="preserve">
+    <value>{0} (PID {1}) защищён: {2}.</value>
+  </data>
+  <data name="Guard_NotAuthorized" xml:space="preserve">
+    <value>Принудительное завершение {0} (PID {1}) не подтверждено пользователем.</value>
+  </data>
+  <data name="Guard_AuthExpired" xml:space="preserve">
+    <value>Подтверждение принудительного завершения истекло. Подтвердите ещё раз.</value>
+  </data>
+  <data name="Guard_GracefulFirst" xml:space="preserve">
+    <value>Сначала {0} (PID {1}) нужно попросить закрыться обычным способом.</value>
+  </data>
+  <data name="Baseline_NewerVersion" xml:space="preserve">
+    <value>Baseline создан более новой версией SnapBack.</value>
+  </data>
+  <data name="Baseline_OtherUser" xml:space="preserve">
+    <value>Baseline принадлежит другой учётной записи.</value>
+  </data>
+  <data name="Unit_B" xml:space="preserve">
+    <value>Б</value>
+  </data>
+  <data name="Unit_KB" xml:space="preserve">
+    <value>КБ</value>
+  </data>
+  <data name="Unit_MB" xml:space="preserve">
+    <value>МБ</value>
+  </data>
+  <data name="Unit_GB" xml:space="preserve">
+    <value>ГБ</value>
+  </data>
+  <data name="Act_NoVisibleWindows" xml:space="preserve">
+    <value>У процесса нет видимых окон.</value>
+  </data>
+  <data name="Act_CloseSent" xml:space="preserve">
+    <value>Запрос на закрытие отправлен (окон: {0}).</value>
+  </data>
+  <data name="Act_CloseBlocked" xml:space="preserve">
+    <value>Windows заблокировала запрос на закрытие.</value>
+  </data>
+  <data name="Act_CloseFailed" xml:space="preserve">
+    <value>Не удалось отправить запрос на закрытие (ошибка {0}).</value>
+  </data>
+  <data name="Act_CtrlCFromConsole" xml:space="preserve">
+    <value>Ctrl+C можно отправить только из окна SnapBack, а не из консоли.</value>
+  </data>
+  <data name="Act_NoConsole" xml:space="preserve">
+    <value>У процесса нет консоли.</value>
+  </data>
+  <data name="Act_AttachFailed" xml:space="preserve">
+    <value>Не удалось подключиться к его консоли (ошибка {0}).</value>
+  </data>
+  <data name="Act_ConsoleShared" xml:space="preserve">
+    <value>Его консолью пользуется {0}, который не закрывается.</value>
+  </data>
+  <data name="Act_CtrlCFailed" xml:space="preserve">
+    <value>Не удалось отправить Ctrl+C (ошибка {0}).</value>
+  </data>
+  <data name="Act_CtrlCSent" xml:space="preserve">
+    <value>Ctrl+C отправлен.</value>
+  </data>
+  <data name="Act_NothingLeft" xml:space="preserve">
+    <value>Закрывать больше нечего.</value>
+  </data>
+  <data name="Act_RmUnavailable" xml:space="preserve">
+    <value>Restart Manager недоступен (ошибка {0}).</value>
+  </data>
+  <data name="Act_RmRegisterFailed" xml:space="preserve">
+    <value>Ошибка регистрации в Restart Manager (ошибка {0}).</value>
+  </data>
+  <data name="Act_Cancelled" xml:space="preserve">
+    <value>Отменено.</value>
+  </data>
+  <data name="Act_RmAgreed" xml:space="preserve">
+    <value>Приложение согласилось завершиться.</value>
+  </data>
+  <data name="Act_RmDeclined" xml:space="preserve">
+    <value>Приложение не согласилось завершиться.</value>
+  </data>
+  <data name="Act_RmFailed" xml:space="preserve">
+    <value>Ошибка Restart Manager (ошибка {0}).</value>
+  </data>
+  <data name="Act_RmNothing" xml:space="preserve">
+    <value>Restart Manager не нашёл ничего, что можно закрыть вежливо.</value>
+  </data>
+  <data name="Act_RmQueryFailed" xml:space="preserve">
+    <value>Ошибка запроса к Restart Manager (ошибка {0}).</value>
+  </data>
+  <data name="Act_RmExtraPid" xml:space="preserve">
+    <value>Restart Manager затронул бы также PID {0}; ничего не сделано.</value>
+  </data>
+  <data name="Act_RmOtherSession" xml:space="preserve">
+    <value>PID {0} находится в другом сеансе; ничего не сделано.</value>
+  </data>
+  <data name="Act_RmType_Service" xml:space="preserve">
+    <value>службу</value>
+  </data>
+  <data name="Act_RmType_Explorer" xml:space="preserve">
+    <value>Проводник Windows</value>
+  </data>
+  <data name="Act_RmType_Console" xml:space="preserve">
+    <value>консольную программу</value>
+  </data>
+  <data name="Act_RmType_Critical" xml:space="preserve">
+    <value>критический процесс</value>
+  </data>
+  <data name="Act_RmType_Other" xml:space="preserve">
+    <value>не оконное приложение</value>
+  </data>
+  <data name="Act_RmNotEligible" xml:space="preserve">
+    <value>Restart Manager определяет PID {0} как {1}; запрос на выход не отправлялся.</value>
+  </data>
+  <data name="Act_TerminateDenied" xml:space="preserve">
+    <value>Windows запретила завершение.</value>
+  </data>
+  <data name="Act_TerminateFailed" xml:space="preserve">
+    <value>Не удалось завершить (ошибка {0}).</value>
+  </data>
+  <data name="Act_Terminated" xml:space="preserve">
+    <value>Завершено.</value>
+  </data>
+  <data name="Act_TerminateNoExit" xml:space="preserve">
+    <value>Процесс не завершился после запроса на завершение.</value>
+  </data>
+  <data name="Verify_NeverTouched" xml:space="preserve">
+    <value>Этот процесс никогда не трогается.</value>
+  </data>
+  <data name="Verify_Exited" xml:space="preserve">
+    <value>Процесс завершился.</value>
+  </data>
+  <data name="Verify_AccessDenied" xml:space="preserve">
+    <value>Доступ запрещён.</value>
+  </data>
+  <data name="Verify_OpenFailed" xml:space="preserve">
+    <value>Не удалось открыть процесс (ошибка {0}).</value>
+  </data>
+  <data name="Verify_PidReused" xml:space="preserve">
+    <value>Этот PID теперь принадлежит другому процессу.</value>
+  </data>
+  <data name="Verify_PathUnverified" xml:space="preserve">
+    <value>Не удалось проверить исполняемый файл.</value>
+  </data>
+  <data name="Verify_PathMismatch" xml:space="preserve">
+    <value>Исполняемый файл не совпадает.</value>
+  </data>
+  <data name="Verify_WindowsComponent" xml:space="preserve">
+    <value>Компоненты Windows никогда не трогаются.</value>
+  </data>
+  <data name="Verify_Critical" xml:space="preserve">
+    <value>Критический (или непроверяемый) процесс.</value>
+  </data>
+  <data name="Verify_Protected" xml:space="preserve">
+    <value>Защищённый (или непроверяемый) процесс.</value>
+  </data>
+  <data name="Verify_OtherSession" xml:space="preserve">
+    <value>Процесс принадлежит другому сеансу.</value>
+  </data>
+  <data name="Verify_OtherUser" xml:space="preserve">
+    <value>Процесс принадлежит другому (или неизвестному) пользователю.</value>
+  </data>
+  <data name="Verify_Elevated" xml:space="preserve">
+    <value>Процесс работает с правами администратора.</value>
+  </data>
+  <data name="Advice_Healthy_Title" xml:space="preserve">
+    <value>Свободной памяти достаточно</value>
+  </data>
+  <data name="Advice_Healthy_Text" xml:space="preserve">
+    <value>Windows хранит недавно использованные данные в кэше (standby) и мгновенно отдаёт эту память приложениям, когда она им нужна. Кэш уже считается доступной памятью, поэтому очистка не нужна.</value>
+  </data>
+  <data name="Advice_Moderate_Title" xml:space="preserve">
+    <value>Память используется умеренно</value>
+  </data>
+  <data name="Advice_Moderate_Text" xml:space="preserve">
+    <value>Если нужно больше памяти, закройте неиспользуемые приложения — например, через «Вернуть к baseline». Очистка кэша не увеличивает доступную память: кэш уже считается доступной памятью.</value>
+  </data>
+  <data name="Advice_Low_Title" xml:space="preserve">
+    <value>Памяти мало</value>
+  </data>
+  <data name="Advice_Low_Text" xml:space="preserve">
+    <value>Почти всю память занимают приложения. Поможет закрытие приложений («Вернуть к baseline»). Глубокая очистка памяти этого не исправит: она только сбрасывает кэш, который Windows и так переиспользовала бы.</value>
+  </data>
+  <data name="Advice_Unknown_Title" xml:space="preserve">
+    <value>Состояние памяти недоступно</value>
+  </data>
+  <data name="Advice_Unknown_Text" xml:space="preserve">
+    <value>Windows не сообщила статистику памяти.</value>
+  </data>
+  <data name="Deep_Mode_Standby" xml:space="preserve">
+    <value>Весь кэш standby</value>
+  </data>
+  <data name="Deep_Mode_LowPriorityStandby" xml:space="preserve">
+    <value>Только низкоприоритетный кэш standby</value>
+  </data>
+  <data name="Deep_Completed" xml:space="preserve">
+    <value>Кэш очищен.</value>
+  </data>
+  <data name="Deep_CancelledByUser" xml:space="preserve">
+    <value>Разрешение администратора не получено. Ничего не изменено.</value>
+  </data>
+  <data name="Deep_NotElevated" xml:space="preserve">
+    <value>Для этой операции нужны права администратора.</value>
+  </data>
+  <data name="Deep_PrivilegeMissing" xml:space="preserve">
+    <value>Нужная системная привилегия недоступна.</value>
+  </data>
+  <data name="Deep_Failed" xml:space="preserve">
+    <value>Не удалось очистить кэш (ошибка {0}).</value>
+  </data>
+  <data name="Deep_BadRequest" xml:space="preserve">
+    <value>Недопустимый запрос.</value>
+  </data>
+  <data name="Deep_LaunchFailed" xml:space="preserve">
+    <value>Не удалось запустить помощник с правами администратора: {0}</value>
+  </data>
+  <data name="Deep_UnknownExit" xml:space="preserve">
+    <value>Помощник с правами администратора вернул неожиданный результат ({0}).</value>
+  </data>
+  <data name="Cmp_Apps" xml:space="preserve">
+    <value>Приложения</value>
+  </data>
+  <data name="Cmp_Processes" xml:space="preserve">
+    <value>Процессы</value>
+  </data>
+  <data name="Cmp_InUse" xml:space="preserve">
+    <value>Используется ОЗУ</value>
+  </data>
+  <data name="Cmp_Available" xml:space="preserve">
+    <value>Доступно</value>
+  </data>
+  <data name="Cmp_Cached" xml:space="preserve">
+    <value>Кэш (standby + modified)</value>
+  </data>
+  <data name="Cmp_Free" xml:space="preserve">
+    <value>Свободно</value>
+  </data>
+  <data name="Cmp_ReleasedByApps" xml:space="preserve">
+    <value>Освобождено закрытием приложений</value>
+  </data>
+  <data name="Cmp_ReclaimedByCleanup" xml:space="preserve">
+    <value>Кэш, сброшенный глубокой очисткой</value>
+  </data>
+  <data name="Cmp_Total" xml:space="preserve">
+    <value>Всего памяти</value>
+  </data>
+  <data name="Cmp_Standby" xml:space="preserve">
+    <value>Standby (кэш)</value>
+  </data>
+  <data name="Cmp_Modified" xml:space="preserve">
+    <value>Modified (ожидает записи на диск)</value>
+  </data>
+  <data name="Cmp_Commit" xml:space="preserve">
+    <value>Выделено (commit)</value>
+  </data>
+</root>

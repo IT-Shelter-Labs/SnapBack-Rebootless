@@ -1,3 +1,6 @@
+using SnapBack.Core.Localization;
+using SnapBack.Core.Memory;
+
 namespace SnapBack.Core.Persistence;
 
 /// <summary>User settings. Defaults are the safe choice; values are clamped on load.</summary>
@@ -31,6 +34,12 @@ public sealed record Settings
     /// <summary>Number of operations kept in the history.</summary>
     public int HistoryLimit { get; init; } = 50;
 
+    /// <summary>UI language: "system" (follow Windows), "en", "ru" or "zh-CN".</summary>
+    public string Language { get; init; } = Languages.System;
+
+    /// <summary>Deep Memory Cleanup mode last chosen by the user.</summary>
+    public DeepCleanupMode DeepCleanupMode { get; init; } = DeepCleanupMode.Standby;
+
     public Settings Normalize() => this with
     {
         SchemaVersion = CurrentSchemaVersion,
@@ -39,6 +48,8 @@ public sealed record Settings
         AutoBaselineQuietSeconds = Math.Clamp(AutoBaselineQuietSeconds, 10, 600),
         AutoBaselineMaxWaitSeconds = Math.Clamp(AutoBaselineMaxWaitSeconds, 60, 3600),
         HistoryLimit = Math.Clamp(HistoryLimit, 1, 500),
+        Language = Languages.NormalizeSetting(Language),
+        DeepCleanupMode = Enum.IsDefined(DeepCleanupMode) ? DeepCleanupMode : DeepCleanupMode.Standby,
         KeepList = (KeepList ?? [])
             .Where(k => k is not null && !string.IsNullOrWhiteSpace(k.AppKey))
             .DistinctBy(k => k.AppKey, StringComparer.Ordinal)

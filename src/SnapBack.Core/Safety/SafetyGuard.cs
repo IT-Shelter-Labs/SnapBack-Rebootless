@@ -1,4 +1,5 @@
 using SnapBack.Core.Classification;
+using SnapBack.Core.Localization;
 using SnapBack.Core.Model;
 using SnapBack.Core.Planning;
 using SnapBack.Core.Text;
@@ -22,7 +23,7 @@ public sealed record GuardDecision(GuardVerdict Verdict, string Message)
 {
     public bool Allowed => Verdict == GuardVerdict.Allowed;
 
-    public static GuardDecision Allow { get; } = new(GuardVerdict.Allowed, "Allowed");
+    public static GuardDecision Allow => new(GuardVerdict.Allowed, Loc.Get("Guard_Allowed"));
 }
 
 /// <summary>
@@ -52,40 +53,40 @@ public sealed class SafetyGuard
 
         if (!item.IsSelectable)
         {
-            return new(GuardVerdict.ItemNotEligible, $"{item.Group.DisplayName} is not eligible for closing ({item.Category}, {item.Level}).");
+            return new(GuardVerdict.ItemNotEligible, Loc.Format("Op_NotEligible", item.Group.DisplayName));
         }
 
         if (!item.Group.Contains(planned.Identity) || item.Group.IsMemberProtected(planned.Pid))
         {
-            return new(GuardVerdict.ItemNotEligible, $"{planned.ImageName} (PID {planned.Pid}) is not an actionable part of {item.Group.DisplayName}.");
+            return new(GuardVerdict.ItemNotEligible, Loc.Format("Guard_NotPartOfItem", planned.ImageName, planned.Pid, item.Group.DisplayName));
         }
 
         // Hard-coded checks that do not depend on any classification data.
         if (planned.Pid is 0 or 4 || planned.Pid == ctx.SelfPid)
         {
-            return new(GuardVerdict.ProtectedNow, $"PID {planned.Pid} is never touched.");
+            return new(GuardVerdict.ProtectedNow, Loc.Format("Guard_NeverTouched", planned.Pid));
         }
 
         if (live is null)
         {
-            return new(GuardVerdict.ProcessExited, $"{planned.ImageName} (PID {planned.Pid}) has already exited.");
+            return new(GuardVerdict.ProcessExited, Loc.Format("Guard_Exited", planned.ImageName, planned.Pid));
         }
 
         if (live.Identity != planned.Identity)
         {
-            return new(GuardVerdict.IdentityMismatch, $"PID {planned.Pid} now belongs to a different process; the original has exited.");
+            return new(GuardVerdict.IdentityMismatch, Loc.Format("Guard_PidReused", planned.Pid));
         }
 
         if (planned.ImagePath is not null && !PathUtil.PathEquals(planned.ImagePath, live.ImagePath))
         {
-            return new(GuardVerdict.PathChanged, $"The executable of PID {planned.Pid} no longer matches {planned.ImageName}.");
+            return new(GuardVerdict.PathChanged, Loc.Format("Guard_PathChanged", planned.Pid, planned.ImageName));
         }
 
         var now = _classifier.Classify(live, ctx);
         if (now.IsProtected)
         {
             var why = string.Join(", ", now.Reasons.Where(r => RiskReasons.LevelOf(r) == SafetyLevel.Protected).Select(RiskReasons.Label));
-            return new(GuardVerdict.ProtectedNow, $"{live.ImageName} (PID {live.Pid}) is protected: {why}.");
+            return new(GuardVerdict.ProtectedNow, Loc.Format("Guard_ProtectedNow", live.ImageName, live.Pid, why));
         }
 
         return GuardDecision.Allow;
@@ -97,17 +98,17 @@ public sealed class SafetyGuard
     {
         if (authorization is null || !authorization.Covers(planned.Identity))
         {
-            return new(GuardVerdict.NotAuthorized, $"Force-termination of {planned.ImageName} (PID {planned.Pid}) was not confirmed by the user.");
+            return new(GuardVerdict.NotAuthorized, Loc.Format("Guard_NotAuthorized", planned.ImageName, planned.Pid));
         }
 
         if (authorization.IsExpired(nowUtc))
         {
-            return new(GuardVerdict.AuthorizationExpired, "The confirmation for force-termination has expired. Please confirm again.");
+            return new(GuardVerdict.AuthorizationExpired, Loc.Get("Guard_AuthExpired"));
         }
 
         if (!gracefulAttempted)
         {
-            return new(GuardVerdict.GracefulNotAttempted, $"{planned.ImageName} (PID {planned.Pid}) must first be asked to close normally.");
+            return new(GuardVerdict.GracefulNotAttempted, Loc.Format("Guard_GracefulFirst", planned.ImageName, planned.Pid));
         }
 
         return CheckGraceful(item, planned, live, ctx);

@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using SnapBack.App.Localization;
 using SnapBack.App.Mvvm;
+using SnapBack.Core.Localization;
 using SnapBack.Core;
 using SnapBack.Core.Execution;
 using SnapBack.Core.Persistence;
@@ -48,7 +50,7 @@ public sealed class HistoryViewModel : ObservableObject
 
     private void Clear()
     {
-        if (_dialogs.Confirm("Clear history", "Delete the history of past operations?"))
+        if (_dialogs.Confirm(Tr.Get("Confirm_ClearHistory_Title"), Tr.Get("Confirm_ClearHistory_Text")))
         {
             _engine.ClearHistory();
             Load();
@@ -60,16 +62,16 @@ public sealed class HistoryEntryViewModel(OperationRecord record)
 {
     public OperationRecord Record { get; } = record;
 
-    public string When => Record.StartedAtUtc.ToLocalTime().ToString("g");
+    public string When => Record.StartedAtUtc.ToLocalTime().ToString("g", Loc.Culture);
 
-    public string Kind => Record.Kind == OperationKind.Force ? "Force-terminate" : "Return to baseline";
+    public string Kind => Tr.Get(Record.Kind == OperationKind.Force ? "History_Force" : "History_Restore");
 
-    public string Summary => $"{Record.Closed} of {Record.Requested} closed · ≈ {ByteSize.Format(Record.MemoryFreedBytes)}"
-        + (Record.StillRunning > 0 ? $" · {Record.StillRunning} still running" : "");
+    public string Summary => Tr.Format("History_Summary", Record.Closed, Record.Requested, ByteSize.Format(Record.MemoryFreedBytes))
+        + (Record.StillRunning > 0 ? Tr.Format("History_StillRunning", Record.StillRunning) : "");
 
     public IReadOnlyList<OperationRecordItem> Items => Record.Items;
 
     public string MemoryText => Record.AvailableBeforeBytes > 0
-        ? $"Available memory: {ByteSize.Format(Record.AvailableBeforeBytes)} → {ByteSize.Format(Record.AvailableAfterBytes)}"
+        ? Tr.Format("History_Available", ByteSize.Format(Record.AvailableBeforeBytes), ByteSize.Format(Record.AvailableAfterBytes))
         : "";
 }

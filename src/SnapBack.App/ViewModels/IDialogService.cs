@@ -11,6 +11,8 @@ public interface IDialogService
 
     void ShowHistory(HistoryViewModel history);
 
+    void ShowMemory(MemoryViewModel memory);
+
     bool Confirm(string title, string message, bool dangerous = false);
 
     void Inform(string title, string message);

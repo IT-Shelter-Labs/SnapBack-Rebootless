@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Reason_KernelOrSystemProcess_Label" xml:space="preserve">
+    <value>Windows 内核进程</value>
+  </data>
+  <data name="Reason_KernelOrSystemProcess_Explain" xml:space="preserve">
+    <value>Windows 内核的一部分。SnapBack 永远不会操作它。</value>
+  </data>
+  <data name="Reason_SnapBackItself_Label" xml:space="preserve">
+    <value>SnapBack 自身</value>
+  </data>
+  <data name="Reason_SnapBackItself_Explain" xml:space="preserve">
+    <value>这是 SnapBack 本身。</value>
+  </data>
+  <data name="Reason_OtherSession_Label" xml:space="preserve">
+    <value>其他会话</value>
+  </data>
+  <data name="Reason_OtherSession_Explain" xml:space="preserve">
+    <value>运行在另一个 Windows 会话中（系统服务或其他已登录用户）。</value>
+  </data>
+  <data name="Reason_OtherUser_Label" xml:space="preserve">
+    <value>其他用户</value>
+  </data>
+  <data name="Reason_OtherUser_Explain" xml:space="preserve">
+    <value>以其他用户帐户运行。</value>
+  </data>
+  <data name="Reason_CriticalProcess_Label" xml:space="preserve">
+    <value>关键系统进程</value>
+  </data>
+  <data name="Reason_CriticalProcess_Explain" xml:space="preserve">
+    <value>Windows 将此进程标记为关键进程：结束它会导致计算机崩溃。</value>
+  </data>
+  <data name="Reason_ProtectedProcess_Label" xml:space="preserve">
+    <value>受保护进程</value>
+  </data>
+  <data name="Reason_ProtectedProcess_Explain" xml:space="preserve">
+    <value>Windows 保护此进程（例如反恶意软件或 DRM）。</value>
+  </data>
+  <data name="Reason_ServiceHost_Label" xml:space="preserve">
+    <value>Windows 服务</value>
+  </data>
+  <data name="Reason_ServiceHost_Explain" xml:space="preserve">
+    <value>承载 Windows 服务。SnapBack 不管理服务。</value>
+  </data>
+  <data name="Reason_ShellComponent_Label" xml:space="preserve">
+    <value>Windows 组件</value>
+  </data>
+  <data name="Reason_ShellComponent_Explain" xml:space="preserve">
+    <value>Windows 桌面、会话或安全的重要组成部分。</value>
+  </data>
+  <data name="Reason_WindowsComponent_Label" xml:space="preserve">
+    <value>Windows 组件</value>
+  </data>
+  <data name="Reason_WindowsComponent_Explain" xml:space="preserve">
+    <value>从 Windows 文件夹运行。</value>
+  </data>
+  <data name="Reason_Elevated_Label" xml:space="preserve">
+    <value>以管理员身份运行</value>
+  </data>
+  <data name="Reason_Elevated_Explain" xml:space="preserve">
+    <value>以管理员权限运行。SnapBack 从不操作提升权限的程序。</value>
+  </data>
+  <data name="Reason_AccessDenied_Label" xml:space="preserve">
+    <value>拒绝访问</value>
+  </data>
+  <data name="Reason_AccessDenied_Explain" xml:space="preserve">
+    <value>Windows 不允许 SnapBack 检查此进程。</value>
+  </data>
+  <data name="Reason_OwnerUnknown_Label" xml:space="preserve">
+    <value>所有者未知</value>
+  </data>
+  <data name="Reason_OwnerUnknown_Explain" xml:space="preserve">
+    <value>无法验证此进程的所有者。</value>
+  </data>
+  <data name="Reason_ImagePathUnknown_Label" xml:space="preserve">
+    <value>未知可执行文件</value>
+  </data>
+  <data name="Reason_ImagePathUnknown_Explain" xml:space="preserve">
+    <value>无法验证此进程的可执行文件。</value>
+  </data>
+  <data name="Reason_CannotVerify_Label" xml:space="preserve">
+    <value>无法验证</value>
+  </data>
+  <data name="Reason_CannotVerify_Explain" xml:space="preserve">
+    <value>无法验证此进程的某些安全属性。</value>
+  </data>
+  <data name="Reason_ConsoleProgram_Label" xml:space="preserve">
+    <value>控制台程序</value>
+  </data>
+  <data name="Reason_ConsoleProgram_Explain" xml:space="preserve">
+    <value>可能正在执行任务；停止它会中断正在进行的工作。</value>
+  </data>
+  <data name="Reason_ScriptOrRuntime_Label" xml:space="preserve">
+    <value>脚本或运行时</value>
+  </data>
+  <data name="Reason_ScriptOrRuntime_Explain" xml:space="preserve">
+    <value>Python、Node.js 等运行时可能正在执行任务。</value>
+  </data>
+  <data name="Reason_NoWindow_Label" xml:space="preserve">
+    <value>后台进程</value>
+  </data>
+  <data name="Reason_NoWindow_Explain" xml:space="preserve">
+    <value>没有窗口，因此无法礼貌地请求其关闭。</value>
+  </data>
+  <data name="Reason_VirtualMachine_Label" xml:space="preserve">
+    <value>虚拟机</value>
+  </data>
+  <data name="Reason_VirtualMachine_Explain" xml:space="preserve">
+    <value>关闭它可能会停止虚拟机并丢失其未保存的状态。</value>
+  </data>
+  <data name="Reason_InstallerOrUpdater_Label" xml:space="preserve">
+    <value>安装程序或更新程序</value>
+  </data>
+  <data name="Reason_InstallerOrUpdater_Explain" xml:space="preserve">
+    <value>中断它可能导致安装损坏。</value>
+  </data>
+  <data name="Reason_LaunchedSnapBack_Label" xml:space="preserve">
+    <value>启动了 SnapBack</value>
+  </data>
+  <data name="Reason_LaunchedSnapBack_Explain" xml:space="preserve">
+    <value>SnapBack 是从此程序启动的；关闭它可能也会关闭 SnapBack。</value>
+  </data>
+  <data name="Reason_WindowsUserTool_Label" xml:space="preserve">
+    <value>Windows 工具</value>
+  </data>
+  <data name="Reason_WindowsUserTool_Explain" xml:space="preserve">
+    <value>Windows 自带的工具。</value>
+  </data>
+  <data name="Reason_PossibleUnsavedWork_Label" xml:space="preserve">
+    <value>可能有未保存的数据</value>
+  </data>
+  <data name="Reason_PossibleUnsavedWork_Explain" xml:space="preserve">
+    <value>编辑器、IDE 和办公软件可能有未保存的文档。SnapBack 会以正常方式请求它们关闭，以便它们向你确认。</value>
+  </data>
+  <data name="Reason_UnsavedChangesInTitle_Label" xml:space="preserve">
+    <value>未保存的更改</value>
+  </data>
+  <data name="Reason_UnsavedChangesInTitle_Explain" xml:space="preserve">
+    <value>窗口标题显示有未保存的更改。</value>
+  </data>
+  <data name="Reason_Browser_Label" xml:space="preserve">
+    <value>网页浏览器</value>
+  </data>
+  <data name="Reason_Browser_Explain" xml:space="preserve">
+    <value>标签页通常会恢复，但正在进行的下载和未提交的表单可能会丢失。</value>
+  </data>
+  <data name="Reason_Terminal_Label" xml:space="preserve">
+    <value>终端</value>
+  </data>
+  <data name="Reason_Terminal_Explain" xml:space="preserve">
+    <value>关闭终端会结束其中运行的所有 shell 和命令。</value>
+  </data>
+  <data name="Reason_SyncOrTransfer_Label" xml:space="preserve">
+    <value>可能正在传输文件</value>
+  </data>
+  <data name="Reason_SyncOrTransfer_Explain" xml:space="preserve">
+    <value>同步、BT 和下载软件可能正在传输数据。</value>
+  </data>
+  <data name="Reason_Launcher_Label" xml:space="preserve">
+    <value>启动器</value>
+  </data>
+  <data name="Reason_Launcher_Explain" xml:space="preserve">
+    <value>游戏和应用启动器可能正在下载或安装更新。</value>
+  </data>
+  <data name="Reason_Recording_Label" xml:space="preserve">
+    <value>录制或直播</value>
+  </data>
+  <data name="Reason_Recording_Explain" xml:space="preserve">
+    <value>可能正在录制或直播。</value>
+  </data>
+  <data name="Reason_NotResponding_Label" xml:space="preserve">
+    <value>未响应</value>
+  </data>
+  <data name="Reason_NotResponding_Explain" xml:space="preserve">
+    <value>该应用当前未响应。</value>
+  </data>
+  <data name="Reason_NewInstanceOfBaselineApp_Label" xml:space="preserve">
+    <value>额外实例</value>
+  </data>
+  <data name="Reason_NewInstanceOfBaselineApp_Explain" xml:space="preserve">
+    <value>创建基线时该应用的另一个实例已在运行。</value>
+  </data>
+  <data name="Reason_StartedByBaselineApp_Label" xml:space="preserve">
+    <value>由基线应用启动</value>
+  </data>
+  <data name="Reason_StartedByBaselineApp_Explain" xml:space="preserve">
+    <value>由创建基线时已在运行的应用启动；该应用可能仍需要它。</value>
+  </data>
+  <data name="Reason_RunsInBackground_Label" xml:space="preserve">
+    <value>在后台运行</value>
+  </data>
+  <data name="Reason_RunsInBackground_Explain" xml:space="preserve">
+    <value>没有可见窗口（例如已最小化到托盘）。</value>
+  </data>
+  <data name="Plan_Kept_InBaseline" xml:space="preserve">
+    <value>基线中已存在</value>
+  </data>
+  <data name="Plan_Kept_Restarted" xml:space="preserve">
+    <value>基线中已存在（之后重新启动过）</value>
+  </data>
+  <data name="Plan_Kept_UserList" xml:space="preserve">
+    <value>在你的保留列表中</value>
+  </data>
+  <data name="Plan_Kept" xml:space="preserve">
+    <value>保留</value>
+  </data>
+  <data name="Plan_Protected" xml:space="preserve">
+    <value>受保护</value>
+  </data>
+  <data name="Plan_ExtraInstance" xml:space="preserve">
+    <value>基线之后的额外实例</value>
+  </data>
+  <data name="Plan_StartedBy" xml:space="preserve">
+    <value>基线之后由 {0} 启动</value>
+  </data>
+  <data name="Plan_StartedAfter" xml:space="preserve">
+    <value>基线之后启动</value>
+  </data>
+  <data name="Step_CloseWindows" xml:space="preserve">
+    <value>向 {0}（PID {1}）发送关闭请求，窗口数：{2} —— 相当于点击 ✕。</value>
+  </data>
+  <data name="Step_ConsoleInterrupt" xml:space="preserve">
+    <value>向 {0}（PID {1}）的控制台发送 Ctrl+C，前提是没有无关程序共用该控制台。</value>
+  </data>
+  <data name="Step_RestartManager" xml:space="preserve">
+    <value>通过 Windows 重启管理器请求 {0}（PID {1}）退出，与安装程序的做法相同（绝不强制）。</value>
+  </data>
+  <data name="Step_NoGracefulMethod" xml:space="preserve">
+    <value>{0}（PID {1}）没有可礼貌关闭的窗口；只会被报告为仍在运行。</value>
+  </data>
+  <data name="Step_ExitsWithApp" xml:space="preserve">
+    <value>{0}（PID {1}）预计会随应用一起退出。</value>
+  </data>
+  <data name="Step_LeftAlone" xml:space="preserve">
+    <value>{0}（PID {1}）不会被操作（{2}）。</value>
+  </data>
+  <data name="Step_ProtectedFallback" xml:space="preserve">
+    <value>受保护</value>
+  </data>
+  <data name="Note_TrayRetry" xml:space="preserve">
+    <value>如果应用最小化到托盘而不是退出，会再次通过 Windows 重启管理器请求它退出。</value>
+  </data>
+  <data name="Note_WaitsForUser" xml:space="preserve">
+    <value>如果应用询问是否保存更改，SnapBack 会等待你的回答，不会自行继续。</value>
+  </data>
+  <data name="Note_NoForce" xml:space="preserve">
+    <value>未经你单独确认，不会强制结束任何程序。</value>
+  </data>
+  <data name="Outcome_Pending" xml:space="preserve">
+    <value>等待中</value>
+  </data>
+  <data name="Outcome_Closing" xml:space="preserve">
+    <value>正在请求关闭…</value>
+  </data>
+  <data name="Outcome_Closed" xml:space="preserve">
+    <value>已关闭</value>
+  </data>
+  <data name="Outcome_PartiallyClosed" xml:space="preserve">
+    <value>已关闭；部分后台进程仍在运行</value>
+  </data>
+  <data name="Outcome_Terminated" xml:space="preserve">
+    <value>已强制结束</value>
+  </data>
+  <data name="Outcome_Skipped" xml:space="preserve">
+    <value>已被安全检查跳过</value>
+  </data>
+  <data name="Outcome_Failed" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="Outcome_AlreadyExited" xml:space="preserve">
+    <value>已经退出</value>
+  </data>
+  <data name="Still_WaitingForUser" xml:space="preserve">
+    <value>仍然打开——可能正在询问你是否保存更改</value>
+  </data>
+  <data name="Still_NotResponding" xml:space="preserve">
+    <value>未响应</value>
+  </data>
+  <data name="Still_Declined" xml:space="preserve">
+    <value>应用拒绝退出</value>
+  </data>
+  <data name="Still_NoGracefulMethod" xml:space="preserve">
+    <value>无法礼貌关闭（没有窗口）</value>
+  </data>
+  <data name="Still_SharedConsole" xml:space="preserve">
+    <value>其控制台与其他程序共用</value>
+  </data>
+  <data name="Still_Cancelled" xml:space="preserve">
+    <value>已停止等待</value>
+  </data>
+  <data name="Still_DidNotExit" xml:space="preserve">
+    <value>未能及时退出</value>
+  </data>
+  <data name="Report_Summary" xml:space="preserve">
+    <value>已关闭 {0}/{1} 个应用，约释放 {2}</value>
+  </data>
+  <data name="Report_StillRunningSuffix" xml:space="preserve">
+    <value>，仍在运行：{0}</value>
+  </data>
+  <data name="Op_NotEligible" xml:space="preserve">
+    <value>{0} 不符合关闭条件。</value>
+  </data>
+  <data name="Op_CouldNotInspect" xml:space="preserve">
+    <value>无法检查 {0}（PID {1}），已保持不动。</value>
+  </data>
+  <data name="Op_SkippedRefused" xml:space="preserve">
+    <value>已跳过：安全检查拒绝操作此应用。未执行任何操作。</value>
+  </data>
+  <data name="Op_AlreadyExited" xml:space="preserve">
+    <value>该应用已经退出。</value>
+  </data>
+  <data name="Op_NothingSafe" xml:space="preserve">
+    <value>没有可以安全操作的对象。</value>
+  </data>
+  <data name="Op_Closed" xml:space="preserve">
+    <value>已关闭。</value>
+  </data>
+  <data name="Op_RestartManagerNote" xml:space="preserve">
+    <value>重启管理器：{0}</value>
+  </data>
+  <data name="Op_CouldNotInspectForce" xml:space="preserve">
+    <value>无法检查 {0}（PID {1}）；未结束。</value>
+  </data>
+  <data name="Op_SomeNotTerminated" xml:space="preserve">
+    <value>部分进程无法结束。</value>
+  </data>
+  <data name="Op_StillRunningCount" xml:space="preserve">
+    <value>仍在运行的进程：{0}。</value>
+  </data>
+  <data name="Op_DryNotEligible" xml:space="preserve">
+    <value>不符合关闭条件。</value>
+  </data>
+  <data name="Op_DryLeftAlone" xml:space="preserve">
+    <value>保持不动。</value>
+  </data>
+  <data name="Op_DryCouldNotInspect" xml:space="preserve">
+    <value>无法检查：{0}</value>
+  </data>
+  <data name="Guard_Allowed" xml:space="preserve">
+    <value>允许</value>
+  </data>
+  <data name="Guard_NotPartOfItem" xml:space="preserve">
+    <value>{0}（PID {1}）不是 {2} 中可操作的部分。</value>
+  </data>
+  <data name="Guard_NeverTouched" xml:space="preserve">
+    <value>PID {0} 永远不会被操作。</value>
+  </data>
+  <data name="Guard_Exited" xml:space="preserve">
+    <value>{0}（PID {1}）已经退出。</value>
+  </data>
+  <data name="Guard_PidReused" xml:space="preserve">
+    <value>PID {0} 现在属于另一个进程；原进程已退出。</value>
+  </data>
+  <data name="Guard_PathChanged" xml:space="preserve">
+    <value>PID {0} 的可执行文件与 {1} 不再一致。</value>
+  </data>
+  <data name="Guard_ProtectedNow" xml:space="preserve">
+    <value>{0}（PID {1}）受保护：{2}。</value>
+  </data>
+  <data name="Guard_NotAuthorized" xml:space="preserve">
+    <value>用户未确认强制结束 {0}（PID {1}）。</value>
+  </data>
+  <data name="Guard_AuthExpired" xml:space="preserve">
+    <value>强制结束的确认已过期。请重新确认。</value>
+  </data>
+  <data name="Guard_GracefulFirst" xml:space="preserve">
+    <value>必须先以正常方式请求 {0}（PID {1}）关闭。</value>
+  </data>
+  <data name="Baseline_NewerVersion" xml:space="preserve">
+    <value>该基线由更新版本的 SnapBack 创建。</value>
+  </data>
+  <data name="Baseline_OtherUser" xml:space="preserve">
+    <value>该基线属于其他用户帐户。</value>
+  </data>
+  <data name="Unit_B" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="Unit_KB" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="Unit_MB" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="Unit_GB" xml:space="preserve">
+    <value>GB</value>
+  </data>
+  <data name="Act_NoVisibleWindows" xml:space="preserve">
+    <value>该进程没有可见窗口。</value>
+  </data>
+  <data name="Act_CloseSent" xml:space="preserve">
+    <value>已发送关闭请求（窗口数：{0}）。</value>
+  </data>
+  <data name="Act_CloseBlocked" xml:space="preserve">
+    <value>Windows 阻止了关闭请求。</value>
+  </data>
+  <data name="Act_CloseFailed" xml:space="preserve">
+    <value>无法发送关闭请求（错误 {0}）。</value>
+  </data>
+  <data name="Act_CtrlCFromConsole" xml:space="preserve">
+    <value>Ctrl+C 只能从 SnapBack 窗口发送，不能从控制台发送。</value>
+  </data>
+  <data name="Act_NoConsole" xml:space="preserve">
+    <value>该进程没有控制台。</value>
+  </data>
+  <data name="Act_AttachFailed" xml:space="preserve">
+    <value>无法连接到其控制台（错误 {0}）。</value>
+  </data>
+  <data name="Act_ConsoleShared" xml:space="preserve">
+    <value>其控制台与不会被关闭的 {0} 共用。</value>
+  </data>
+  <data name="Act_CtrlCFailed" xml:space="preserve">
+    <value>无法发送 Ctrl+C（错误 {0}）。</value>
+  </data>
+  <data name="Act_CtrlCSent" xml:space="preserve">
+    <value>已发送 Ctrl+C。</value>
+  </data>
+  <data name="Act_NothingLeft" xml:space="preserve">
+    <value>没有需要关闭的内容。</value>
+  </data>
+  <data name="Act_RmUnavailable" xml:space="preserve">
+    <value>重启管理器不可用（错误 {0}）。</value>
+  </data>
+  <data name="Act_RmRegisterFailed" xml:space="preserve">
+    <value>重启管理器注册失败（错误 {0}）。</value>
+  </data>
+  <data name="Act_Cancelled" xml:space="preserve">
+    <value>已取消。</value>
+  </data>
+  <data name="Act_RmAgreed" xml:space="preserve">
+    <value>应用已同意退出。</value>
+  </data>
+  <data name="Act_RmDeclined" xml:space="preserve">
+    <value>应用未同意退出。</value>
+  </data>
+  <data name="Act_RmFailed" xml:space="preserve">
+    <value>重启管理器失败（错误 {0}）。</value>
+  </data>
+  <data name="Act_RmNothing" xml:space="preserve">
+    <value>重启管理器没有找到可以礼貌关闭的内容。</value>
+  </data>
+  <data name="Act_RmQueryFailed" xml:space="preserve">
+    <value>重启管理器查询失败（错误 {0}）。</value>
+  </data>
+  <data name="Act_RmExtraPid" xml:space="preserve">
+    <value>重启管理器还会影响 PID {0}；未执行任何操作。</value>
+  </data>
+  <data name="Act_RmOtherSession" xml:space="preserve">
+    <value>PID {0} 位于其他会话中；未执行任何操作。</value>
+  </data>
+  <data name="Act_RmType_Service" xml:space="preserve">
+    <value>服务</value>
+  </data>
+  <data name="Act_RmType_Explorer" xml:space="preserve">
+    <value>Windows 资源管理器</value>
+  </data>
+  <data name="Act_RmType_Console" xml:space="preserve">
+    <value>控制台程序</value>
+  </data>
+  <data name="Act_RmType_Critical" xml:space="preserve">
+    <value>关键进程</value>
+  </data>
+  <data name="Act_RmType_Other" xml:space="preserve">
+    <value>非窗口应用</value>
+  </data>
+  <data name="Act_RmNotEligible" xml:space="preserve">
+    <value>重启管理器将 PID {0} 识别为{1}；未请求其退出。</value>
+  </data>
+  <data name="Act_TerminateDenied" xml:space="preserve">
+    <value>Windows 拒绝了结束操作。</value>
+  </data>
+  <data name="Act_TerminateFailed" xml:space="preserve">
+    <value>结束失败（错误 {0}）。</value>
+  </data>
+  <data name="Act_Terminated" xml:space="preserve">
+    <value>已结束。</value>
+  </data>
+  <data name="Act_TerminateNoExit" xml:space="preserve">
+    <value>请求结束后进程仍未退出。</value>
+  </data>
+  <data name="Verify_NeverTouched" xml:space="preserve">
+    <value>此进程永远不会被操作。</value>
+  </data>
+  <data name="Verify_Exited" xml:space="preserve">
+    <value>进程已退出。</value>
+  </data>
+  <data name="Verify_AccessDenied" xml:space="preserve">
+    <value>拒绝访问。</value>
+  </data>
+  <data name="Verify_OpenFailed" xml:space="preserve">
+    <value>无法打开进程（错误 {0}）。</value>
+  </data>
+  <data name="Verify_PidReused" xml:space="preserve">
+    <value>该 PID 现在属于另一个进程。</value>
+  </data>
+  <data name="Verify_PathUnverified" xml:space="preserve">
+    <value>无法验证可执行文件。</value>
+  </data>
+  <data name="Verify_PathMismatch" xml:space="preserve">
+    <value>可执行文件不一致。</value>
+  </data>
+  <data name="Verify_WindowsComponent" xml:space="preserve">
+    <value>Windows 组件永远不会被操作。</value>
+  </data>
+  <data name="Verify_Critical" xml:space="preserve">
+    <value>关键（或无法验证的）进程。</value>
+  </data>
+  <data name="Verify_Protected" xml:space="preserve">
+    <value>受保护（或无法验证的）进程。</value>
+  </data>
+  <data name="Verify_OtherSession" xml:space="preserve">
+    <value>该进程属于其他会话。</value>
+  </data>
+  <data name="Verify_OtherUser" xml:space="preserve">
+    <value>该进程属于其他（或未知）用户。</value>
+  </data>
+  <data name="Verify_Elevated" xml:space="preserve">
+    <value>该进程以管理员权限运行。</value>
+  </data>
+  <data name="Advice_Healthy_Title" xml:space="preserve">
+    <value>可用内存充足</value>
+  </data>
+  <data name="Advice_Healthy_Text" xml:space="preserve">
+    <value>Windows 会把最近使用的数据保存在缓存（备用内存）中，并在应用需要内存时立即交给它们。这部分缓存已计入可用内存，因此无需清理。</value>
+  </data>
+  <data name="Advice_Moderate_Title" xml:space="preserve">
+    <value>内存使用适中</value>
+  </data>
+  <data name="Advice_Moderate_Text" xml:space="preserve">
+    <value>如果需要更多内存，请关闭不用的应用——例如使用“返回基线”。清理缓存不会增加可用内存：缓存本来就算作可用内存。</value>
+  </data>
+  <data name="Advice_Low_Title" xml:space="preserve">
+    <value>内存不足</value>
+  </data>
+  <data name="Advice_Low_Text" xml:space="preserve">
+    <value>大部分内存被应用占用。关闭应用（返回基线）才有帮助。深度内存清理无法解决这个问题，因为它只会丢弃 Windows 本来就会重新利用的缓存。</value>
+  </data>
+  <data name="Advice_Unknown_Title" xml:space="preserve">
+    <value>无法获取内存状态</value>
+  </data>
+  <data name="Advice_Unknown_Text" xml:space="preserve">
+    <value>Windows 未报告内存统计信息。</value>
+  </data>
+  <data name="Deep_Mode_Standby" xml:space="preserve">
+    <value>全部备用缓存</value>
+  </data>
+  <data name="Deep_Mode_LowPriorityStandby" xml:space="preserve">
+    <value>仅低优先级备用缓存</value>
+  </data>
+  <data name="Deep_Completed" xml:space="preserve">
+    <value>缓存已清除。</value>
+  </data>
+  <data name="Deep_CancelledByUser" xml:space="preserve">
+    <value>未获得管理员权限。未做任何更改。</value>
+  </data>
+  <data name="Deep_NotElevated" xml:space="preserve">
+    <value>此操作需要管理员权限。</value>
+  </data>
+  <data name="Deep_PrivilegeMissing" xml:space="preserve">
+    <value>所需的系统特权不可用。</value>
+  </data>
+  <data name="Deep_Failed" xml:space="preserve">
+    <value>无法清除缓存（错误 {0}）。</value>
+  </data>
+  <data name="Deep_BadRequest" xml:space="preserve">
+    <value>无效请求。</value>
+  </data>
+  <data name="Deep_LaunchFailed" xml:space="preserve">
+    <value>无法启动提升权限的辅助进程：{0}</value>
+  </data>
+  <data name="Deep_UnknownExit" xml:space="preserve">
+    <value>提升权限的辅助进程返回了意外结果（{0}）。</value>
+  </data>
+  <data name="Cmp_Apps" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="Cmp_Processes" xml:space="preserve">
+    <value>进程</value>
+  </data>
+  <data name="Cmp_InUse" xml:space="preserve">
+    <value>已用内存</value>
+  </data>
+  <data name="Cmp_Available" xml:space="preserve">
+    <value>可用</value>
+  </data>
+  <data name="Cmp_Cached" xml:space="preserve">
+    <value>已缓存（备用 + 已修改）</value>
+  </data>
+  <data name="Cmp_Free" xml:space="preserve">
+    <value>空闲</value>
+  </data>
+  <data name="Cmp_ReleasedByApps" xml:space="preserve">
+    <value>关闭应用释放的内存</value>
+  </data>
+  <data name="Cmp_ReclaimedByCleanup" xml:space="preserve">
+    <value>深度内存清理回收的缓存</value>
+  </data>
+  <data name="Cmp_Total" xml:space="preserve">
+    <value>内存总量</value>
+  </data>
+  <data name="Cmp_Standby" xml:space="preserve">
+    <value>备用（缓存）</value>
+  </data>
+  <data name="Cmp_Modified" xml:space="preserve">
+    <value>已修改（等待写入）</value>
+  </data>
+  <data name="Cmp_Commit" xml:space="preserve">
+    <value>已提交</value>
+  </data>
+</root>
