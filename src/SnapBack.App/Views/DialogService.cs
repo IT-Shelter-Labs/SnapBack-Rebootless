@@ -21,5 +21,7 @@ public sealed class DialogService(Func<Window?> owner) : IDialogService
     public void Inform(string title, string message) =>
         MessageBox.Show(Owner(), message, title, MessageBoxButton.OK, MessageBoxImage.Information);
 
-    private Window Owner() => owner() ?? Application.Current.MainWindow;
+    /// <summary>The active window (e.g. the operation window when confirming from it), else the main window.</summary>
+    private Window Owner() =>
+        Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive) ?? owner() ?? Application.Current.MainWindow;
 }

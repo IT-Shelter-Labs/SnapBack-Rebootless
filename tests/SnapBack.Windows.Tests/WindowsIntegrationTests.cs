@@ -158,7 +158,8 @@ public class WindowsIntegrationTests
         var snapshot = probe.Capture();
         var groups = new AppGrouper(new ProcessClassifier()).Group(snapshot);
         var group = groups.Single(g => g.Members.Any(m => m.Pid == target.Pid));
-        Assert.False(group.IsProtected, "The test target must be an ordinary user app: " + string.Join(", ", group.Assessment.Reasons));
+        Assert.False(group.IsProtected, $"The test target must be an ordinary user app: {string.Join(", ", group.Assessment.Reasons)} "
+            + $"(elevated={group.Root.IsElevated}, integrity={group.Root.Integrity}, owner={group.Root.OwnerSid}, host elevated={snapshot.Context.SelfElevated})");
 
         var emptyBaseline = new Baseline { UserSid = snapshot.Context.UserSid, BootTimeUtc = snapshot.Context.BootTimeUtc, CreatedAtUtc = DateTime.UtcNow };
         var comparison = BaselineComparer.Compare(emptyBaseline, groups, snapshot.Context);

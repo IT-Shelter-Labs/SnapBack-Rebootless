@@ -5,33 +5,35 @@ using System.Text;
 namespace SnapBack.Windows.Tests;
 
 /// <summary>
-/// Starts a process with a normal-user, medium-integrity token derived from the current one.
+/// Starts a process with a UAC-style filtered (LUA), medium-integrity token derived from the current one.
 /// CI runners run tests elevated; SnapBack (correctly) refuses to touch elevated processes, so the
 /// end-to-end tests launch their target de-elevated to exercise the real close path.
 /// Test-only code: the product itself never changes tokens.
 /// </summary>
 internal static class DeElevatedLauncher
 {
-    private const uint SAFER_SCOPEID_USER = 2;
-    private const uint SAFER_LEVELID_NORMALUSER = 0x20000;
-    private const uint SAFER_LEVEL_OPEN = 1;
     private const int TokenIntegrityLevel = 25;
     private const uint SE_GROUP_INTEGRITY = 0x20;
 
     public static int Start(string exe, string arguments)
     {
-        if (!SaferCreateLevel(SAFER_SCOPEID_USER, SAFER_LEVELID_NORMALUSER, SAFER_LEVEL_OPEN, out var level, 0))
+        const uint TOKEN_ALL_ACCESS = 0xF01FF;
+        const uint DISABLE_MAX_PRIVILEGE = 0x1;
+        const uint LUA_TOKEN = 0x4;
+
+        if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ALL_ACCESS, out var own))
         {
-            throw new Win32Exception(Marshal.GetLastWin32Error(), "SaferCreateLevel");
+            throw new Win32Exception(Marshal.GetLastWin32Error(), "OpenProcessToken");
         }
 
         nint token = 0;
         nint sid = 0;
         try
         {
-            if (!SaferComputeTokenFromLevel(level, 0, out token, 0, 0))
+            // The same kind of filtered token UAC gives a standard (non-elevated) session.
+            if (!CreateRestrictedToken(own, DISABLE_MAX_PRIVILEGE | LUA_TOKEN, 0, 0, 0, 0, 0, 0, out token))
             {
-                throw new Win32Exception(Marshal.GetLastWin32Error(), "SaferComputeTokenFromLevel");
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "CreateRestrictedToken");
             }
 
             if (!ConvertStringSidToSid("S-1-16-8192", out sid))
@@ -68,7 +70,7 @@ internal static class DeElevatedLauncher
                 CloseHandle(token);
             }
 
-            SaferCloseLevel(level);
+            CloseHandle(own);
         }
     }
 
@@ -112,13 +114,14 @@ internal static class DeElevatedLauncher
     }
 
     [DllImport("advapi32.dll", SetLastError = true)]
-    private static extern bool SaferCreateLevel(uint scopeId, uint levelId, uint openFlags, out nint levelHandle, nint reserved);
+    private static extern bool OpenProcessToken(nint processHandle, uint desiredAccess, out nint tokenHandle);
 
     [DllImport("advapi32.dll", SetLastError = true)]
-    private static extern bool SaferComputeTokenFromLevel(nint levelHandle, nint inAccessToken, out nint outAccessToken, uint flags, nint reserved);
+    private static extern bool CreateRestrictedToken(nint existingToken, uint flags, uint disableSidCount, nint sidsToDisable,
+        uint deletePrivilegeCount, nint privilegesToDelete, uint restrictedSidCount, nint sidsToRestrict, out nint newToken);
 
-    [DllImport("advapi32.dll", SetLastError = true)]
-    private static extern bool SaferCloseLevel(nint levelHandle);
+    [DllImport("kernel32.dll")]
+    private static extern nint GetCurrentProcess();
 
     [DllImport("advapi32.dll", EntryPoint = "ConvertStringSidToSidW", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern bool ConvertStringSidToSid(string stringSid, out nint sid);

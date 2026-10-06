@@ -67,6 +67,32 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw "snapback $c failed with exit code $LASTEXITCODE" }
           }
 
+      - name: GUI smoke test (window starts and analyzes without errors)
+        shell: pwsh
+        env:
+          SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-gui
+        run: |
+          $p = Start-Process ./publish/SnapBack/SnapBack.exe -PassThru
+          Start-Sleep -Seconds 20
+          $alive = -not $p.HasExited
+          if ($alive) { Stop-Process -Id $p.Id -Force }
+          $log = Get-Content "$env:SNAPBACK_DATA_DIR\logs\*.log" -Raw
+          Write-Host $log
+          if (-not $alive) { throw "SnapBack exited unexpectedly (exit code $($p.ExitCode))" }
+          if ($log -match '\[(ERR|CRT)\]') { throw "Errors were logged" }
+
+      - name: Automatic baseline smoke test (headless mode)
+        shell: pwsh
+        env:
+          SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-auto
+        run: |
+          New-Item -ItemType Directory -Force $env:SNAPBACK_DATA_DIR | Out-Null
+          '{ "autoBaselineOnSignIn": true, "autoBaselineMinDelaySeconds": 0, "autoBaselineQuietSeconds": 10 }' | Set-Content "$env:SNAPBACK_DATA_DIR\settings.json"
+          $p = Start-Process ./publish/SnapBack/SnapBack.exe -ArgumentList '--auto-baseline' -PassThru
+          if (-not $p.WaitForExit(180000)) { Stop-Process -Id $p.Id -Force; throw "--auto-baseline did not finish" }
+          Get-Content "$env:SNAPBACK_DATA_DIR\logs\*.log"
+          if (-not (Test-Path "$env:SNAPBACK_DATA_DIR\baseline.json")) { throw "No baseline was created" }
+
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
