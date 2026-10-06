@@ -197,6 +197,9 @@ SnapBack 的基本原则是：**关闭错误的进程远比少关闭一些更糟
 位置（例如 `%LOCALAPPDATA%\Programs\SnapBack`），然后运行 `SnapBack.exe`。可以用 `SHA256SUMS.txt`
 校验下载文件。
 
+可执行文件目前尚未进行代码签名，因此首次启动时 Windows SmartScreen 可能会显示“Windows 已保护你的电脑”：
+请选择“更多信息 → 仍要运行”（如有需要，可先核对 SHA-256）。
+
 没有安装程序，也不会在系统中注册任何内容。卸载时，先在设置中关闭“随 Windows 启动 SnapBack”（如果
 启用过），通过托盘图标退出 SnapBack，然后删除程序文件夹和 `%LOCALAPPDATA%\SnapBack`。
 

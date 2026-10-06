@@ -52,6 +52,12 @@ jobs:
             if (-not (Test-Path "publish/SnapBack/$exe")) { throw "$exe is missing" }
           }
           if ((Get-Item publish/SnapBack/SnapBack.exe).VersionInfo.OriginalFilename -ne 'SnapBack.dll') { throw "SnapBack.exe is not the GUI" }
+          # The release also ships ARM64 builds: make sure they publish.
+          dotnet publish src/SnapBack.App -c Release -r win-arm64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish/arm64
+          if ($LASTEXITCODE -ne 0) { throw 'ARM64 publish of the app failed' }
+          dotnet publish src/SnapBack.Cli -c Release -r win-arm64 --self-contained -p:PublishSingleFile=true -o publish/arm64
+          if ($LASTEXITCODE -ne 0) { throw 'ARM64 publish of the CLI failed' }
+          Get-ChildItem publish/arm64 -Filter *.exe | Format-Table Name, Length
 
       - name: CLI smoke test
         shell: pwsh

@@ -17,6 +17,14 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Check version
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          $declared = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+          if ($declared -ne $version) { throw "Tag $version does not match <Version>$declared</Version> in Directory.Build.props" }
+          if (-not (Select-String -Path CHANGELOG.md -Pattern "^## \[$([regex]::Escape($version))\]" -Quiet)) { throw "CHANGELOG.md has no entry for $version" }
+
       - name: Test
         run: dotnet test SnapBack.sln -c Release
 
@@ -27,14 +35,41 @@ jobs:
           foreach ($rid in @('win-x64', 'win-arm64')) {
             $out = "publish/SnapBack-$version-$rid"
             dotnet publish src/SnapBack.App -c Release -r $rid --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=$version -o $out
+            if ($LASTEXITCODE -ne 0) { throw "publish App $rid failed" }
             dotnet publish src/SnapBack.Cli -c Release -r $rid --self-contained -p:PublishSingleFile=true -p:Version=$version -o $out
-            Copy-Item README.md, README.ru.md, README.zh-CN.md, LICENSE, docs/SAFETY.md -Destination $out
+            if ($LASTEXITCODE -ne 0) { throw "publish Cli $rid failed" }
+            Remove-Item "$out/*.pdb" -ErrorAction SilentlyContinue
+            Copy-Item README.md, README.ru.md, README.zh-CN.md, LICENSE, CHANGELOG.md, docs/SAFETY.md -Destination $out
+
+            # Sanity checks of the package.
+            foreach ($exe in 'SnapBack.exe', 'snapback-cli.exe') {
+              if (-not (Test-Path "$out/$exe")) { throw "$exe missing in $rid package" }
+            }
+            $info = (Get-Item "$out/SnapBack.exe").VersionInfo
+            if ($info.OriginalFilename -ne 'SnapBack.dll') { throw "SnapBack.exe is not the GUI ($rid)" }
+            if (-not $info.ProductVersion.StartsWith($version)) { throw "SnapBack.exe has version $($info.ProductVersion), expected $version" }
+            if ($rid -eq 'win-x64') {
+              $cliVersion = (& "$out/snapback-cli.exe" --version | Out-String).Trim()
+              if (-not $cliVersion.StartsWith($version)) { throw "snapback-cli reports '$cliVersion', expected $version" }
+              Write-Host "snapback-cli --version: $cliVersion"
+            }
+
+            Get-ChildItem $out | Format-Table Name, Length
             Compress-Archive -Path "$out/*" -DestinationPath "publish/SnapBack-$version-$rid.zip"
           }
           Get-FileHash publish/*.zip -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } | Set-Content publish/SHA256SUMS.txt
+          Get-Content publish/SHA256SUMS.txt
 
       - name: Create GitHub release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" publish/*.zip publish/SHA256SUMS.txt --title "SnapBack ${{ github.ref_name }}" --generate-notes
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $notes = "docs/release-notes/$tag.md"
+          if (Test-Path $notes) {
+            gh release create $tag publish/*.zip publish/SHA256SUMS.txt --title "SnapBack $tag" --notes-file $notes --verify-tag
+          } else {
+            gh release create $tag publish/*.zip publish/SHA256SUMS.txt --title "SnapBack $tag" --generate-notes --verify-tag
+          }
+          if ($LASTEXITCODE -ne 0) { throw 'gh release create failed' }

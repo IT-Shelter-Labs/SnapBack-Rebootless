@@ -4,7 +4,26 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## [0.3.0] - Unreleased
+## [1.0.0] - 2026-10-06
+
+First public release. It contains everything listed below; versions 0.1–0.3 were development
+milestones and were never published.
+
+### Highlights
+- Baseline and named **profiles** (*Clean*, *Work*, *Gaming*, …) of your session, compared by
+  application, not by PID.
+- **Return to baseline**: polite closing (close request, Ctrl+C, Restart Manager), preview and dry
+  run, forced termination only after a separate confirmation, fail-closed protection of system,
+  elevated, other-user and critical processes, PID-reuse-safe actions.
+- Dashboard with **session drift**, **expected impact**, RAM in use vs. available vs. cache.
+- **Rules** (always keep / always close / ask every time), **memory growth** tracking,
+  **WSL and Docker** handled with their own commands.
+- Notification-area icon, **start with Windows**, automatic baseline after startup, rare optional
+  notifications.
+- Optional **Deep Memory Cleanup** (standby cache), never automatic, UAC only for that operation.
+- English, Русский, 简体中文; command-line interface `snapback-cli.exe`.
+
+## [0.3.0] - development (not released)
 
 ### Added
 - **Profiles** (*Clean*, *Work*, *Gaming*, …) instead of a single baseline: create from the current
@@ -38,7 +57,7 @@ All notable changes to this project are documented here. The format follows
   exiting after the automatic baseline. Existing Run entries are updated automatically.
 - Docker Desktop processes are protected (*WSL / Docker*) instead of "manual review".
 
-## [0.2.0]
+## [0.2.0] - development (not released)
 
 ### Added
 - Memory analysis: RAM in use, available, standby/modified cache, free and committed memory
@@ -62,7 +81,7 @@ All notable changes to this project are documented here. The format follows
 - The CLI executable is `snapback-cli.exe` (it previously collided with `SnapBack.exe` on
   case-insensitive file systems).
 
-## [0.1.0]
+## [0.1.0] - development (not released)
 
 ### Added
 - Baselines describing the user session as applications (survive PID changes, restarts and updates),
@@ -77,3 +96,5 @@ All notable changes to this project are documented here. The format follows
 - Keep list (whitelist), history of operations, settings, file logging.
 - WPF app with Fluent theme (light/dark) and a command-line interface.
 - Unit tests for all safety-critical logic and Windows integration tests.
+
+[1.0.0]: https://github.com/IT-Shelter-Labs/SnapBack-Rebootless/releases/tag/v1.0.0

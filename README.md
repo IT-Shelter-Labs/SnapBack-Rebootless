@@ -220,6 +220,9 @@ Download `SnapBack-<version>-win-x64.zip` (or `win-arm64`) from the [Releases](.
 extract it anywhere (for example `%LOCALAPPDATA%\Programs\SnapBack`) and run `SnapBack.exe`. Verify
 the download with `SHA256SUMS.txt` if you like.
 
+The executables are not code-signed yet, so Windows SmartScreen may show *Windows protected your
+PC* on the first start: choose *More info → Run anyway* (after checking the SHA-256 if you like).
+
 There is no installer and nothing is registered system-wide. To uninstall, turn off *Start SnapBack
 with Windows* in Settings (if you enabled it), exit SnapBack from its tray icon, then delete the
 folder and `%LOCALAPPDATA%\SnapBack`.
