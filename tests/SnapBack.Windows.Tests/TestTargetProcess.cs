@@ -24,13 +24,17 @@ internal sealed class TestTargetProcess : IDisposable
         }
     }
 
+    /// <summary>Starts the target with the test host's own token (elevated if the host is).</summary>
     public static TestTargetProcess Start(string mode)
     {
-        var exe = Locate();
-        var p = Process.Start(new ProcessStartInfo(exe, mode) { UseShellExecute = false })
+        var p = Process.Start(new ProcessStartInfo(Locate(), mode) { UseShellExecute = false })
             ?? throw new InvalidOperationException("Could not start the test target.");
         return new TestTargetProcess(p);
     }
+
+    /// <summary>Starts the target as a normal (non-elevated) user process, even from an elevated host.</summary>
+    public static TestTargetProcess StartAsNormalUser(string mode, bool hostElevated) =>
+        hostElevated ? new TestTargetProcess(Process.GetProcessById(DeElevatedLauncher.Start(Locate(), mode))) : Start(mode);
 
     /// <summary>Waits until the probe sees a visible main window for the target.</summary>
     public ProcessInfo WaitForWindow(WindowsSystemProbe probe)

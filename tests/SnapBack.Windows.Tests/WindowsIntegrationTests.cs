@@ -82,16 +82,34 @@ public class WindowsIntegrationTests
     }
 
     [WindowsOnlyFact]
-    public async Task Graceful_close_closes_a_normal_window_app()
+    public void Elevated_app_is_protected_and_refused()
     {
-        using var target = TestTargetProcess.Start("normal");
-        var (item, operation, ctx) = Prepare(target);
-        if (item is null)
+        var probe = Probe();
+        if (!probe.BaseContext.SelfElevated)
         {
-            return; // elevated environment: verified as protected in Prepare
+            return; // needs an elevated host to start an elevated target
         }
 
-        var report = await operation!.RunGracefulAsync();
+        using var target = TestTargetProcess.Start("normal");
+        target.WaitForWindow(probe);
+        var snapshot = probe.Capture();
+        var group = new AppGrouper(new ProcessClassifier()).Group(snapshot).Single(g => g.Members.Any(m => m.Pid == target.Pid));
+        Assert.True(group.IsProtected);
+        Assert.Contains(RiskReason.Elevated, group.Assessment.Reasons);
+
+        var controller = Controller(snapshot.Context);
+        Assert.Equal(ActionStatus.Refused, controller.Terminate(ProcessTarget.From(group.Root)).Status);
+        Assert.Equal(ActionStatus.Refused, controller.RequestCloseWindows(ProcessTarget.From(group.Root)).Status);
+        Assert.False(target.HasExited);
+    }
+
+    [WindowsOnlyFact]
+    public async Task Graceful_close_closes_a_normal_window_app()
+    {
+        using var target = StartTarget("normal");
+        var (item, operation) = Prepare(target);
+
+        var report = await operation.RunGracefulAsync();
         Assert.Equal(ItemOutcome.Closed, report.Items.Single().Outcome);
         Assert.True(target.WaitForExit(TimeSpan.FromSeconds(5)));
     }
@@ -99,14 +117,10 @@ public class WindowsIntegrationTests
     [WindowsOnlyFact]
     public async Task App_that_refuses_is_reported_and_only_force_terminated_after_authorization()
     {
-        using var target = TestTargetProcess.Start("prompt");
-        var (item, operation, _) = Prepare(target);
-        if (item is null)
-        {
-            return;
-        }
+        using var target = StartTarget("prompt");
+        var (item, operation) = Prepare(target);
 
-        var report = await operation!.RunGracefulAsync();
+        var report = await operation.RunGracefulAsync();
         var result = report.Items.Single();
         Assert.Equal(ItemOutcome.StillRunning, result.Outcome);
         Assert.Equal(StillRunningReason.WaitingForUser, result.Reason);
@@ -121,45 +135,35 @@ public class WindowsIntegrationTests
     [WindowsOnlyFact]
     public async Task Tray_app_is_asked_through_restart_manager_and_never_killed()
     {
-        using var target = TestTargetProcess.Start("tray");
-        var (item, operation, _) = Prepare(target, recording: true);
-        if (item is null)
-        {
-            return;
-        }
+        using var target = StartTarget("tray");
+        var (_, operation) = Prepare(target, recording: true);
 
-        var report = await operation!.RunGracefulAsync();
+        var report = await operation.RunGracefulAsync();
         var result = report.Items.Single();
         Assert.NotEqual(ItemOutcome.Terminated, result.Outcome);
+        Assert.Equal(ItemOutcome.Closed, result.Outcome);
         Assert.Contains(Recorder!.Calls, c => c.StartsWith("rm", StringComparison.Ordinal));
         Assert.DoesNotContain(Recorder.Calls, c => c.StartsWith("terminate", StringComparison.Ordinal));
     }
 
     private RecordingController? Recorder { get; set; }
 
-    private (PlanItem? Item, CleanupOperation? Operation, SessionContext Ctx) Prepare(TestTargetProcess target, bool recording = false)
+    private static TestTargetProcess StartTarget(string mode) =>
+        TestTargetProcess.StartAsNormalUser(mode, Probe().BaseContext.SelfElevated);
+
+    private (PlanItem Item, CleanupOperation Operation) Prepare(TestTargetProcess target, bool recording = false)
     {
         var probe = Probe();
         target.WaitForWindow(probe);
         var snapshot = probe.Capture();
         var groups = new AppGrouper(new ProcessClassifier()).Group(snapshot);
         var group = groups.Single(g => g.Members.Any(m => m.Pid == target.Pid));
+        Assert.False(group.IsProtected, "The test target must be an ordinary user app: " + string.Join(", ", group.Assessment.Reasons));
 
         var emptyBaseline = new Baseline { UserSid = snapshot.Context.UserSid, BootTimeUtc = snapshot.Context.BootTimeUtc, CreatedAtUtc = DateTime.UtcNow };
         var comparison = BaselineComparer.Compare(emptyBaseline, groups, snapshot.Context);
         var plan = new CleanupPlanner().Build(groups, comparison, new PlannerOptions());
         var controller = Controller(snapshot.Context);
-
-        if (snapshot.Context.SelfElevated)
-        {
-            // CI runners often run elevated: then the target is elevated too and must be untouchable.
-            Assert.Contains(plan.Protected, i => i.Group.Id == group.Id);
-            Assert.Contains(RiskReason.Elevated, group.Assessment.Reasons);
-            Assert.NotEqual(ActionStatus.Done, controller.Terminate(ProcessTarget.From(group.Root)).Status);
-            Assert.NotEqual(ActionStatus.Done, controller.RequestCloseWindows(ProcessTarget.From(group.Root)).Status);
-            Assert.False(target.HasExited);
-            return (null, null, snapshot.Context);
-        }
 
         var item = plan.Candidates.Single(i => i.Group.Id == group.Id);
         IProcessController effective = controller;
@@ -172,7 +176,7 @@ public class WindowsIntegrationTests
         var options = new CleanupOptions { GracefulTimeout = TimeSpan.FromSeconds(8) };
         var operation = new CleanupOperation([item], snapshot.Context, probe, effective, new SafetyGuard(new ProcessClassifier()), options,
             TimeProvider.System, NullLogger.Instance);
-        return (item, operation, snapshot.Context);
+        return (item, operation);
     }
 
     private sealed class RecordingController(IProcessController inner) : IProcessController
