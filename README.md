@@ -109,16 +109,16 @@ keeps an existing baseline from the same boot.
 
 ### Command line
 
-`snapback.exe` shares the engine and all safety checks with the window:
+`snapback-cli.exe` shares the engine and all safety checks with the window:
 
 ```text
-snapback status                       baseline, running apps, memory, what is new
-snapback baseline create [--force]    make the current state the baseline
-snapback baseline show [--all] [--json]
-snapback list [--all] [--json]        apps started after the baseline
-snapback preview [selection] [--json] dry run: every step + live safety verdict
-snapback restore [selection] [--yes]  ask the selected apps to close (never forced)
-snapback history [--json]
+snapback-cli status                       baseline, running apps, memory, what is new
+snapback-cli baseline create [--force]    make the current state the baseline
+snapback-cli baseline show [--all] [--json]
+snapback-cli list [--all] [--json]        apps started after the baseline
+snapback-cli preview [selection] [--json] dry run: every step + live safety verdict
+snapback-cli restore [selection] [--yes]  ask the selected apps to close (never forced)
+snapback-cli history [--json]
 
 selection: --app <name> (repeatable) | --include-caution | --include-review
 ```

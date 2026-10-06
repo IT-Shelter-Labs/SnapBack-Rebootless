@@ -103,7 +103,7 @@ internal static class Program
             case "create":
                 if (engine.Baseline is not null && !a.Has("--force"))
                 {
-                    return Usage("A baseline already exists. Use 'snapback baseline create --force' to replace it.");
+                    return Usage("A baseline already exists. Use 'snapback-cli baseline create --force' to replace it.");
                 }
 
                 var b = engine.CreateBaseline(BaselineOrigin.Manual);
@@ -336,7 +336,7 @@ internal static class Program
             return true;
         }
 
-        Console.Error.WriteLine(analysis.BaselineProblem ?? "No baseline yet. Run 'snapback baseline create' first.");
+        Console.Error.WriteLine(analysis.BaselineProblem ?? "No baseline yet. Run 'snapback-cli baseline create' first.");
         return false;
     }
 
@@ -385,7 +385,7 @@ internal static class Program
     private static int Usage(string message)
     {
         Console.Error.WriteLine(message);
-        Console.Error.WriteLine("Run 'snapback help' for usage.");
+        Console.Error.WriteLine("Run 'snapback-cli help' for usage.");
         return ExitUsage;
     }
 
@@ -393,16 +393,16 @@ internal static class Program
         SnapBack - return your Windows session to its baseline without rebooting.
 
         Usage:
-          snapback status                     Baseline, running apps, memory, what is new
-          snapback baseline create [--force]  Make the current state the baseline
-          snapback baseline show [--all] [--json]
-          snapback baseline delete
-          snapback list [--all] [--json]      Apps started after the baseline (--all: also kept/protected)
-          snapback preview [selection] [--json]
-                                              Dry run: show every step and the live safety verdict
-          snapback restore [selection] [--yes]
-                                              Ask the selected apps to close (never forced)
-          snapback history [--json]
+          snapback-cli status                      Baseline, running apps, memory, what is new
+          snapback-cli baseline create [--force]   Make the current state the baseline
+          snapback-cli baseline show [--all] [--json]
+          snapback-cli baseline delete
+          snapback-cli list [--all] [--json]       Apps started after the baseline (--all: also kept/protected)
+          snapback-cli preview [selection] [--json]
+                                                   Dry run: show every step and the live safety verdict
+          snapback-cli restore [selection] [--yes]
+                                                   Ask the selected apps to close (never forced)
+          snapback-cli history [--json]
 
         Selection (default: the apps the GUI pre-selects, i.e. those marked safe):
           --app <name>          Only apps whose name or executable matches (repeatable)

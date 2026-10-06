@@ -45,13 +45,18 @@ jobs:
           dotnet publish src/SnapBack.App -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish/SnapBack
           dotnet publish src/SnapBack.Cli -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o publish/SnapBack
           Get-ChildItem publish/SnapBack
+          # The GUI and the CLI must be distinct files (Windows file names are case-insensitive).
+          foreach ($exe in 'SnapBack.exe', 'snapback-cli.exe') {
+            if (-not (Test-Path "publish/SnapBack/$exe")) { throw "$exe is missing" }
+          }
+          if ((Get-Item publish/SnapBack/SnapBack.exe).VersionInfo.OriginalFilename -ne 'SnapBack.dll') { throw "SnapBack.exe is not the GUI" }
 
       - name: CLI smoke test
         shell: pwsh
         env:
           SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-ci
         run: |
-          $exe = "./publish/SnapBack/snapback.exe"
+          $exe = "./publish/SnapBack/snapback-cli.exe"
           $commands = @(
             @('--version'),
             @('status'),
@@ -62,9 +67,9 @@ jobs:
             @('history')
           )
           foreach ($c in $commands) {
-            Write-Host "> snapback $c"
+            Write-Host "> snapback-cli $c"
             & $exe @c
-            if ($LASTEXITCODE -ne 0) { throw "snapback $c failed with exit code $LASTEXITCODE" }
+            if ($LASTEXITCODE -ne 0) { throw "snapback-cli $c failed with exit code $LASTEXITCODE" }
           }
 
       - name: GUI smoke test (window starts and analyzes without errors)
@@ -73,7 +78,7 @@ jobs:
           SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-gui
         run: |
           # A baseline plus a few apps started afterwards, so the lists are not empty.
-          ./publish/SnapBack/snapback.exe baseline create
+          ./publish/SnapBack/snapback-cli.exe baseline create
           $extra = @(
             Start-Process notepad.exe -PassThru
             Start-Process ./tests/SnapBack.TestTarget/bin/Release/net10.0-windows/SnapBack.TestTarget.exe -ArgumentList normal -PassThru

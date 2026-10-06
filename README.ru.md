@@ -106,13 +106,13 @@ SnapBack исходит из того, что **закрыть не тот пр�
 ### Командная строка
 
 ```text
-snapback status                       baseline, приложения, память, что нового
-snapback baseline create [--force]    сделать текущее состояние базовым
-snapback baseline show [--all] [--json]
-snapback list [--all] [--json]        приложения, запущенные после baseline
-snapback preview [выбор] [--json]     dry run: все шаги и вердикт проверок
-snapback restore [выбор] [--yes]      попросить выбранные приложения закрыться (без принуждения)
-snapback history [--json]
+snapback-cli status                       baseline, приложения, память, что нового
+snapback-cli baseline create [--force]    сделать текущее состояние базовым
+snapback-cli baseline show [--all] [--json]
+snapback-cli list [--all] [--json]        приложения, запущенные после baseline
+snapback-cli preview [выбор] [--json]     dry run: все шаги и вердикт проверок
+snapback-cli restore [выбор] [--yes]      попросить выбранные приложения закрыться (без принуждения)
+snapback-cli history [--json]
 
 выбор: --app <имя> (можно несколько) | --include-caution | --include-review
 ```

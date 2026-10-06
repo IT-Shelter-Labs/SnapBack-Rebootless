@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
-    <AssemblyName>snapback</AssemblyName>
+    <AssemblyName>snapback-cli</AssemblyName>
     <RootNamespace>SnapBack.Cli</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Description>SnapBack command-line interface (status, baselines, preview, graceful restore).</Description>
