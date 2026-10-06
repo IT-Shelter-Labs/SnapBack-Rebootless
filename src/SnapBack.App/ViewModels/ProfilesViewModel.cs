@@ -343,6 +343,9 @@ public sealed class ProfileItemViewModel(Profile profile, bool isDefault, bool i
             return tags.Count == 0 ? text : text + " · " + string.Join(" · ", tags);
         }
     }
+
+    /// <summary>Used by screen readers (UI Automation name of the list item).</summary>
+    public override string ToString() => Name;
 }
 
 public sealed class ProfileAppViewModel(BaselineApp app)
@@ -354,6 +357,8 @@ public sealed class ProfileAppViewModel(BaselineApp app)
     public string? Path => App.ExecutablePath;
 
     public ImageSource? Icon => IconCache.Get(App.ExecutablePath);
+
+    public override string ToString() => Name;
 }
 
 public sealed class RunningAppOption(AppGroup group)

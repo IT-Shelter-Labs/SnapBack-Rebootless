@@ -67,6 +67,7 @@ try {
         $list = Find-ById $profiles 'ProfilesList'
         $names = Get-Texts $list
         if (-not $names) { throw 'The profiles window lists no profile' }
+        if ($names | Where-Object { $_ -like 'SnapBack.*ViewModel' }) { throw 'A profile has no accessible name' }
         Write-Host "Profiles: $($names -join ', ')"
         Save-Screenshot "profiles-$Language"
         Invoke-Element (Find-ById $profiles 'CloseProfilesButton')
