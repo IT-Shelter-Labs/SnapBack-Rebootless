@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>SnapBack</AssemblyName>
+    <RootNamespace>SnapBack.App</RootNamespace>
+    <ApplicationIcon>Assets\snapback.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- WPF0001: Application.ThemeMode (Fluent theme) is marked experimental. -->
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
+    <Description>SnapBack - return your Windows session to a fresh-start state without rebooting.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SnapBack.Core\SnapBack.Core.csproj" />
+    <ProjectReference Include="..\SnapBack.Windows\SnapBack.Windows.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\snapback.png" />
+  </ItemGroup>
+
+</Project>

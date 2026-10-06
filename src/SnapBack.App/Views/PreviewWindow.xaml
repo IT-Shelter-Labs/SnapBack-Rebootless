@@ -1,0 +1,93 @@
+<Window x:Class="SnapBack.App.Views.PreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SnapBack.App.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:PreviewViewModel}"
+        Title="Preview — SnapBack" Width="820" Height="680" MinWidth="600" MinHeight="420"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+
+    <Grid Margin="24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock Text="{Binding Header}" FontSize="22" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding SubHeader}" Style="{StaticResource Secondary}" FontSize="13" Margin="0,4,0,0" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Card}" Margin="0,0,0,8">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <Image DockPanel.Dock="Left" Source="{Binding Icon}" Width="24" Height="24" Margin="0,0,10,0" />
+                                        <Border DockPanel.Dock="Right" Style="{StaticResource Badge}">
+                                            <TextBlock Text="{Binding BadgeText}" Style="{StaticResource BadgeText}" />
+                                        </Border>
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding MemoryText}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    </DockPanel>
+                                    <ItemsControl ItemsSource="{Binding Steps}" Margin="34,8,0,0">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Margin="0,2">
+                                                    <DockPanel>
+                                                        <TextBlock DockPanel.Dock="Left" Style="{StaticResource Icon}" Text="{Binding Glyph}" FontSize="12" Margin="0,2,8,0" VerticalAlignment="Top" />
+                                                        <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                                                    </DockPanel>
+                                                    <TextBlock Text="{Binding Check}" Style="{StaticResource Secondary}" Margin="20,0,0,0" TextWrapping="Wrap"
+                                                               Visibility="{Binding Check, Converter={StaticResource HasValueToVisibility}}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <ItemsControl ItemsSource="{Binding Notes}" Margin="34,6,0,0">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding StringFormat='ⓘ {0}'}" Style="{StaticResource Secondary}" TextWrapping="Wrap" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <TextBlock Text="{Binding DryRunText}" Foreground="{DynamicResource SystemFillColorCriticalBrush}" Margin="34,6,0,0" TextWrapping="Wrap"
+                                               Visibility="{Binding DryRunText, Converter={StaticResource HasValueToVisibility}}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Margin="0,12,0,12">
+            <TextBlock Text="{Binding MemoryText}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding TimeoutText}" TextWrapping="Wrap" Margin="0,4,0,0" />
+            <TextBlock Text="{Binding NotTouchedText}" Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="0,4,0,0" />
+            <TextBlock Text="{Binding DryRunSummary}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,6,0,0"
+                       Visibility="{Binding DryRunSummary, Converter={StaticResource HasValueToVisibility}}" />
+        </StackPanel>
+
+        <DockPanel Grid.Row="3">
+            <Button DockPanel.Dock="Left" Command="{Binding DryRunCommand}" Padding="14,8"
+                    ToolTip="Run every safety check against the live system without changing anything">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource Icon}" Text="&#xE9D9;" Margin="0,0,6,0" />
+                    <TextBlock Text="Dry run (check only)" />
+                </StackPanel>
+            </Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancel" IsCancel="True" Padding="18,8" Margin="0,0,8,0" />
+                <Button Content="{Binding ConfirmText}" Click="Confirm_Click" Style="{DynamicResource AccentButtonStyle}" Padding="18,8" />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>

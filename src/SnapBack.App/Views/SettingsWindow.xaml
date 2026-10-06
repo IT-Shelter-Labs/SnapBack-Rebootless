@@ -1,0 +1,101 @@
+<Window x:Class="SnapBack.App.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SnapBack.App.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
+        Title="Settings — SnapBack" Width="680" Height="720" MinWidth="520" MinHeight="480"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+
+    <Grid Margin="24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Settings" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Closing apps" Style="{StaticResource SectionTitle}" />
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBox DockPanel.Dock="Right" Width="80" Text="{Binding GracefulTimeoutSeconds, UpdateSourceTrigger=LostFocus}" />
+                            <TextBlock Text="Seconds to wait for each app to close (5–120)" VerticalAlignment="Center" TextWrapping="Wrap" />
+                        </DockPanel>
+                        <CheckBox Content="Also pre-select apps marked with a caution (possible unsaved data, browsers, …)"
+                                  IsChecked="{Binding PreselectCautionItems}" />
+                        <TextBlock Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="0,6,0,0"
+                                   Text="Apps that need manual review (scripts, consoles, background processes) are never pre-selected, and nothing is ever force-terminated without asking." />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Automatic baseline" Style="{StaticResource SectionTitle}" />
+                        <CheckBox Content="Create a baseline automatically after I sign in to Windows" IsChecked="{Binding AutoBaselineOnSignIn}" />
+                        <TextBlock Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="0,6,0,8"
+                                   Text="SnapBack starts briefly at sign-in, waits until startup apps have finished launching, saves the baseline and exits. It adds one entry to your Startup apps; nothing else is changed." />
+                        <DockPanel Margin="0,0,0,6" IsEnabled="{Binding AutoBaselineOnSignIn}">
+                            <TextBox DockPanel.Dock="Right" Width="80" Text="{Binding AutoBaselineMinDelaySeconds, UpdateSourceTrigger=LostFocus}" />
+                            <TextBlock Text="Wait at least this many seconds after sign-in" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <DockPanel IsEnabled="{Binding AutoBaselineOnSignIn}">
+                            <TextBox DockPanel.Dock="Right" Width="80" Text="{Binding AutoBaselineQuietSeconds, UpdateSourceTrigger=LostFocus}" />
+                            <TextBlock Text="…and until no new apps have started for this many seconds" VerticalAlignment="Center" TextWrapping="Wrap" />
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Always keep (whitelist)" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="0,0,0,8"
+                                   Text="These apps are treated as part of your clean state and are never suggested for closing. Add apps with “Always keep selected” in the main window." />
+                        <TextBlock Text="Your keep list is empty." Style="{StaticResource Secondary}"
+                                   Visibility="{Binding KeepList.Count, Converter={StaticResource NoValueToVisibility}}" />
+                        <ItemsControl ItemsSource="{Binding KeepList}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,2">
+                                        <Button DockPanel.Dock="Right" Content="Remove" Padding="10,2"
+                                                Command="{Binding DataContext.RemoveKeepCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding}" />
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding AppKey}" Style="{StaticResource Secondary}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Data" Style="{StaticResource SectionTitle}" />
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBox DockPanel.Dock="Right" Width="80" Text="{Binding HistoryLimit, UpdateSourceTrigger=LostFocus}" />
+                            <TextBlock Text="Operations kept in history" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <TextBlock Text="{Binding DataFolder, StringFormat='Settings, baseline, history and logs are stored in {0}'}"
+                                   Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,8" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Open data folder" Command="{Binding OpenDataFolderCommand}" Padding="12,6" Margin="0,0,8,0" />
+                            <Button Content="Delete baseline…" Command="{Binding DeleteBaselineCommand}" Padding="12,6" Style="{StaticResource DangerButton}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="Cancel" IsCancel="True" Padding="18,8" Margin="0,0,8,0" />
+            <Button Content="Save" Click="Save_Click" IsDefault="True" Style="{DynamicResource AccentButtonStyle}" Padding="22,8" />
+        </StackPanel>
+    </Grid>
+</Window>

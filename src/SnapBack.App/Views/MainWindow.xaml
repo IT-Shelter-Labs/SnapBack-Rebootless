@@ -1,0 +1,188 @@
+<Window x:Class="SnapBack.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SnapBack.App.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
+        Title="SnapBack" Icon="/Assets/snapback.png"
+        Width="1120" Height="760" MinWidth="880" MinHeight="560"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <ResourceDictionary Source="AppListTemplates.xaml" />
+    </Window.Resources>
+
+    <Grid Margin="24,16,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Grid.Row="0" Margin="0,0,0,12">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Command="{Binding RefreshCommand}" Style="{StaticResource ToolbarButton}" ToolTip="Re-analyze running applications (F5)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" Text="&#xE72C;" Margin="0,0,6,0" />
+                        <TextBlock Text="Refresh" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding OpenHistoryCommand}" Style="{StaticResource ToolbarButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" Text="&#xE81C;" Margin="0,0,6,0" />
+                        <TextBlock Text="History" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding OpenSettingsCommand}" Style="{StaticResource ToolbarButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" Text="&#xE713;" Margin="0,0,6,0" />
+                        <TextBlock Text="Settings" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Image Source="/Assets/snapback.png" Width="40" Height="40" Margin="0,0,12,0" RenderOptions.BitmapScalingMode="HighQuality" />
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="SnapBack" FontSize="24" FontWeight="SemiBold" />
+                    <TextBlock Text="Return your session to its fresh-start state — without rebooting." Style="{StaticResource Secondary}" FontSize="13" />
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Info bar -->
+        <Border Grid.Row="1" Style="{StaticResource InfoBar}" Margin="0,0,0,12"
+                Visibility="{Binding Banner, Converter={StaticResource HasValueToVisibility}}">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Left" Style="{StaticResource Icon}" Text="&#xE946;" Margin="0,0,10,0" FontSize="16" />
+                <TextBlock Text="{Binding Banner}" TextWrapping="Wrap" VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
+
+        <!-- Stat cards -->
+        <UniformGrid Grid.Row="2" Rows="1" Columns="5" Margin="-6,0,-6,12">
+            <Border Style="{StaticResource Card}" Margin="6,0">
+                <StackPanel>
+                    <TextBlock Text="Baseline" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{Binding BaselineText}" Style="{StaticResource CardValue}" />
+                    <TextBlock Text="{Binding BaselineHint}" Style="{StaticResource CardHint}" ToolTip="{Binding BaselineHint}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="6,0">
+                <StackPanel>
+                    <TextBlock Text="Apps running" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{Binding AppsRunningText}" Style="{StaticResource CardValue}" />
+                    <TextBlock Text="{Binding AppsRunningHint}" Style="{StaticResource CardHint}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="6,0">
+                <StackPanel>
+                    <TextBlock Text="Memory in use" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{Binding MemoryText}" Style="{StaticResource CardValue}" />
+                    <TextBlock Text="{Binding MemoryHint}" Style="{StaticResource CardHint}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="6,0">
+                <StackPanel>
+                    <TextBlock Text="New since baseline" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{Binding NewSinceText}" Style="{StaticResource CardValue}" />
+                    <TextBlock Text="{Binding NewSinceHint}" Style="{StaticResource CardHint}" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="6,0">
+                <StackPanel>
+                    <TextBlock Text="Can be freed" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{Binding FreeableText}" Style="{StaticResource CardValue}" />
+                    <TextBlock Text="{Binding FreeableHint}" Style="{StaticResource CardHint}" />
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- Toolbar -->
+        <DockPanel Grid.Row="3" Margin="0,0,0,8">
+            <Button DockPanel.Dock="Left" Command="{Binding CreateBaselineCommand}" Padding="12,6"
+                    ToolTip="Everything running right now becomes the 'clean' state SnapBack returns to.">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource Icon}" Text="&#xE735;" Margin="0,0,6,0" />
+                    <TextBlock Text="Make current state the baseline" />
+                </StackPanel>
+            </Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Select suggested" Command="{Binding SelectSafeCommand}" Style="{StaticResource ToolbarButton}"
+                        ToolTip="Select the apps marked Safe" />
+                <Button Content="Clear selection" Command="{Binding ClearSelectionCommand}" Style="{StaticResource ToolbarButton}" />
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Lists -->
+        <TabControl Grid.Row="4" Margin="0,0,0,12">
+            <TabItem Header="{Binding CandidatesHeader}">
+                <Grid Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <ContentControl ContentTemplate="{StaticResource AppListHeader}" />
+                    <ListView Grid.Row="1" ItemsSource="{Binding Candidates}" ItemTemplate="{StaticResource AppRowTemplate}"
+                              ItemContainerStyle="{StaticResource AppListItem}" SelectionMode="Single"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True" />
+                    <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Style="{StaticResource Secondary}" FontSize="14"
+                               Visibility="{Binding HasNoCandidates, Converter={StaticResource BoolToVisibility}}"
+                               Text="Nothing new since the baseline. Your session is already in its clean state." />
+                </Grid>
+            </TabItem>
+            <TabItem Header="{Binding KeptHeader}">
+                <Grid Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Apps that were part of the baseline (or are in your keep list). SnapBack never suggests closing them; new windows or child processes they open are fine."
+                               Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="8,0,8,8" />
+                    <ContentControl Grid.Row="1" ContentTemplate="{StaticResource AppListHeader}" />
+                    <ListView Grid.Row="2" ItemsSource="{Binding Kept}" ItemTemplate="{StaticResource AppRowTemplate}"
+                              ItemContainerStyle="{StaticResource AppListItem}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="{Binding ProtectedHeader}">
+                <Grid Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Windows components, services, elevated programs and anything SnapBack cannot fully verify. These are never closed, no matter what is selected."
+                               Style="{StaticResource Secondary}" TextWrapping="Wrap" Margin="8,0,8,8" />
+                    <ContentControl Grid.Row="1" ContentTemplate="{StaticResource AppListHeader}" />
+                    <ListView Grid.Row="2" ItemsSource="{Binding Protected}" ItemTemplate="{StaticResource AppRowTemplate}"
+                              ItemContainerStyle="{StaticResource AppListItem}" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              VirtualizingPanel.IsVirtualizing="True" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- Footer -->
+        <DockPanel Grid.Row="5">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button Content="Always keep selected" Command="{Binding KeepSelectedCommand}" Padding="12,8" Margin="0,0,8,0"
+                        ToolTip="Never suggest these apps again (your keep list)" />
+                <Button Command="{Binding RestoreCommand}" Style="{DynamicResource AccentButtonStyle}" Padding="18,8" MinWidth="220">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" Text="&#xE7A7;" Margin="0,0,8,0" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                        <TextBlock Text="{Binding RestoreButtonText}" FontWeight="SemiBold" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{Binding SelectionText}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding Status}" Style="{StaticResource Secondary}" />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>
