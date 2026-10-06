@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Test
+        run: dotnet test SnapBack.sln -c Release
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          foreach ($rid in @('win-x64', 'win-arm64')) {
+            $out = "publish/SnapBack-$version-$rid"
+            dotnet publish src/SnapBack.App -c Release -r $rid --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=$version -o $out
+            dotnet publish src/SnapBack.Cli -c Release -r $rid --self-contained -p:PublishSingleFile=true -p:Version=$version -o $out
+            Copy-Item README.md, LICENSE, docs/SAFETY.md -Destination $out
+            Compress-Archive -Path "$out/*" -DestinationPath "publish/SnapBack-$version-$rid.zip"
+          }
+          Get-FileHash publish/*.zip -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } | Set-Content publish/SHA256SUMS.txt
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" publish/*.zip publish/SHA256SUMS.txt --title "SnapBack ${{ github.ref_name }}" --generate-notes

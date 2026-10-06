@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: Windows build & tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore SnapBack.sln
+
+      - name: Build
+        run: dotnet build SnapBack.sln -c Release --no-restore
+
+      - name: Test (unit + Windows integration)
+        run: dotnet test SnapBack.sln -c Release --no-build --logger "trx" --logger "console;verbosity=normal" --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+
+      - name: Publish (smoke test)
+        shell: pwsh
+        run: |
+          dotnet publish src/SnapBack.App -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish/SnapBack
+          dotnet publish src/SnapBack.Cli -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o publish/SnapBack
+          Get-ChildItem publish/SnapBack
+
+      - name: CLI smoke test
+        shell: pwsh
+        env:
+          SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-ci
+        run: |
+          $exe = "./publish/SnapBack/snapback.exe"
+          $commands = @(
+            @('--version'),
+            @('status'),
+            @('baseline', 'create'),
+            @('baseline', 'show'),
+            @('list', '--all'),
+            @('preview', '--include-caution', '--include-review'),
+            @('history')
+          )
+          foreach ($c in $commands) {
+            Write-Host "> snapback $c"
+            & $exe @c
+            if ($LASTEXITCODE -ne 0) { throw "snapback $c failed with exit code $LASTEXITCODE" }
+          }
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: SnapBack-win-x64
+          path: publish/SnapBack
+
+  portable-tests:
+    name: Portable tests (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Core tests
+        run: dotnet test tests/SnapBack.Core.Tests -c Release
+
+      - name: Native layout tests
+        run: dotnet test tests/SnapBack.Windows.Tests -c Release
