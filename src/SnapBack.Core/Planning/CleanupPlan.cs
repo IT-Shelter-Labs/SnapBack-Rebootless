@@ -2,6 +2,7 @@ using SnapBack.Core.Baselines;
 using SnapBack.Core.Classification;
 using SnapBack.Core.Grouping;
 using SnapBack.Core.Localization;
+using SnapBack.Core.Rules;
 
 namespace SnapBack.Core.Planning;
 
@@ -39,6 +40,9 @@ public sealed class PlanItem
 
     public KeepReason KeepReason { get; init; }
 
+    /// <summary>The user's rule for this app, if any.</summary>
+    public AppRuleKind? Rule { get; init; }
+
     /// <summary>Whether the item is ticked when the list is first shown.</summary>
     public bool DefaultSelected { get; init; }
 
@@ -70,6 +74,7 @@ public sealed class PlanItem
 
             var start = Comparison?.Status switch
             {
+                _ when Rule == AppRuleKind.AlwaysClose => Loc.Get("Plan_RuleAlwaysClose"),
                 GroupStatus.NewInstanceOfBaselineApp => Loc.Get("Plan_ExtraInstance"),
                 _ when Comparison?.StartedByBaselineApp is { } p => Loc.Format("Plan_StartedBy", p),
                 _ => Loc.Get("Plan_StartedAfter"),

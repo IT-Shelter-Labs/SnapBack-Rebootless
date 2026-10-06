@@ -62,4 +62,24 @@ public class NativeLayoutTests
             Assert.Equal(48, Offset<PERFORMANCE_INFORMATION>(nameof(PERFORMANCE_INFORMATION.SystemCache)));
         }
     }
+
+    [Fact]
+    public void Notify_icon_data_matches_shellapi_h()
+    {
+        if (IntPtr.Size != 8)
+        {
+            return;
+        }
+
+        Assert.Equal(976, Marshal.SizeOf<NOTIFYICONDATAW>());
+        Assert.Equal(40, Offset<NOTIFYICONDATAW>(nameof(NOTIFYICONDATAW.szTip)));
+        Assert.Equal(304, Offset<NOTIFYICONDATAW>(nameof(NOTIFYICONDATAW.szInfo)));
+        Assert.Equal(816, Offset<NOTIFYICONDATAW>(nameof(NOTIFYICONDATAW.uVersion)));
+        Assert.Equal(820, Offset<NOTIFYICONDATAW>(nameof(NOTIFYICONDATAW.szInfoTitle)));
+        Assert.Equal(952, Offset<NOTIFYICONDATAW>(nameof(NOTIFYICONDATAW.guidItem)));
+        Assert.Equal(968, Offset<NOTIFYICONDATAW>(nameof(NOTIFYICONDATAW.hBalloonIcon)));
+    }
+
+    [Fact]
+    public void Power_throttling_state_is_12_bytes() => Assert.Equal(12, Marshal.SizeOf<PROCESS_POWER_THROTTLING_STATE>());
 }

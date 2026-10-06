@@ -14,7 +14,10 @@ public sealed class AppPaths
 
     public string Settings => Path.Combine(Root, "settings.json");
 
+    /// <summary>The single baseline of version 0.2; read once to migrate it into a profile.</summary>
     public string Baseline => Path.Combine(Root, "baseline.json");
+
+    public string Profiles => Path.Combine(Root, "profiles.json");
 
     public string History => Path.Combine(Root, "history.json");
 

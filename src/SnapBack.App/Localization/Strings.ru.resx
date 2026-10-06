@@ -47,16 +47,10 @@
     <value>Запущено приложений</value>
   </data>
   <data name="Card_Memory" xml:space="preserve">
-    <value>Используется памяти</value>
+    <value>Занято RAM</value>
   </data>
   <data name="Card_NewSince" xml:space="preserve">
     <value>Новых после baseline</value>
-  </data>
-  <data name="Card_Freeable" xml:space="preserve">
-    <value>Можно освободить</value>
-  </data>
-  <data name="Card_FreeableHint" xml:space="preserve">
-    <value>память, занятая этими приложениями</value>
   </data>
   <data name="Main_BaselineNone" xml:space="preserve">
     <value>Не создан</value>
@@ -75,9 +69,6 @@
   </data>
   <data name="Main_ProcessesTotal" xml:space="preserve">
     <value>всего процессов: {0}</value>
-  </data>
-  <data name="Main_MemoryHint" xml:space="preserve">
-    <value>занято {0} из {1}</value>
   </data>
   <data name="Main_NewSinceHint" xml:space="preserve">
     <value>приложения, запущенные после baseline</value>
@@ -128,7 +119,7 @@
     <value>Защищены ({0})</value>
   </data>
   <data name="Tab_Kept_Description" xml:space="preserve">
-    <value>Приложения, которые были в baseline (или в списке «Всегда оставлять»). SnapBack никогда не предлагает их закрыть; новые окна и дочерние процессы этих приложений не являются причиной для закрытия.</value>
+    <value>Приложения из выбранного профиля или с правилом «Всегда оставлять». SnapBack никогда не предлагает их закрыть; новые окна или дочерние процессы этих приложений — это нормально.</value>
   </data>
   <data name="Tab_Protected_Description" xml:space="preserve">
     <value>Компоненты Windows, службы, программы с правами администратора и всё, что SnapBack не может полностью проверить. Они никогда не закрываются, что бы ни было выбрано.</value>
@@ -167,7 +158,7 @@
     <value>Всегда оставлять выбранные</value>
   </data>
   <data name="Main_AlwaysKeep_Tooltip" xml:space="preserve">
-    <value>Больше никогда не предлагать эти приложения (список «Всегда оставлять»)</value>
+    <value>Больше никогда не предлагать эти приложения (правило «Всегда оставлять»)</value>
   </data>
   <data name="Main_Restore" xml:space="preserve">
     <value>Вернуть к baseline…</value>
@@ -222,11 +213,6 @@
   </data>
   <data name="Confirm_ReplaceBaseline_Title" xml:space="preserve">
     <value>Заменить baseline</value>
-  </data>
-  <data name="Confirm_ReplaceBaseline_Text" xml:space="preserve">
-    <value>Сделать текущее состояние новым baseline?
-
-Всё, что запущено сейчас, будет считаться частью чистого состояния.</value>
   </data>
   <data name="Confirm_Keep_Title" xml:space="preserve">
     <value>Всегда оставлять</value>
@@ -442,29 +428,14 @@
   <data name="Settings_ClosingHint" xml:space="preserve">
     <value>Приложения, требующие проверки (скрипты, консоли, фоновые процессы), никогда не отмечаются заранее, и ничего не завершается принудительно без вашего согласия.</value>
   </data>
-  <data name="Settings_AutoBaseline" xml:space="preserve">
-    <value>Автоматический baseline</value>
-  </data>
   <data name="Settings_AutoBaselineEnable" xml:space="preserve">
-    <value>Создавать baseline автоматически после входа в Windows</value>
-  </data>
-  <data name="Settings_AutoBaselineHint" xml:space="preserve">
-    <value>SnapBack ненадолго запускается при входе, ждёт, пока программы автозагрузки закончат запуск, сохраняет baseline и завершается. Добавляется одна запись в автозагрузку; больше ничего не меняется.</value>
+    <value>Автоматически создавать baseline после запуска</value>
   </data>
   <data name="Settings_MinDelay" xml:space="preserve">
     <value>Ждать не меньше стольких секунд после входа</value>
   </data>
   <data name="Settings_Quiet" xml:space="preserve">
     <value>…и пока столько секунд не запускаются новые приложения</value>
-  </data>
-  <data name="Settings_KeepList" xml:space="preserve">
-    <value>Всегда оставлять (whitelist)</value>
-  </data>
-  <data name="Settings_KeepListHint" xml:space="preserve">
-    <value>Эти приложения считаются частью чистого состояния и никогда не предлагаются к закрытию. Добавить их можно кнопкой «Всегда оставлять выбранные» в главном окне.</value>
-  </data>
-  <data name="Settings_KeepListEmpty" xml:space="preserve">
-    <value>Список пуст.</value>
   </data>
   <data name="Settings_Data" xml:space="preserve">
     <value>Данные</value>
@@ -478,17 +449,8 @@
   <data name="Settings_OpenDataFolder" xml:space="preserve">
     <value>Открыть папку данных</value>
   </data>
-  <data name="Settings_DeleteBaseline" xml:space="preserve">
-    <value>Удалить baseline…</value>
-  </data>
   <data name="Settings_SaveFailed" xml:space="preserve">
     <value>Не удалось сохранить настройки: {0}</value>
-  </data>
-  <data name="Confirm_DeleteBaseline_Title" xml:space="preserve">
-    <value>Удалить baseline</value>
-  </data>
-  <data name="Confirm_DeleteBaseline_Text" xml:space="preserve">
-    <value>Удалить текущий baseline? SnapBack не будет ничего предлагать закрыть, пока вы не создадите новый.</value>
   </data>
   <data name="History_WindowTitle" xml:space="preserve">
     <value>История — SnapBack</value>
@@ -514,9 +476,6 @@
   <data name="History_StillRunning" xml:space="preserve">
     <value> · ещё работают: {0}</value>
   </data>
-  <data name="History_Available" xml:space="preserve">
-    <value>Доступная память: {0} → {1}</value>
-  </data>
   <data name="Confirm_ClearHistory_Title" xml:space="preserve">
     <value>Очистить историю</value>
   </data>
@@ -535,5 +494,470 @@
     <value>Не удалось запустить SnapBack:
 
 {0}</value>
+  </data>
+  <data name="Common_OK" xml:space="preserve">
+    <value>ОК</value>
+  </data>
+  <data name="Main_Profile" xml:space="preserve">
+    <value>Профиль</value>
+  </data>
+  <data name="Main_Profile_Tooltip" xml:space="preserve">
+    <value>Состояние, с которым сравнивается сеанс. Выбор профиля ничего не закрывает.</value>
+  </data>
+  <data name="Main_Profiles" xml:space="preserve">
+    <value>Профили</value>
+  </data>
+  <data name="Main_Profiles_Tooltip" xml:space="preserve">
+    <value>Создание, переименование, обновление и редактирование профилей (Чистый, Работа, Игры…)</value>
+  </data>
+  <data name="Main_Uptime" xml:space="preserve">
+    <value>Время сеанса: {0}</value>
+  </data>
+  <data name="Main_Uptime_Tooltip" xml:space="preserve">
+    <value>Время с момента входа в Windows</value>
+  </data>
+  <data name="Main_MemoryAvailable" xml:space="preserve">
+    <value>доступно {0} из {1}</value>
+  </data>
+  <data name="Main_MemoryTooltip" xml:space="preserve">
+    <value>Занято: {0}
+Доступно: {1}
+Кэш (standby + modified): {2}
+
+Кэш уже входит в «Доступно»: Windows мгновенно отдаёт его приложениям.</value>
+  </data>
+  <data name="Main_NewApps" xml:space="preserve">
+    <value>{0} прил.</value>
+  </data>
+  <data name="Main_RestoreTo" xml:space="preserve">
+    <value>Вернуть к «{0}»…</value>
+  </data>
+  <data name="Main_RestoreToCount" xml:space="preserve">
+    <value>Вернуть к «{0}» ({1})…</value>
+  </data>
+  <data name="Card_Drift" xml:space="preserve">
+    <value>Отклонение сеанса</value>
+  </data>
+  <data name="Card_Impact" xml:space="preserve">
+    <value>Ожидаемый эффект</value>
+  </data>
+  <data name="Drift_Unknown" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="Drift_Low" xml:space="preserve">
+    <value>Низкое</value>
+  </data>
+  <data name="Drift_Medium" xml:space="preserve">
+    <value>Среднее</value>
+  </data>
+  <data name="Drift_High" xml:space="preserve">
+    <value>Высокое</value>
+  </data>
+  <data name="Drift_Hint" xml:space="preserve">
+    <value>{0} прил. · {1} проц. · {2}</value>
+  </data>
+  <data name="Drift_Hint_InSync" xml:space="preserve">
+    <value>соответствует профилю</value>
+  </data>
+  <data name="Drift_Hint_Unknown" xml:space="preserve">
+    <value>нужен профиль</value>
+  </data>
+  <data name="Drift_Tooltip" xml:space="preserve">
+    <value>Оценка {0} из 100 · главным образом: {1} · возраст baseline: {2}</value>
+  </data>
+  <data name="Drift_Explain" xml:space="preserve">
+    <value>Насколько сеанс ушёл от профиля: больше всего учитываются новые приложения и их память, немного — лишние процессы и возраст baseline. Кэш никогда не учитывается.</value>
+  </data>
+  <data name="Drift_Factor_None" xml:space="preserve">
+    <value>ничего</value>
+  </data>
+  <data name="Drift_Factor_NewApps" xml:space="preserve">
+    <value>новые приложения</value>
+  </data>
+  <data name="Drift_Factor_AppMemory" xml:space="preserve">
+    <value>память новых приложений</value>
+  </data>
+  <data name="Drift_Factor_Processes" xml:space="preserve">
+    <value>лишние процессы</value>
+  </data>
+  <data name="Drift_Factor_Age" xml:space="preserve">
+    <value>возраст baseline</value>
+  </data>
+  <data name="Impact_Unknown" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="Impact_None" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="Impact_Low" xml:space="preserve">
+    <value>Низкий</value>
+  </data>
+  <data name="Impact_Medium" xml:space="preserve">
+    <value>Средний</value>
+  </data>
+  <data name="Impact_High" xml:space="preserve">
+    <value>Высокий</value>
+  </data>
+  <data name="Impact_Hint" xml:space="preserve">
+    <value>~{0} от выбранных прил.: {1}</value>
+  </data>
+  <data name="Impact_Line_InUse" xml:space="preserve">
+    <value>Занято RAM: {0}</value>
+  </data>
+  <data name="Impact_Line_NewApps" xml:space="preserve">
+    <value>  Новые приложения: {0}</value>
+  </data>
+  <data name="Impact_Line_ProfileApps" xml:space="preserve">
+    <value>  Приложения профиля: {0}</value>
+  </data>
+  <data name="Impact_Line_System" xml:space="preserve">
+    <value>  Система и прочее: {0}</value>
+  </data>
+  <data name="Impact_Line_Cache" xml:space="preserve">
+    <value>Кэш / standby: {0} (уже доступен, не занят)</value>
+  </data>
+  <data name="Impact_Line_Estimate" xml:space="preserve">
+    <value>Оценка освобождения: ~{0}</value>
+  </data>
+  <data name="Impact_Line_Level" xml:space="preserve">
+    <value>Ожидаемый эффект: {0}</value>
+  </data>
+  <data name="Duration_Minutes" xml:space="preserve">
+    <value>{0} мин</value>
+  </data>
+  <data name="Duration_HoursMinutes" xml:space="preserve">
+    <value>{0} ч {1} мин</value>
+  </data>
+  <data name="Duration_DaysHours" xml:space="preserve">
+    <value>{0} дн. {1} ч</value>
+  </data>
+  <data name="Time_LessThanMinute" xml:space="preserve">
+    <value>меньше минуты</value>
+  </data>
+  <data name="Confirm_ReplaceProfile_Text" xml:space="preserve">
+    <value>Заменить приложения профиля «{0}» текущим состоянием?
+
+Всё, что запущено сейчас, будет считаться частью этого профиля.</value>
+  </data>
+  <data name="Exit_OperationRunning" xml:space="preserve">
+    <value>SnapBack сейчас закрывает приложения. Дождитесь окончания (или прекратите ожидание), прежде чем выходить.</value>
+  </data>
+  <data name="Status_RuleSet" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Status_RuleCleared" xml:space="preserve">
+    <value>{0}: правило удалено</value>
+  </data>
+  <data name="Rule_AlwaysKeep" xml:space="preserve">
+    <value>Всегда оставлять</value>
+  </data>
+  <data name="Rule_AlwaysClose" xml:space="preserve">
+    <value>Всегда закрывать</value>
+  </data>
+  <data name="Rule_AskEveryTime" xml:space="preserve">
+    <value>Спрашивать каждый раз</value>
+  </data>
+  <data name="Rule_Menu_AlwaysKeep" xml:space="preserve">
+    <value>Всегда оставлять</value>
+  </data>
+  <data name="Rule_Menu_AlwaysClose" xml:space="preserve">
+    <value>Всегда закрывать (отмечать заранее)</value>
+  </data>
+  <data name="Rule_Menu_AskEveryTime" xml:space="preserve">
+    <value>Спрашивать каждый раз (не отмечать)</value>
+  </data>
+  <data name="Rule_Menu_Clear" xml:space="preserve">
+    <value>Без правила</value>
+  </data>
+  <data name="Row_Rule" xml:space="preserve">
+    <value>Правило: {0}</value>
+  </data>
+  <data name="Growth_Title" xml:space="preserve">
+    <value>Память во времени</value>
+  </data>
+  <data name="Growth_Explain" xml:space="preserve">
+    <value>Пока SnapBack работает, он примерно раз в 15 минут записывает выделенную память каждого приложения (на диск ничего не сохраняется). Постоянный рост — не обязательно утечка: кэш и рост нагрузки (вкладки, документы) тоже увеличивают память; перезапуск приложения её освобождает.</value>
+  </data>
+  <data name="Growth_NoData" xml:space="preserve">
+    <value>Истории пока нет: SnapBack собирает её, пока работает (например, в трее).</value>
+  </data>
+  <data name="Growth_None" xml:space="preserve">
+    <value>Ни у одного приложения память заметно не выросла.</value>
+  </data>
+  <data name="Growth_Growing" xml:space="preserve">
+    <value>Растёт</value>
+  </data>
+  <data name="Growth_Unusual" xml:space="preserve">
+    <value>Необычный рост памяти</value>
+  </data>
+  <data name="Growth_Summary" xml:space="preserve">
+    <value>{0} → {1} за {2} ч</value>
+  </data>
+  <data name="Growth_Unusual_Row" xml:space="preserve">
+    <value>Необычный рост памяти: {0} → {1} за {2} ч</value>
+  </data>
+  <data name="Growth_Growing_Row" xml:space="preserve">
+    <value>Память растёт: {0} → {1} за {2} ч</value>
+  </data>
+  <data name="Env_Wsl_Stop" xml:space="preserve">
+    <value>Остановить WSL…</value>
+  </data>
+  <data name="Env_Docker_Stop" xml:space="preserve">
+    <value>Остановить Docker…</value>
+  </data>
+  <data name="Env_Wsl_Hint" xml:space="preserve">
+    <value>WSL останавливается командой «wsl --shutdown», а не завершением vmmem. Перед остановкой вы увидите, что именно будет остановлено.</value>
+  </data>
+  <data name="Env_Docker_Hint" xml:space="preserve">
+    <value>Docker Desktop останавливается командой «docker desktop stop», а не завершением его процессов. Перед остановкой вы увидите работающие контейнеры.</value>
+  </data>
+  <data name="Env_Checking" xml:space="preserve">
+    <value>Проверка, что запущено…</value>
+  </data>
+  <data name="Env_Stopping" xml:space="preserve">
+    <value>Остановка {0}…</value>
+  </data>
+  <data name="Env_Result_NotRunning" xml:space="preserve">
+    <value>{0} не запущен.</value>
+  </data>
+  <data name="Env_Wsl_Confirm_Title" xml:space="preserve">
+    <value>Остановить WSL?</value>
+  </data>
+  <data name="Env_Docker_Confirm_Title" xml:space="preserve">
+    <value>Остановить Docker Desktop?</value>
+  </data>
+  <data name="Preview_Impact" xml:space="preserve">
+    <value>Ожидаемый эффект: {0}</value>
+  </data>
+  <data name="Preview_Env_Title" xml:space="preserve">
+    <value>Также остановить (необязательно)</value>
+  </data>
+  <data name="Preview_Env_Wsl" xml:space="preserve">
+    <value>Остановить WSL · {0}</value>
+  </data>
+  <data name="Preview_Env_Docker" xml:space="preserve">
+    <value>Остановить Docker Desktop · {0}</value>
+  </data>
+  <data name="Preview_Env_Confirm_Title" xml:space="preserve">
+    <value>Остановить также WSL / Docker?</value>
+  </data>
+  <data name="Op_Header_StoppingWsl" xml:space="preserve">
+    <value>Остановка WSL…</value>
+  </data>
+  <data name="Op_Header_StoppingDocker" xml:space="preserve">
+    <value>Остановка Docker Desktop…</value>
+  </data>
+  <data name="Profiles_Title" xml:space="preserve">
+    <value>Профили</value>
+  </data>
+  <data name="Profiles_Intro" xml:space="preserve">
+    <value>Профиль — это состояние, к которому нужно возвращаться: приложения, которые должны оставаться запущенными. Создайте профиль из текущего состояния и переключайтесь между ними — перед переключением всегда показывается обычный предпросмотр.</value>
+  </data>
+  <data name="Profiles_Empty" xml:space="preserve">
+    <value>Профилей пока нет. Создайте профиль из текущего состояния.</value>
+  </data>
+  <data name="Profiles_New" xml:space="preserve">
+    <value>Новый из текущего состояния…</value>
+  </data>
+  <data name="Profiles_New_Tooltip" xml:space="preserve">
+    <value>Все запущенные сейчас приложения войдут в новый профиль</value>
+  </data>
+  <data name="Profiles_New_Title" xml:space="preserve">
+    <value>Новый профиль</value>
+  </data>
+  <data name="Profiles_New_Text" xml:space="preserve">
+    <value>Название нового профиля (в него войдут запущенные сейчас приложения):</value>
+  </data>
+  <data name="Profiles_Rename" xml:space="preserve">
+    <value>Переименовать…</value>
+  </data>
+  <data name="Profiles_Rename_Title" xml:space="preserve">
+    <value>Переименование профиля</value>
+  </data>
+  <data name="Profiles_Rename_Text" xml:space="preserve">
+    <value>Новое название:</value>
+  </data>
+  <data name="Profiles_Delete" xml:space="preserve">
+    <value>Удалить…</value>
+  </data>
+  <data name="Profiles_Delete_Title" xml:space="preserve">
+    <value>Удаление профиля</value>
+  </data>
+  <data name="Profiles_Delete_Text" xml:space="preserve">
+    <value>Удалить профиль «{0}»? Ничего не будет закрыто; удаляется только сохранённый список приложений.</value>
+  </data>
+  <data name="Profiles_SetDefault" xml:space="preserve">
+    <value>Сделать основным</value>
+  </data>
+  <data name="Profiles_Update" xml:space="preserve">
+    <value>Обновить из текущего состояния…</value>
+  </data>
+  <data name="Profiles_Update_Tooltip" xml:space="preserve">
+    <value>Заменить приложения профиля запущенными сейчас (название и параметры сохраняются)</value>
+  </data>
+  <data name="Profiles_Use" xml:space="preserve">
+    <value>Сравнивать с этим профилем</value>
+  </data>
+  <data name="Profiles_Use_Tooltip" xml:space="preserve">
+    <value>Выбрать профиль в главном окне. Ничего не закрывается.</value>
+  </data>
+  <data name="Profiles_Apps" xml:space="preserve">
+    <value>Приложения в «{0}» ({1})</value>
+  </data>
+  <data name="Profiles_AppsHint" xml:space="preserve">
+    <value>Эти приложения остаются запущенными при возврате к профилю. Всё остальное будет предложено закрыть (защищённые компоненты системы никогда не затрагиваются).</value>
+  </data>
+  <data name="Profiles_AddApp" xml:space="preserve">
+    <value>Добавить запущенное приложение</value>
+  </data>
+  <data name="Profiles_Environments" xml:space="preserve">
+    <value>При переходе к этому профилю</value>
+  </data>
+  <data name="Profiles_StopWsl" xml:space="preserve">
+    <value>Предлагать остановить WSL</value>
+  </data>
+  <data name="Profiles_StopDocker" xml:space="preserve">
+    <value>Предлагать остановить Docker Desktop</value>
+  </data>
+  <data name="Profiles_EnvironmentsHint" xml:space="preserve">
+    <value>Это только предложение: предпросмотр показывает, что будет остановлено, и каждый раз спрашивает вас.</value>
+  </data>
+  <data name="Profiles_Details" xml:space="preserve">
+    <value>{0} прил. · обновлён {1}</value>
+  </data>
+  <data name="Profiles_Default" xml:space="preserve">
+    <value>основной</value>
+  </data>
+  <data name="Profiles_Current" xml:space="preserve">
+    <value>выбран</value>
+  </data>
+  <data name="Profile_Suggest_Clean" xml:space="preserve">
+    <value>Чистый</value>
+  </data>
+  <data name="Profile_Suggest_Work" xml:space="preserve">
+    <value>Работа</value>
+  </data>
+  <data name="Profile_Suggest_Gaming" xml:space="preserve">
+    <value>Игры</value>
+  </data>
+  <data name="Profile_Suggest_Streaming" xml:space="preserve">
+    <value>Стриминг</value>
+  </data>
+  <data name="Profile_Suggest_Custom" xml:space="preserve">
+    <value>Другой</value>
+  </data>
+  <data name="Settings_Startup" xml:space="preserve">
+    <value>Автозапуск</value>
+  </data>
+  <data name="Settings_StartWithWindows" xml:space="preserve">
+    <value>Запускать SnapBack вместе с Windows</value>
+  </data>
+  <data name="Settings_StartMinimized" xml:space="preserve">
+    <value>Запускать свёрнутым в трей</value>
+  </data>
+  <data name="Settings_AutoBaselineProfile" xml:space="preserve">
+    <value>Профиль для записи</value>
+  </data>
+  <data name="Settings_StartupHint" xml:space="preserve">
+    <value>Используется обычная запись автозагрузки текущего пользователя (без прав администратора). Автоматический baseline ждёт, пока программы автозагрузки запустятся и компьютер перестанет быть занят.</value>
+  </data>
+  <data name="Settings_StartupDisabledByWindows" xml:space="preserve">
+    <value>SnapBack отключён в «Параметры Windows → Приложения → Автозагрузка». Включите его там, чтобы он запускался.</value>
+  </data>
+  <data name="Settings_Tray" xml:space="preserve">
+    <value>Трей</value>
+  </data>
+  <data name="Settings_CloseButton" xml:space="preserve">
+    <value>При закрытии окна:</value>
+  </data>
+  <data name="Settings_CloseToTray" xml:space="preserve">
+    <value>Оставлять SnapBack работать в трее (рекомендуется)</value>
+  </data>
+  <data name="Settings_ExitOnClose" xml:space="preserve">
+    <value>Выходить из SnapBack</value>
+  </data>
+  <data name="Settings_Notifications" xml:space="preserve">
+    <value>Показывать уведомления</value>
+  </data>
+  <data name="Settings_NotificationsHint" xml:space="preserve">
+    <value>Редко и только по делу: сильное отклонение сеанса, когда новые приложения держат много памяти, или необычный рост памяти. Никогда — из-за кэша. Режим «Не беспокоить» Windows соблюдается.</value>
+  </data>
+  <data name="Settings_Rules" xml:space="preserve">
+    <value>Правила</value>
+  </data>
+  <data name="Settings_RulesHint" xml:space="preserve">
+    <value>Постоянные правила для приложений. «Всегда закрывать» лишь заранее отмечает приложение: оно всё равно закрывается вежливо, после предпросмотра, и никогда не завершается принудительно без вашего подтверждения. Никакое правило не снимает защиту с компонентов системы.</value>
+  </data>
+  <data name="Settings_RulesEmpty" xml:space="preserve">
+    <value>Правил пока нет. Щёлкните приложение правой кнопкой в главном окне, чтобы добавить.</value>
+  </data>
+  <data name="History_ReturnTo" xml:space="preserve">
+    <value>Возврат к «{0}»</value>
+  </data>
+  <data name="History_Released" xml:space="preserve">
+    <value>Память, освобождённая приложениями: {0}</value>
+  </data>
+  <data name="History_AppsClosed" xml:space="preserve">
+    <value>Закрыто приложений: {0} из {1}</value>
+  </data>
+  <data name="History_Forced" xml:space="preserve">
+    <value>Принудительно завершено процессов: {0}</value>
+  </data>
+  <data name="History_DeepCleanupUsed" xml:space="preserve">
+    <value>Глубокая очистка памяти: использована, сброшено кэша {0} (отдельно от приложений)</value>
+  </data>
+  <data name="History_DeepCleanupNotUsed" xml:space="preserve">
+    <value>Глубокая очистка памяти: не использовалась</value>
+  </data>
+  <data name="History_Environments" xml:space="preserve">
+    <value>Остановлено собственной командой: {0}</value>
+  </data>
+  <data name="History_Duration" xml:space="preserve">
+    <value>Длительность: {0}</value>
+  </data>
+  <data name="Tray_Open" xml:space="preserve">
+    <value>Открыть SnapBack</value>
+  </data>
+  <data name="Tray_Return" xml:space="preserve">
+    <value>Вернуть к baseline…</value>
+  </data>
+  <data name="Tray_ReturnTo" xml:space="preserve">
+    <value>Вернуть к «{0}»…</value>
+  </data>
+  <data name="Tray_ChooseProfile" xml:space="preserve">
+    <value>Выбрать профиль</value>
+  </data>
+  <data name="Tray_CreateBaseline" xml:space="preserve">
+    <value>Создать baseline…</value>
+  </data>
+  <data name="Tray_UpdateProfile" xml:space="preserve">
+    <value>Обновить «{0}» из текущего состояния…</value>
+  </data>
+  <data name="Tray_Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Tray_Exit" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+  <data name="Tray_Tooltip_Header" xml:space="preserve">
+    <value>SnapBack · {0}</value>
+  </data>
+  <data name="Tray_Tooltip_Extra" xml:space="preserve">
+    <value>лишних приложений: {0} · ~{1} можно освободить</value>
+  </data>
+  <data name="Tray_Tooltip_InSync" xml:space="preserve">
+    <value>Лишних приложений нет</value>
+  </data>
+  <data name="Tray_Tooltip_NoBaseline" xml:space="preserve">
+    <value>Baseline ещё не создан</value>
+  </data>
+  <data name="Tray_Hint_Title" xml:space="preserve">
+    <value>SnapBack продолжает работать</value>
+  </data>
+  <data name="Tray_Hint_Text" xml:space="preserve">
+    <value>Он остаётся в трее и проверяет сеанс раз в 15 минут. Чтобы выйти, щёлкните значок правой кнопкой. Это можно изменить в настройках.</value>
+  </data>
+  <data name="Tray_NothingSelected" xml:space="preserve">
+    <value>Ни одно приложение не отмечено заранее. Откройте список и выберите, что закрыть.</value>
   </data>
 </root>

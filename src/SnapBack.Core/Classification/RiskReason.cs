@@ -21,6 +21,9 @@ public enum RiskReason
     ImagePathUnknown,
     CannotVerify,
 
+    /// <summary>Part of WSL or Docker Desktop: stopped with their own command, never by closing processes.</summary>
+    ManagedEnvironment,
+
     // ---- Manual review --------------------------------------------------------------------
     ConsoleProgram,
     ScriptOrRuntime,
@@ -65,6 +68,7 @@ public static class RiskReasons
         [RiskReason.OwnerUnknown] = SafetyLevel.Protected,
         [RiskReason.ImagePathUnknown] = SafetyLevel.Protected,
         [RiskReason.CannotVerify] = SafetyLevel.Protected,
+        [RiskReason.ManagedEnvironment] = SafetyLevel.Protected,
 
         [RiskReason.ConsoleProgram] = SafetyLevel.ManualReview,
         [RiskReason.ScriptOrRuntime] = SafetyLevel.ManualReview,

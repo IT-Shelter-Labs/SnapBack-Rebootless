@@ -13,6 +13,11 @@ public interface IDialogService
 
     void ShowMemory(MemoryViewModel memory);
 
+    void ShowProfiles(ProfilesViewModel profiles);
+
+    /// <summary>Asks for a short text (e.g. a profile name). Returns <c>null</c> when cancelled.</summary>
+    string? Prompt(string title, string message, string initial, IReadOnlyList<string> suggestions);
+
     bool Confirm(string title, string message, bool dangerous = false);
 
     void Inform(string title, string message);

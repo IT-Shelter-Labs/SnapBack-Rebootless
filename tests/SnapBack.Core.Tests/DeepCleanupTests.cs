@@ -272,8 +272,8 @@ public class DeepCleanupTests
         {
             var app = App(4000, @"C:\Apps\Telegram\Telegram.exe", 100, parent: 1100, visibleWindows: 1);
             var system = new FakeSystem([.. FreshSession()]);
-            var (settings, baseline, history) = StoreFactory.Create(new AppPaths(dir), NullLoggerFactory.Instance);
-            var engine = new SnapBackEngine(system, system, settings, baseline, history, NullLoggerFactory.Instance);
+            var (settings, profiles, history) = StoreFactory.Create(new AppPaths(dir), NullLoggerFactory.Instance);
+            var engine = new SnapBackEngine(system, system, settings, profiles, history, NullLoggerFactory.Instance);
             var cleaner = new CountingCleaner();
             _ = new DeepCleanupService(system.GetMemoryStatus, cleaner, TimeProvider.System, NullLogger.Instance);
 

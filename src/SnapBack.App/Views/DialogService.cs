@@ -15,6 +15,14 @@ public sealed class DialogService(Func<Window?> owner) : IDialogService
 
     public void ShowMemory(MemoryViewModel memory) => new MemoryWindow(memory) { Owner = Owner() }.ShowDialog();
 
+    public void ShowProfiles(ProfilesViewModel profiles) => new ProfilesWindow(profiles) { Owner = Owner() }.ShowDialog();
+
+    public string? Prompt(string title, string message, string initial, IReadOnlyList<string> suggestions)
+    {
+        var window = new PromptWindow(title, message, initial, suggestions) { Owner = Owner() };
+        return window.ShowDialog() == true ? window.Value : null;
+    }
+
     public bool Confirm(string title, string message, bool dangerous = false) =>
         MessageBox.Show(Owner(), message, title, MessageBoxButton.YesNo,
             dangerous ? MessageBoxImage.Warning : MessageBoxImage.Question,

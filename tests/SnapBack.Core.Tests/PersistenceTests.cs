@@ -56,16 +56,20 @@ public sealed class PersistenceTests : IDisposable
         Assert.Equal(5, s.GracefulTimeoutSeconds);
         Assert.Equal(10, s.AutoBaselineQuietSeconds);
         Assert.Equal(500, s.HistoryLimit);
-        Assert.Single(s.KeepList);
+
+        // The version 1 keep list is migrated into "always keep" rules (duplicates and empty keys dropped).
+        Assert.Null(s.KeepList);
+        var rule = Assert.Single(s.Rules);
+        Assert.Equal(Core.Rules.AppRuleKind.AlwaysKeep, rule.Kind);
     }
 
     [Fact]
     public void Keep_list_add_and_remove()
     {
         var s = new Settings().WithKept("key", "App", DateTime.UtcNow).WithKept("key", "App", DateTime.UtcNow);
-        Assert.Single(s.KeepList);
+        Assert.Single(s.Rules);
         Assert.Contains("key", s.KeepAppKeys);
-        Assert.Empty(s.WithoutKept("key").KeepList);
+        Assert.Empty(s.WithoutKept("key").Rules);
     }
 
     [Fact]

@@ -12,7 +12,26 @@ public static class BaselineFactory
         ArgumentNullException.ThrowIfNull(snapshot);
         ArgumentNullException.ThrowIfNull(groups);
 
-        var apps = groups
+        var apps = AppsFrom(groups);
+
+        return new Baseline
+        {
+            CreatedAtUtc = snapshot.TakenAtUtc,
+            Origin = origin,
+            UserSid = snapshot.Context.UserSid,
+            SessionId = snapshot.Context.SessionId,
+            BootTimeUtc = snapshot.Context.BootTimeUtc,
+            MachineName = machineName,
+            Apps = apps,
+            ProcessCount = groups.Sum(g => g.ProcessCount),
+            PrivateWorkingSet = groups.Sum(g => g.PrivateWorkingSet),
+            AvailableMemoryBytes = snapshot.Memory.AvailablePhysicalBytes,
+        };
+    }
+
+    /// <summary>One <see cref="BaselineApp"/> per application (instances of the same app are merged).</summary>
+    public static List<BaselineApp> AppsFrom(IReadOnlyList<AppGroup> groups) =>
+        groups
             .GroupBy(g => g.AppKey, StringComparer.Ordinal)
             .Select(kg =>
             {
@@ -32,21 +51,6 @@ public static class BaselineFactory
             .OrderBy(a => a.WasProtected)
             .ThenBy(a => a.DisplayName, StringComparer.CurrentCultureIgnoreCase)
             .ToList();
-
-        return new Baseline
-        {
-            CreatedAtUtc = snapshot.TakenAtUtc,
-            Origin = origin,
-            UserSid = snapshot.Context.UserSid,
-            SessionId = snapshot.Context.SessionId,
-            BootTimeUtc = snapshot.Context.BootTimeUtc,
-            MachineName = machineName,
-            Apps = apps,
-            ProcessCount = groups.Sum(g => g.ProcessCount),
-            PrivateWorkingSet = groups.Sum(g => g.PrivateWorkingSet),
-            AvailableMemoryBytes = snapshot.Memory.AvailablePhysicalBytes,
-        };
-    }
 
     /// <summary>Returns a description of why a stored baseline cannot be used here, or <c>null</c> if it can.</summary>
     public static string? Validate(Baseline baseline, SessionContext ctx)

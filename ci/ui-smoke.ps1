@@ -19,63 +19,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, System.Windows.Forms, System.Drawing
-$AE = [System.Windows.Automation.AutomationElement]
-$Scope = [System.Windows.Automation.TreeScope]
-
-function New-Cond($property, $value) { New-Object System.Windows.Automation.PropertyCondition($property, $value) }
-
-function Find-TopWindow([int] $processId, [string] $automationId, [int] $timeoutSec = 40) {
-    # Owned dialogs are often exposed as children of their owner window rather than of the desktop,
-    # so look at the process's top-level windows and inside them.
-    $byId = New-Cond $AE::AutomationIdProperty $automationId
-    $byProcess = New-Cond $AE::ProcessIdProperty $processId
-    $deadline = (Get-Date).AddSeconds($timeoutSec)
-    while ((Get-Date) -lt $deadline) {
-        foreach ($top in $AE::RootElement.FindAll($Scope::Children, $byProcess)) {
-            if ($top.Current.AutomationId -eq $automationId) { return $top }
-            $inner = $top.FindFirst($Scope::Descendants, $byId)
-            if ($inner) { return $inner }
-        }
-        Start-Sleep -Milliseconds 500
-    }
-    throw "Window '$automationId' did not appear"
-}
-
-function Find-ById($element, [string] $id) {
-    $e = $element.FindFirst($Scope::Descendants, (New-Cond $AE::AutomationIdProperty $id))
-    if (-not $e) { throw "Element '$id' not found" }
-    return $e
-}
-
-function Get-Texts($element) {
-    $element.FindAll($Scope::Descendants, [System.Windows.Automation.Condition]::TrueCondition) |
-        ForEach-Object { $_.Current.Name } | Where-Object { $_ }
-}
-
-function Invoke-Element($element) {
-    $element.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
-}
-
-function Assert-Texts($texts, [string[]] $expected, [string] $label) {
-    foreach ($e in $expected) {
-        if (-not ($texts | Where-Object { $_ -like "*$e*" })) {
-            Write-Host "---- texts seen ($label) ----"; $texts | Select-Object -Unique | ForEach-Object { Write-Host "  $_" }
-            throw "[$label] expected text not found: '$e'"
-        }
-        Write-Host "[$label] found: $e"
-    }
-}
-
-function Save-Screenshot([string] $name) {
-    try {
-        New-Item -ItemType Directory -Force $ScreenshotDir | Out-Null
-        $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-        $bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
-        [System.Drawing.Graphics]::FromImage($bmp).CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
-        $bmp.Save((Join-Path $ScreenshotDir "$name.png"))
-    } catch { Write-Host "Screenshot failed: $_" }
-}
+. (Join-Path $PSScriptRoot 'uia-common.ps1')
 
 New-Item -ItemType Directory -Force $DataDir | Out-Null
 "{ ""language"": ""$Language"" }" | Set-Content (Join-Path $DataDir 'settings.json') -Encoding UTF8
@@ -107,6 +51,26 @@ try {
         Save-Screenshot "memory-$Language"
         $memory.GetCurrentPattern([System.Windows.Automation.WindowPattern]::Pattern).Close()
         Start-Sleep -Seconds 1
+
+        # Dashboard: session drift and expected impact are shown, the profile picker exists.
+        foreach ($id in 'DriftValue', 'ImpactValue', 'UptimeText') {
+            $value = (Find-ById $main $id).Current.Name
+            if (-not $value) { throw "Dashboard value '$id' is empty" }
+            Write-Host "Dashboard $id = $value"
+        }
+        $null = Find-ById $main 'ProfileCombo'
+
+        # Profiles window opens and lists the profile created by the CLI.
+        Invoke-Element (Find-ById $main 'ProfilesButton')
+        $profiles = Find-TopWindow $process.Id 'ProfilesWindow'
+        Start-Sleep -Seconds 1
+        $list = Find-ById $profiles 'ProfilesList'
+        $names = Get-Texts $list
+        if (-not $names) { throw 'The profiles window lists no profile' }
+        Write-Host "Profiles: $($names -join ', ')"
+        Save-Screenshot "profiles-$Language"
+        Invoke-Element (Find-ById $profiles 'CloseProfilesButton')
+        Start-Sleep -Seconds 2
     }
 
     if ($SwitchTo) {
@@ -131,7 +95,7 @@ try {
 }
 finally {
     if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force }
-    $log = (Get-ChildItem (Join-Path $DataDir 'logs') -Filter *.log -ErrorAction SilentlyContinue | Get-Content) -join "`n"
+    $log = Get-SnapBackLog $DataDir
     Write-Host "---- SnapBack log ($Language) ----"
     Write-Host $log
 }

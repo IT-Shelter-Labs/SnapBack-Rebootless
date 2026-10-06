@@ -7,10 +7,12 @@ using SnapBack.App.Localization;
 using SnapBack.App.Mvvm;
 using SnapBack.App.Services;
 using SnapBack.Core;
+using SnapBack.Core.Environments;
 using SnapBack.Core.Execution;
 using SnapBack.Core.Localization;
 using SnapBack.Core.Memory;
 using SnapBack.Core.Model;
+using SnapBack.Core.Profiles;
 using SnapBack.Core.Safety;
 using SnapBack.Core.Text;
 
@@ -31,6 +33,9 @@ public sealed class OperationViewModel : ObservableObject
     private readonly CancellationTokenSource _cts = new();
     private readonly DispatcherTimer _timer;
     private readonly DateTime _startedUtc = DateTime.UtcNow;
+    private readonly Profile? _profile;
+    private readonly IReadOnlyList<EnvironmentStopConfirmation> _environmentStops;
+    private readonly EnvironmentService? _environments;
     private bool _isRunning;
     private bool _isMeasuring;
     private string _headerKey = "Op_Header_Closing";
@@ -38,8 +43,12 @@ public sealed class OperationViewModel : ObservableObject
     private DeepCleanupReport? _deepReport;
 
     public OperationViewModel(SnapBackEngine engine, CleanupOperation operation, SessionStatistics before,
-        Func<Task<SessionStatistics>> measure, DeepCleanupService deepCleanup, IDialogService dialogs)
+        Func<Task<SessionStatistics>> measure, DeepCleanupService deepCleanup, IDialogService dialogs,
+        Profile? profile = null, IReadOnlyList<EnvironmentStopConfirmation>? environmentStops = null, EnvironmentService? environments = null)
     {
+        _profile = profile;
+        _environmentStops = environmentStops ?? [];
+        _environments = environments;
         _engine = engine;
         _operation = operation;
         _before = before;
@@ -64,6 +73,11 @@ public sealed class OperationViewModel : ObservableObject
     public ObservableCollection<ComparisonRowViewModel> Comparison { get; } = [];
 
     public ObservableCollection<ComparisonRowViewModel> DeepCleanupRows { get; } = [];
+
+    /// <summary>Results of stopping WSL / Docker with their own commands.</summary>
+    public ObservableCollection<string> EnvironmentResults { get; } = [];
+
+    public bool HasEnvironmentResults => EnvironmentResults.Count > 0;
 
     public ICommand StopCommand { get; }
 
@@ -146,7 +160,8 @@ public sealed class OperationViewModel : ObservableObject
                 Update(r);
             }
 
-            _engine.RecordHistory(report);
+            _engine.RecordHistory(report, _profile);
+            await StopEnvironmentsAsync();
         }
         finally
         {
@@ -159,6 +174,45 @@ public sealed class OperationViewModel : ObservableObject
         await MeasureAsync();
     }
 
+    /// <summary>WSL / Docker the user confirmed in the preview, stopped with their own commands after the apps.</summary>
+    private async Task StopEnvironmentsAsync()
+    {
+        if (_environments is null)
+        {
+            return;
+        }
+
+        foreach (var confirmation in _environmentStops)
+        {
+            if (_cts.IsCancellationRequested)
+            {
+                break;
+            }
+
+            _headerKey = confirmation.Kind == EnvironmentKind.Wsl ? "Op_Header_StoppingWsl" : "Op_Header_StoppingDocker";
+            OnPropertyChanged(nameof(Header));
+            EnvironmentStopResult result;
+            try
+            {
+                result = await _environments.StopAsync(confirmation, _cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+
+            EnvironmentResults.Add(result.Message);
+            if (result.Status == EnvironmentStopStatus.Stopped)
+            {
+                _engine.UpdateHistory(_operation.Id, r => (r ?? Empty()).WithEnvironmentStopped(EnvironmentNames.Of(confirmation.Kind)));
+            }
+        }
+
+        OnPropertyChanged(nameof(HasEnvironmentResults));
+    }
+
+    private Core.Persistence.OperationRecord Empty() => new() { OperationId = _operation.Id, StartedAtUtc = _startedUtc, FinishedAtUtc = DateTime.UtcNow };
+
     private async Task MeasureAsync()
     {
         _isMeasuring = true;
@@ -169,6 +223,7 @@ public sealed class OperationViewModel : ObservableObject
             var after = await _measure();
             _comparison = new RestoreComparison(_before, after, _operation.Results.Sum(r => r.MemoryFreedBytes)) { DeepCleanup = _deepReport };
             Fill(Comparison, _comparison.Rows);
+            _engine.UpdateHistory(_operation.Id, r => (r ?? Empty()).WithStatistics(_before, after));
         }
         catch (Exception ex)
         {
@@ -239,7 +294,7 @@ public sealed class OperationViewModel : ObservableObject
                 Update(r);
             }
 
-            _engine.RecordHistory(report);
+            _engine.RecordHistory(report, _profile);
         }
         finally
         {
@@ -259,6 +314,7 @@ public sealed class OperationViewModel : ObservableObject
         if (memory.LastReport is { } report)
         {
             _deepReport = report;
+            _engine.UpdateHistory(_operation.Id, r => (r ?? Empty()).WithDeepCleanup(report));
             if (_comparison is not null)
             {
                 _comparison = _comparison with { DeepCleanup = report };

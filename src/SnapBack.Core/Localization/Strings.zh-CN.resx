@@ -203,7 +203,7 @@
     <value>基线中已存在（之后重新启动过）</value>
   </data>
   <data name="Plan_Kept_UserList" xml:space="preserve">
-    <value>在你的保留列表中</value>
+    <value>始终保留（你的规则）</value>
   </data>
   <data name="Plan_Kept" xml:space="preserve">
     <value>保留</value>
@@ -609,5 +609,101 @@
   </data>
   <data name="Cmp_Commit" xml:space="preserve">
     <value>已提交</value>
+  </data>
+  <data name="Reason_ManagedEnvironment_Label" xml:space="preserve">
+    <value>WSL / Docker</value>
+  </data>
+  <data name="Reason_ManagedEnvironment_Explain" xml:space="preserve">
+    <value>属于 WSL 或 Docker Desktop。SnapBack 从不关闭这些进程；请改用它们自己的命令停止 WSL 或 Docker。</value>
+  </data>
+  <data name="Plan_RuleAlwaysClose" xml:space="preserve">
+    <value>你的规则：始终关闭</value>
+  </data>
+  <data name="Profile_DefaultName" xml:space="preserve">
+    <value>干净</value>
+  </data>
+  <data name="Profile_NotFound" xml:space="preserve">
+    <value>该配置文件已不存在。</value>
+  </data>
+  <data name="Profile_TooMany" xml:space="preserve">
+    <value>最多只能有 {0} 个配置文件。</value>
+  </data>
+  <data name="Impact_Explain_NothingSelected" xml:space="preserve">
+    <value>未选择任何应用，因此不会有任何变化。</value>
+  </data>
+  <data name="Impact_Explain_MostlyNotNew" xml:space="preserve">
+    <value>大部分已用内存并非由基线之后新增的应用造成。</value>
+  </data>
+  <data name="Impact_Explain_PlentyAvailable" xml:space="preserve">
+    <value>可用内存充足。返回基线主要是减少杂乱和后台活动。</value>
+  </data>
+  <data name="Impact_Explain_ShouldHelp" xml:space="preserve">
+    <value>内存逐渐紧张，而新增应用占用了其中很大一部分，因此返回基线应该会有明显帮助。</value>
+  </data>
+  <data name="Impact_Explain_Estimate" xml:space="preserve">
+    <value>这只是估计，并非承诺：与其他程序共享的内存仍会被占用，应用可能拒绝关闭，Windows 也可能把部分释放的内存保留为缓存（这些缓存仍然可用）。</value>
+  </data>
+  <data name="Notify_Drift_Title" xml:space="preserve">
+    <value>会话偏移较高</value>
+  </data>
+  <data name="Notify_Drift_Text" xml:space="preserve">
+    <value>额外应用 {0} 个 · 约可回收 {1}</value>
+  </data>
+  <data name="Notify_Growth_Title" xml:space="preserve">
+    <value>内存异常增长</value>
+  </data>
+  <data name="Notify_Growth_Text" xml:space="preserve">
+    <value>{0}：{3} 小时内从 {1} 增至 {2}。这可能是正常缓存，也可能是内存泄漏。</value>
+  </data>
+  <data name="Env_Wsl_NotInstalled" xml:space="preserve">
+    <value>找不到 wsl.exe，因此 SnapBack 无法停止 WSL。</value>
+  </data>
+  <data name="Env_Docker_CliMissing" xml:space="preserve">
+    <value>找不到 Docker 命令行工具（docker.exe）。请通过 Docker Desktop 的托盘图标退出它。</value>
+  </data>
+  <data name="Env_Docker_StopUnsupported" xml:space="preserve">
+    <value>此版本的 Docker Desktop 没有“docker desktop stop”命令（需要 4.37 或更高版本）。请通过其托盘图标退出 Docker Desktop。</value>
+  </data>
+  <data name="Env_Wsl_Warning" xml:space="preserve">
+    <value>所有 WSL 发行版和 WSL 虚拟机都将关闭（wsl --shutdown）。</value>
+  </data>
+  <data name="Env_Wsl_Warning_Distros" xml:space="preserve">
+    <value>以下正在运行的 WSL 发行版及其中所有 Linux 进程和服务都将关闭（wsl --shutdown）：{0}</value>
+  </data>
+  <data name="Env_Wsl_Warning_Docker" xml:space="preserve">
+    <value>Docker Desktop 运行在 WSL 中：其引擎和容器也会停止。如果希望 Docker 正常关闭，请先停止 Docker。</value>
+  </data>
+  <data name="Env_Docker_Warning_Containers" xml:space="preserve">
+    <value>{0} 个正在运行的容器将停止：{1}</value>
+  </data>
+  <data name="Env_Docker_Warning_None" xml:space="preserve">
+    <value>没有正在运行的容器。Docker Desktop 及其引擎将停止（docker desktop stop）。</value>
+  </data>
+  <data name="Env_Docker_Warning_Unknown" xml:space="preserve">
+    <value>SnapBack 无法列出正在运行的容器。所有正在运行的容器都将停止。</value>
+  </data>
+  <data name="Env_Warning_Unsaved" xml:space="preserve">
+    <value>其中未保存的工作（编辑器、数据库、任务）可能会丢失。</value>
+  </data>
+  <data name="Env_Result_Expired" xml:space="preserve">
+    <value>确认已过期；未停止任何内容。请重试。</value>
+  </data>
+  <data name="Env_Result_NotRunning" xml:space="preserve">
+    <value>{0} 未运行。</value>
+  </data>
+  <data name="Env_Result_Changed" xml:space="preserve">
+    <value>确认之后 {0} 中启动了新内容；未停止任何内容。请检查后重试。</value>
+  </data>
+  <data name="Env_Result_TimedOut" xml:space="preserve">
+    <value>{0} 未能及时完成停止，可能仍在关闭中。</value>
+  </data>
+  <data name="Env_Result_Failed" xml:space="preserve">
+    <value>无法停止 {0}：{1}</value>
+  </data>
+  <data name="Env_Result_StillRunning" xml:space="preserve">
+    <value>停止命令已完成，但 {0} 仍在运行。</value>
+  </data>
+  <data name="Env_Result_Stopped" xml:space="preserve">
+    <value>已使用 {0} 自己的命令将其停止。</value>
   </data>
 </root>

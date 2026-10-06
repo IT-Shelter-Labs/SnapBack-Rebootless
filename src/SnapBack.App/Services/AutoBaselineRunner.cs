@@ -1,15 +1,19 @@
 using Microsoft.Extensions.Logging;
 using SnapBack.Core.Baselines;
 using SnapBack.Core.Startup;
+using SnapBack.Windows;
 
 namespace SnapBack.App.Services;
 
 /// <summary>
-/// Headless mode started at sign-in (<c>--auto-baseline</c>): waits until autostart programs have
-/// finished launching, takes the baseline, and exits. It never closes anything.
+/// Automatic baseline after signing in (when SnapBack starts with Windows and the option is on):
+/// waits until autostart programs have finished launching, then captures the profile. It never
+/// closes anything.
 /// </summary>
 public static class AutoBaselineRunner
 {
+    private static readonly TimeSpan PollInterval = TimeSpan.FromSeconds(10);
+
     public static async Task RunAsync(AppServices services, CancellationToken cancellationToken)
     {
         var log = services.Loggers.CreateLogger("AutoBaseline");
@@ -22,36 +26,50 @@ public static class AutoBaselineRunner
             return;
         }
 
-        var ctx = services.Probe.BaseContext;
-        if (engine.Baseline is { } existing
-            && (existing.BootTimeUtc - ctx.BootTimeUtc).Duration() <= BaselineComparer.BootTimeTolerance)
+        var first = services.Probe.Capture();
+        var logon = StartupSettleDetector.EstimateLogonUtc(first);
+        var target = AutoBaselinePolicy.Target(engine.Profiles, settings.AutoBaselineProfileId);
+        if (!AutoBaselinePolicy.ShouldCapture(target, logon))
         {
-            log.LogInformation("A baseline for the current boot already exists ({Created:u}); keeping it", existing.CreatedAtUtc);
+            log.LogInformation("Profile {Profile} was already captured during this sign-in ({Created:u}); keeping it", target!.Name, target.Baseline.CreatedAtUtc);
             return;
         }
 
-        var first = services.Probe.Capture();
         var detector = new StartupSettleDetector(
             TimeSpan.FromSeconds(settings.AutoBaselineMinDelaySeconds),
             TimeSpan.FromSeconds(settings.AutoBaselineQuietSeconds),
             TimeSpan.FromSeconds(settings.AutoBaselineMaxWaitSeconds),
-            StartupSettleDetector.EstimateLogonUtc(first),
+            logon,
             DateTime.UtcNow);
+        var cpu = new CpuUsageMeter();
+        cpu.Sample();
 
         log.LogInformation("Waiting for startup to settle before taking the automatic baseline");
         while (!cancellationToken.IsCancellationRequested)
         {
-            var snapshot = services.Probe.Capture();
-            var groups = engine.Analyze(snapshot).Groups;
-            var state = detector.Observe(DateTime.UtcNow, StartupSettleDetector.RelevantKeys(groups));
-            if (state != SettleState.Waiting)
+            await Task.Delay(PollInterval, cancellationToken).ConfigureAwait(false);
+            var (state, snapshot, groups) = await Task.Run(() =>
             {
-                var baseline = engine.CreateBaseline(BaselineOrigin.Automatic, snapshot);
-                log.LogInformation("Automatic baseline taken ({State}): {Apps} apps", state, baseline.Apps.Count);
-                return;
+                using var _ = ResourceModes.BackgroundThread();
+                var busy = cpu.Sample();
+                var s = services.Probe.Capture();
+                var g = engine.Analyze(s).Groups;
+                return (detector.Observe(DateTime.UtcNow, StartupSettleDetector.RelevantKeys(g), busy), s, g);
+            }, cancellationToken).ConfigureAwait(false);
+
+            if (state == SettleState.Waiting)
+            {
+                continue;
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(false);
+            // Settings or profiles may have changed while waiting.
+            target = AutoBaselinePolicy.Target(engine.Profiles, engine.Settings.AutoBaselineProfileId);
+            var profile = target is null
+                ? engine.CreateProfile(Core.Localization.Loc.Get("Profile_DefaultName"), BaselineOrigin.Automatic, snapshot)
+                : engine.UpdateProfile(target.Id, BaselineOrigin.Automatic, snapshot);
+            log.LogInformation("Automatic baseline taken ({State}) for profile {Profile}: {Apps} apps",
+                state, profile.Name, groups.Count(g => !g.IsProtected));
+            return;
         }
     }
 }

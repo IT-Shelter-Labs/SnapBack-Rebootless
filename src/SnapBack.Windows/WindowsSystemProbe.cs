@@ -55,6 +55,17 @@ public sealed class WindowsSystemProbe : ISystemProbe
         return new SystemSnapshot(ctx, processes, GetMemoryStatus(), DateTime.UtcNow);
     }
 
+    /// <summary>
+    /// A cheap snapshot: names, sessions and memory counters from one system call, without opening
+    /// any process. Enough to recognize WSL or Docker; never used for safety decisions.
+    /// </summary>
+    public SystemSnapshot CaptureLight()
+    {
+        var none = new HashSet<int>();
+        var processes = SystemProcessInformationReader.Query().Select(r => Minimal(r, none)).ToList();
+        return new SystemSnapshot(_baseContext, processes, MemoryStatus.Unknown, DateTime.UtcNow);
+    }
+
     public ProcessInfo? Inspect(ProcessIdentity identity, SessionContext context)
     {
         var raw = SystemProcessInformationReader.Query().FirstOrDefault(r => r.Pid == identity.Pid);

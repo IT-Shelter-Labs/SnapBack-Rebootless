@@ -52,6 +52,31 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Memory growth over time (from the background history; never called a leak) -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="{l:Tr Growth_Title}" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{l:Tr Growth_Explain}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,8" />
+                        <TextBlock Text="{Binding GrowthEmptyText}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None"
+                                   Visibility="{Binding HasGrowth, Converter={StaticResource InverseBoolToVisibility}}" />
+                        <ItemsControl ItemsSource="{Binding Growth}" AutomationProperties.AutomationId="GrowthList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,4">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding LevelText}" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                        </DockPanel>
+                                        <TextBlock Text="{Binding Summary}" />
+                                        <TextBlock Text="{Binding Timeline}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
                 <!-- Optional Deep Memory Cleanup -->
                 <Border Style="{StaticResource Card}" Margin="0,0,0,10">
                     <StackPanel>

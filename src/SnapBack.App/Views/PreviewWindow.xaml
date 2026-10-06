@@ -7,7 +7,7 @@
         xmlns:l="clr-namespace:SnapBack.App.Localization"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:PreviewViewModel}"
-        Title="{l:Tr Preview_Title}" FontFamily="{Binding UiFont, Source={x:Static l:Tr.Instance}}" Width="820" Height="680" MinWidth="600" MinHeight="420"
+        Title="{l:Tr Preview_Title}" FontFamily="{Binding UiFont, Source={x:Static l:Tr.Instance}}" Width="860" Height="760" MinWidth="600" MinHeight="420"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
 
     <Grid Margin="24,16">
@@ -25,6 +25,33 @@
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
+                <!-- Expected impact: an estimate, shown before anything happens. -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10" AutomationProperties.AutomationId="ImpactCard">
+                    <StackPanel>
+                        <TextBlock Text="{Binding ImpactTitle}" Style="{StaticResource SectionTitle}" AutomationProperties.AutomationId="PreviewImpact" />
+                        <TextBlock Text="{Binding ImpactText}" TextWrapping="Wrap" TextTrimming="None" />
+                    </StackPanel>
+                </Border>
+
+                <!-- WSL / Docker: optional, stopped with their own commands after the apps. -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10" Visibility="{Binding HasEnvironmentOptions, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel>
+                        <TextBlock Text="{l:Tr Preview_Env_Title}" Style="{StaticResource SectionTitle}" />
+                        <ItemsControl ItemsSource="{Binding EnvironmentOptions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,4">
+                                        <CheckBox IsChecked="{Binding IsChecked}" IsEnabled="{Binding CanStop}">
+                                            <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        </CheckBox>
+                                        <TextBlock Text="{Binding StatusText}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="28,2,0,0" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
                 <ItemsControl ItemsSource="{Binding Items}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -87,7 +114,7 @@
             </Button>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Content="{l:Tr Common_Cancel}" IsCancel="True" Padding="18,8" Margin="0,0,8,0" />
-                <Button Content="{Binding ConfirmText}" Click="Confirm_Click" AutomationProperties.AutomationId="ConfirmCloseButton" Style="{DynamicResource AccentButtonStyle}" Padding="18,8" />
+                <Button Content="{Binding ConfirmText}" Click="Confirm_Click" IsEnabled="{Binding CanConfirm}" AutomationProperties.AutomationId="ConfirmCloseButton" Style="{DynamicResource AccentButtonStyle}" Padding="18,8" />
             </StackPanel>
         </DockPanel>
     </Grid>

@@ -82,6 +82,14 @@
         <!-- Results -->
         <StackPanel Grid.Row="2" Margin="0,12,0,12" Visibility="{Binding IsFinished, Converter={StaticResource BoolToVisibility}}">
             <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" Margin="0,0,0,8" AutomationProperties.AutomationId="OperationSummary" />
+            <ItemsControl ItemsSource="{Binding EnvironmentResults}" Margin="0,0,0,8"
+                          Visibility="{Binding HasEnvironmentResults, Converter={StaticResource BoolToVisibility}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
             <Border Style="{StaticResource Card}" Visibility="{Binding HasComparison, Converter={StaticResource BoolToVisibility}}">
                 <StackPanel>

@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
         Title="{l:Tr Settings_WindowTitle}" FontFamily="{Binding UiFont, Source={x:Static l:Tr.Instance}}"
-        Width="700" Height="760" MinWidth="540" MinHeight="480"
+        Width="720" Height="820" MinWidth="540" MinHeight="480"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
         AutomationProperties.AutomationId="SettingsWindow">
 
@@ -48,35 +48,71 @@
 
                 <Border Style="{StaticResource Card}" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock Text="{l:Tr Settings_AutoBaseline}" Style="{StaticResource SectionTitle}" />
-                        <CheckBox IsChecked="{Binding AutoBaselineOnSignIn}">
-                            <TextBlock Text="{l:Tr Settings_AutoBaselineEnable}" TextWrapping="Wrap" />
+                        <TextBlock Text="{l:Tr Settings_Startup}" Style="{StaticResource SectionTitle}" />
+                        <CheckBox IsChecked="{Binding StartWithWindows}" AutomationProperties.AutomationId="StartWithWindowsCheck">
+                            <TextBlock Text="{l:Tr Settings_StartWithWindows}" TextWrapping="Wrap" />
                         </CheckBox>
-                        <TextBlock Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="0,6,0,8" Text="{l:Tr Settings_AutoBaselineHint}" />
-                        <DockPanel Margin="0,0,0,6" IsEnabled="{Binding AutoBaselineOnSignIn}">
-                            <TextBox DockPanel.Dock="Right" Width="80" Text="{Binding AutoBaselineMinDelaySeconds, UpdateSourceTrigger=LostFocus}" />
-                            <TextBlock Text="{l:Tr Settings_MinDelay}" VerticalAlignment="Center" TextWrapping="Wrap" />
-                        </DockPanel>
-                        <DockPanel IsEnabled="{Binding AutoBaselineOnSignIn}">
-                            <TextBox DockPanel.Dock="Right" Width="80" Text="{Binding AutoBaselineQuietSeconds, UpdateSourceTrigger=LostFocus}" />
-                            <TextBlock Text="{l:Tr Settings_Quiet}" VerticalAlignment="Center" TextWrapping="Wrap" />
-                        </DockPanel>
+                        <TextBlock Text="{Binding StartupDisabledNote}" Foreground="{DynamicResource SystemFillColorCautionBrush}" TextWrapping="Wrap" Margin="28,2,0,0"
+                                   Visibility="{Binding StartupDisabledNote, Converter={StaticResource HasValueToVisibility}}" />
+                        <StackPanel Margin="28,4,0,0" IsEnabled="{Binding StartWithWindows}">
+                            <CheckBox IsChecked="{Binding StartMinimizedToTray}" AutomationProperties.AutomationId="StartMinimizedCheck">
+                                <TextBlock Text="{l:Tr Settings_StartMinimized}" TextWrapping="Wrap" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding AutoBaselineOnSignIn}" AutomationProperties.AutomationId="AutoBaselineCheck">
+                                <TextBlock Text="{l:Tr Settings_AutoBaselineEnable}" TextWrapping="Wrap" />
+                            </CheckBox>
+                            <StackPanel Margin="28,4,0,0" IsEnabled="{Binding AutoBaselineOnSignIn}">
+                                <DockPanel Margin="0,0,0,6" Visibility="{Binding HasProfiles, Converter={StaticResource BoolToVisibility}}">
+                                    <ComboBox DockPanel.Dock="Right" MinWidth="180" ItemsSource="{Binding ProfileOptions}" SelectedItem="{Binding AutoBaselineProfile}"
+                                              DisplayMemberPath="DisplayName" AutomationProperties.Name="{l:Tr Settings_AutoBaselineProfile}" />
+                                    <TextBlock Text="{l:Tr Settings_AutoBaselineProfile}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                </DockPanel>
+                                <DockPanel Margin="0,0,0,6">
+                                    <TextBox DockPanel.Dock="Right" Width="80" Text="{Binding AutoBaselineMinDelaySeconds, UpdateSourceTrigger=LostFocus}" />
+                                    <TextBlock Text="{l:Tr Settings_MinDelay}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox DockPanel.Dock="Right" Width="80" Text="{Binding AutoBaselineQuietSeconds, UpdateSourceTrigger=LostFocus}" />
+                                    <TextBlock Text="{l:Tr Settings_Quiet}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                </DockPanel>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="0,8,0,0" Text="{l:Tr Settings_StartupHint}" />
                     </StackPanel>
                 </Border>
 
                 <Border Style="{StaticResource Card}" Margin="0,0,0,10">
                     <StackPanel>
-                        <TextBlock Text="{l:Tr Settings_KeepList}" Style="{StaticResource SectionTitle}" />
-                        <TextBlock Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,8" Text="{l:Tr Settings_KeepListHint}" />
-                        <TextBlock Text="{l:Tr Settings_KeepListEmpty}" Style="{StaticResource Secondary}"
-                                   Visibility="{Binding KeepList.Count, Converter={StaticResource NoValueToVisibility}}" />
-                        <ItemsControl ItemsSource="{Binding KeepList}">
+                        <TextBlock Text="{l:Tr Settings_Tray}" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{l:Tr Settings_CloseButton}" Margin="0,0,0,4" />
+                        <RadioButton GroupName="CloseButton" IsChecked="{Binding CloseToTray}" Margin="0,0,0,2" AutomationProperties.AutomationId="CloseToTrayRadio">
+                            <TextBlock Text="{l:Tr Settings_CloseToTray}" TextWrapping="Wrap" />
+                        </RadioButton>
+                        <RadioButton GroupName="CloseButton" IsChecked="{Binding ExitOnClose}" AutomationProperties.AutomationId="ExitOnCloseRadio">
+                            <TextBlock Text="{l:Tr Settings_ExitOnClose}" TextWrapping="Wrap" />
+                        </RadioButton>
+                        <CheckBox IsChecked="{Binding ShowNotifications}" Margin="0,10,0,0" AutomationProperties.AutomationId="NotificationsCheck">
+                            <TextBlock Text="{l:Tr Settings_Notifications}" TextWrapping="Wrap" />
+                        </CheckBox>
+                        <TextBlock Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="28,2,0,0" Text="{l:Tr Settings_NotificationsHint}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="{l:Tr Settings_Rules}" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,8" Text="{l:Tr Settings_RulesHint}" />
+                        <TextBlock Text="{l:Tr Settings_RulesEmpty}" Style="{StaticResource Secondary}"
+                                   Visibility="{Binding Rules.Count, Converter={StaticResource NoValueToVisibility}}" />
+                        <ItemsControl ItemsSource="{Binding Rules}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <DockPanel Margin="0,2">
-                                        <Button DockPanel.Dock="Right" Content="{l:Tr Common_Remove}" Padding="10,2"
-                                                Command="{Binding DataContext.RemoveKeepCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    <DockPanel Margin="0,3">
+                                        <Button DockPanel.Dock="Right" Content="{l:Tr Common_Remove}" Padding="10,2" Margin="8,0,0,0"
+                                                Command="{Binding DataContext.RemoveRuleCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                 CommandParameter="{Binding}" />
+                                        <ComboBox DockPanel.Dock="Right" MinWidth="170" ItemsSource="{Binding Options}" SelectedItem="{Binding Kind}" DisplayMemberPath="Name"
+                                                  AutomationProperties.Name="{Binding DisplayName}" />
                                         <StackPanel>
                                             <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
                                             <TextBlock Text="{Binding AppKey}" Style="{StaticResource Secondary}" />
@@ -99,7 +135,6 @@
                         <TextBlock Text="{Binding DataFolder}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,8" />
                         <StackPanel Orientation="Horizontal">
                             <Button Content="{l:Tr Settings_OpenDataFolder}" Command="{Binding OpenDataFolderCommand}" Padding="12,6" Margin="0,0,8,0" />
-                            <Button Content="{l:Tr Settings_DeleteBaseline}" Command="{Binding DeleteBaselineCommand}" Padding="12,6" Style="{StaticResource DangerButton}" />
                         </StackPanel>
                     </StackPanel>
                 </Border>

@@ -67,13 +67,28 @@ jobs:
             @('list', '--all'),
             @('preview', '--include-caution', '--include-review'),
             @('history'),
-            @('memory')
+            @('memory'),
+            @('status', '--json'),
+            @('profile', 'create', 'Work'),
+            @('profile', 'rename', 'Work', 'Gaming'),
+            @('profile', 'use', 'Gaming'),
+            @('profile', 'default', 'Gaming'),
+            @('profiles'),
+            @('status', '--profile', 'Gaming'),
+            @('rules'),
+            @('env'),
+            @('profile', 'delete', 'Gaming', '--yes'),
+            @('profiles', '--json')
           )
           foreach ($c in $commands) {
             Write-Host "> snapback-cli $c"
             & $exe @c
             if ($LASTEXITCODE -ne 0) { throw "snapback-cli $c failed with exit code $LASTEXITCODE" }
           }
+          # Rules can never target a protected process.
+          & $exe rule close explorer
+          if ($LASTEXITCODE -ne 2) { throw "A rule was accepted for a protected process (exit code $LASTEXITCODE)" }
+          $global:LASTEXITCODE = 0
 
       - name: GUI smoke test — English (sorting, Memory window, live switch to Russian)
         shell: pwsh
@@ -119,17 +134,10 @@ jobs:
           ./publish/SnapBack/snapback-cli.exe memory --json
           Get-ChildItem "$env:SNAPBACK_DATA_DIR/logs" -Filter *.log | Get-Content
 
-      - name: Automatic baseline smoke test (headless mode)
+      - name: Tray, autostart and background resource usage
         shell: pwsh
-        env:
-          SNAPBACK_DATA_DIR: ${{ runner.temp }}\snapback-auto
         run: |
-          New-Item -ItemType Directory -Force $env:SNAPBACK_DATA_DIR | Out-Null
-          '{ "autoBaselineOnSignIn": true, "autoBaselineMinDelaySeconds": 0, "autoBaselineQuietSeconds": 10 }' | Set-Content "$env:SNAPBACK_DATA_DIR\settings.json"
-          $p = Start-Process ./publish/SnapBack/SnapBack.exe -ArgumentList '--auto-baseline' -PassThru
-          if (-not $p.WaitForExit(180000)) { Stop-Process -Id $p.Id -Force; throw "--auto-baseline did not finish" }
-          Get-ChildItem "$env:SNAPBACK_DATA_DIR/logs" -Filter *.log -ErrorAction SilentlyContinue | Get-Content
-          if (-not (Test-Path "$env:SNAPBACK_DATA_DIR\baseline.json")) { throw "No baseline was created" }
+          ./ci/tray-smoke.ps1 -Exe ./publish/SnapBack/SnapBack.exe -DataDir "$env:RUNNER_TEMP/snapback-tray" -IdleSeconds 60
 
       - name: Upload screenshots
         if: always()

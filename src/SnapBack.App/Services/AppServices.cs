@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Logging;
 using SnapBack.Core;
+using SnapBack.Core.Environments;
 using SnapBack.Core.Logging;
 using SnapBack.Core.Memory;
 using SnapBack.Core.Persistence;
 using SnapBack.Windows;
+using SnapBack.Windows.Environments;
 
 namespace SnapBack.App.Services;
 
@@ -11,9 +13,10 @@ namespace SnapBack.App.Services;
 public sealed class AppServices : IDisposable
 {
     private AppServices(AppPaths paths, ILoggerFactory loggers, FileLoggerProvider fileLog, WindowsSystemProbe probe, SnapBackEngine engine,
-        DeepCleanupService deepCleanup)
+        DeepCleanupService deepCleanup, EnvironmentService environments)
     {
         DeepCleanup = deepCleanup;
+        Environments = environments;
         Paths = paths;
         Loggers = loggers;
         FileLog = fileLog;
@@ -34,6 +37,9 @@ public sealed class AppServices : IDisposable
     /// <summary>Optional Deep Memory Cleanup; only ever runs when the user asks for it.</summary>
     public DeepCleanupService DeepCleanup { get; }
 
+    /// <summary>WSL and Docker Desktop, stopped only with their own commands after confirmation.</summary>
+    public EnvironmentService Environments { get; }
+
     public static AppServices Create()
     {
         var paths = AppPaths.Default();
@@ -42,8 +48,8 @@ public sealed class AppServices : IDisposable
 
         var probe = new WindowsSystemProbe(loggers.CreateLogger<WindowsSystemProbe>());
         var controller = new WindowsProcessController(probe.BaseContext, loggers.CreateLogger<WindowsProcessController>());
-        var (settings, baseline, history) = StoreFactory.Create(paths, loggers);
-        var engine = new SnapBackEngine(probe, controller, settings, baseline, history, loggers);
+        var (settings, profiles, history) = StoreFactory.Create(paths, loggers);
+        var engine = new SnapBackEngine(probe, controller, settings, profiles, history, loggers);
 
         var cleaner = new MemoryCleaner(
             probe.BaseContext.SelfElevated,
@@ -51,7 +57,10 @@ public sealed class AppServices : IDisposable
             new ShellElevatedRunner(Environment.ProcessPath ?? throw new InvalidOperationException("Unknown executable path.")));
         var deepCleanup = new DeepCleanupService(probe.GetMemoryStatus, cleaner, TimeProvider.System, loggers.CreateLogger<DeepCleanupService>());
 
-        return new AppServices(paths, loggers, fileLog, probe, engine, deepCleanup);
+        var environments = new EnvironmentService(new ProcessCommandRunner(), EnvironmentToolLocator.Find(), probe.CaptureLight,
+            TimeProvider.System, loggers.CreateLogger<EnvironmentService>());
+
+        return new AppServices(paths, loggers, fileLog, probe, engine, deepCleanup, environments);
     }
 
     public void Dispose() => Loggers.Dispose();

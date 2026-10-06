@@ -203,7 +203,7 @@
     <value>Was present in baseline (restarted since)</value>
   </data>
   <data name="Plan_Kept_UserList" xml:space="preserve">
-    <value>In your keep list</value>
+    <value>Always kept (your rule)</value>
   </data>
   <data name="Plan_Kept" xml:space="preserve">
     <value>Kept</value>
@@ -609,5 +609,101 @@
   </data>
   <data name="Cmp_Commit" xml:space="preserve">
     <value>Committed</value>
+  </data>
+  <data name="Reason_ManagedEnvironment_Label" xml:space="preserve">
+    <value>WSL / Docker</value>
+  </data>
+  <data name="Reason_ManagedEnvironment_Explain" xml:space="preserve">
+    <value>Part of WSL or Docker Desktop. SnapBack never closes these processes; stop WSL or Docker with their own action instead.</value>
+  </data>
+  <data name="Plan_RuleAlwaysClose" xml:space="preserve">
+    <value>Your rule: always close</value>
+  </data>
+  <data name="Profile_DefaultName" xml:space="preserve">
+    <value>Clean</value>
+  </data>
+  <data name="Profile_NotFound" xml:space="preserve">
+    <value>The profile no longer exists.</value>
+  </data>
+  <data name="Profile_TooMany" xml:space="preserve">
+    <value>You can have at most {0} profiles.</value>
+  </data>
+  <data name="Impact_Explain_NothingSelected" xml:space="preserve">
+    <value>No apps are selected, so nothing would change.</value>
+  </data>
+  <data name="Impact_Explain_MostlyNotNew" xml:space="preserve">
+    <value>Most memory in use is not caused by applications added after the baseline.</value>
+  </data>
+  <data name="Impact_Explain_PlentyAvailable" xml:space="preserve">
+    <value>Plenty of memory is available. Returning to the baseline mainly reduces clutter and background activity.</value>
+  </data>
+  <data name="Impact_Explain_ShouldHelp" xml:space="preserve">
+    <value>Memory is getting scarce and the new applications use a large part of it, so returning to the baseline should help noticeably.</value>
+  </data>
+  <data name="Impact_Explain_Estimate" xml:space="preserve">
+    <value>This is an estimate, not a promise: memory shared with other programs stays in use, apps may refuse to close, and Windows may keep part of the released memory as cache (which is still available).</value>
+  </data>
+  <data name="Notify_Drift_Title" xml:space="preserve">
+    <value>Session drift is high</value>
+  </data>
+  <data name="Notify_Drift_Text" xml:space="preserve">
+    <value>{0} extra apps · ~{1} reclaimable</value>
+  </data>
+  <data name="Notify_Growth_Title" xml:space="preserve">
+    <value>Unusual memory growth</value>
+  </data>
+  <data name="Notify_Growth_Text" xml:space="preserve">
+    <value>{0}: {1} → {2} in {3} h. This can be normal caching or a memory leak.</value>
+  </data>
+  <data name="Env_Wsl_NotInstalled" xml:space="preserve">
+    <value>wsl.exe was not found, so SnapBack cannot stop WSL.</value>
+  </data>
+  <data name="Env_Docker_CliMissing" xml:space="preserve">
+    <value>The Docker command-line tool (docker.exe) was not found. Quit Docker Desktop from its tray icon.</value>
+  </data>
+  <data name="Env_Docker_StopUnsupported" xml:space="preserve">
+    <value>This Docker Desktop version has no “docker desktop stop” command (version 4.37 or newer is needed). Quit Docker Desktop from its tray icon.</value>
+  </data>
+  <data name="Env_Wsl_Warning" xml:space="preserve">
+    <value>All WSL distributions and the WSL virtual machine will shut down (wsl --shutdown).</value>
+  </data>
+  <data name="Env_Wsl_Warning_Distros" xml:space="preserve">
+    <value>These running WSL distributions will shut down, with every Linux process and service in them (wsl --shutdown): {0}</value>
+  </data>
+  <data name="Env_Wsl_Warning_Docker" xml:space="preserve">
+    <value>Docker Desktop runs inside WSL: its engine and containers stop too. Stop Docker first if you want it to shut down cleanly.</value>
+  </data>
+  <data name="Env_Docker_Warning_Containers" xml:space="preserve">
+    <value>{0} running container(s) will stop: {1}</value>
+  </data>
+  <data name="Env_Docker_Warning_None" xml:space="preserve">
+    <value>No containers are running. Docker Desktop and its engine will stop (docker desktop stop).</value>
+  </data>
+  <data name="Env_Docker_Warning_Unknown" xml:space="preserve">
+    <value>SnapBack could not list the running containers. Any running containers will stop.</value>
+  </data>
+  <data name="Env_Warning_Unsaved" xml:space="preserve">
+    <value>Unsaved work inside them (editors, databases, jobs) may be lost.</value>
+  </data>
+  <data name="Env_Result_Expired" xml:space="preserve">
+    <value>The confirmation is too old; nothing was stopped. Please try again.</value>
+  </data>
+  <data name="Env_Result_NotRunning" xml:space="preserve">
+    <value>{0} is not running.</value>
+  </data>
+  <data name="Env_Result_Changed" xml:space="preserve">
+    <value>Something new started in {0} after you confirmed; nothing was stopped. Please check and try again.</value>
+  </data>
+  <data name="Env_Result_TimedOut" xml:space="preserve">
+    <value>{0} did not finish stopping in time. It may still be shutting down.</value>
+  </data>
+  <data name="Env_Result_Failed" xml:space="preserve">
+    <value>{0} could not be stopped: {1}</value>
+  </data>
+  <data name="Env_Result_StillRunning" xml:space="preserve">
+    <value>The stop command finished, but {0} is still running.</value>
+  </data>
+  <data name="Env_Result_Stopped" xml:space="preserve">
+    <value>{0} was stopped with its own command.</value>
   </data>
 </root>

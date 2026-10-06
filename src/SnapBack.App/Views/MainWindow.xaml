@@ -9,7 +9,7 @@
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         Title="{l:Tr App_Name}" Icon="/Assets/snapback.png"
         FontFamily="{Binding UiFont, Source={x:Static l:Tr.Instance}}"
-        Width="1160" Height="780" MinWidth="900" MinHeight="580"
+        Width="1180" Height="860" MinWidth="940" MinHeight="620"
         WindowStartupLocation="CenterScreen"
         AutomationProperties.AutomationId="MainWindow">
 
@@ -19,6 +19,8 @@
 
     <Grid Margin="24,16,24,16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -35,6 +37,13 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource Icon}" Text="&#xE72C;" Margin="0,0,6,0" />
                         <TextBlock Text="{l:Tr Main_Refresh}" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding OpenProfilesCommand}" Style="{StaticResource ToolbarButton}" ToolTip="{l:Tr Main_Profiles_Tooltip}"
+                        AutomationProperties.AutomationId="ProfilesButton">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icon}" Text="&#xE8F1;" Margin="0,0,6,0" />
+                        <TextBlock Text="{l:Tr Main_Profiles}" />
                     </StackPanel>
                 </Button>
                 <Button Command="{Binding OpenMemoryCommand}" Style="{StaticResource ToolbarButton}" ToolTip="{l:Tr Main_Memory_Tooltip}"
@@ -75,13 +84,25 @@
             </DockPanel>
         </Border>
 
-        <!-- Stat cards -->
-        <UniformGrid Grid.Row="2" Rows="1" Columns="5" Margin="-6,0,-6,12">
-            <Border Style="{StaticResource Card}" Margin="6,0">
+        <!-- Profile -->
+        <DockPanel Grid.Row="2" Margin="0,0,0,10">
+            <TextBlock DockPanel.Dock="Left" Text="{l:Tr Main_Profile}" VerticalAlignment="Center" Margin="0,0,8,0" Style="{StaticResource Secondary}" FontSize="13" />
+            <ComboBox DockPanel.Dock="Left" ItemsSource="{Binding ProfileOptions}" SelectedItem="{Binding SelectedProfile}" DisplayMemberPath="DisplayName"
+                      MinWidth="200" IsEnabled="{Binding HasProfiles}" ToolTip="{l:Tr Main_Profile_Tooltip}"
+                      AutomationProperties.AutomationId="ProfileCombo" AutomationProperties.Name="{l:Tr Main_Profile}" />
+            <TextBlock DockPanel.Dock="Left" Text="{Binding BaselineHint}" Style="{StaticResource Secondary}" VerticalAlignment="Center" Margin="12,0,0,0"
+                       ToolTip="{l:Tr Card_Baseline}" />
+            <TextBlock Text="{Binding UptimeText}" Style="{StaticResource Secondary}" VerticalAlignment="Center" HorizontalAlignment="Right"
+                       AutomationProperties.AutomationId="UptimeText" ToolTip="{l:Tr Main_Uptime_Tooltip}" />
+        </DockPanel>
+
+        <!-- Dashboard: what is needed to decide, nothing more. -->
+        <UniformGrid Grid.Row="3" Rows="1" Columns="5" Margin="-6,0,-6,12">
+            <Border Style="{StaticResource Card}" Margin="6,0" ToolTip="{Binding DriftTooltip}" ToolTipService.ShowDuration="60000">
                 <StackPanel>
-                    <TextBlock Text="{l:Tr Card_Baseline}" Style="{StaticResource CardLabel}" />
-                    <TextBlock Text="{Binding BaselineText}" Style="{StaticResource CardValue}" />
-                    <TextBlock Text="{Binding BaselineHint}" Style="{StaticResource CardHint}" ToolTip="{Binding BaselineHint}" />
+                    <TextBlock Text="{l:Tr Card_Drift}" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{Binding DriftText}" Style="{StaticResource DriftValue}" AutomationProperties.AutomationId="DriftValue" />
+                    <TextBlock Text="{Binding DriftHint}" Style="{StaticResource CardHint}" />
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource Card}" Margin="6,0">
@@ -91,11 +112,11 @@
                     <TextBlock Text="{Binding AppsRunningHint}" Style="{StaticResource CardHint}" />
                 </StackPanel>
             </Border>
-            <Border Style="{StaticResource Card}" Margin="6,0">
+            <Border Style="{StaticResource Card}" Margin="6,0" ToolTip="{Binding MemoryTooltip}">
                 <StackPanel>
                     <TextBlock Text="{l:Tr Card_Memory}" Style="{StaticResource CardLabel}" />
                     <TextBlock Text="{Binding MemoryText}" Style="{StaticResource CardValue}" />
-                    <TextBlock Text="{Binding MemoryHint}" Style="{StaticResource CardHint}" ToolTip="{Binding MemoryHint}" />
+                    <TextBlock Text="{Binding MemoryHint}" Style="{StaticResource CardHint}" />
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource Card}" Margin="6,0">
@@ -105,17 +126,40 @@
                     <TextBlock Text="{Binding NewSinceHint}" Style="{StaticResource CardHint}" ToolTip="{Binding NewSinceHint}" />
                 </StackPanel>
             </Border>
-            <Border Style="{StaticResource Card}" Margin="6,0">
+            <Border Style="{StaticResource Card}" Margin="6,0" ToolTip="{Binding ImpactTooltip}" ToolTipService.ShowDuration="60000">
                 <StackPanel>
-                    <TextBlock Text="{l:Tr Card_Freeable}" Style="{StaticResource CardLabel}" />
-                    <TextBlock Text="{Binding FreeableText}" Style="{StaticResource CardValue}" />
-                    <TextBlock Text="{l:Tr Card_FreeableHint}" Style="{StaticResource CardHint}" />
+                    <TextBlock Text="{l:Tr Card_Impact}" Style="{StaticResource CardLabel}" />
+                    <TextBlock Text="{Binding ImpactText}" Style="{StaticResource ImpactValue}" AutomationProperties.AutomationId="ImpactValue" />
+                    <TextBlock Text="{Binding ImpactHint}" Style="{StaticResource CardHint}" />
                 </StackPanel>
             </Border>
         </UniformGrid>
 
+        <!-- WSL / Docker: stopped with their own commands, never by closing their processes. -->
+        <ItemsControl Grid.Row="4" ItemsSource="{Binding Environments}" Margin="0,0,0,12"
+                      Visibility="{Binding HasEnvironments, Converter={StaticResource BoolToVisibility}}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Style="{StaticResource Card}" Padding="14,8" Margin="0,0,12,0" ToolTip="{Binding Hint}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Icon}" Text="&#xE7F4;" Margin="0,0,8,0" />
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding MemoryText}" Style="{StaticResource Secondary}" VerticalAlignment="Center" Margin="8,0,12,0" />
+                            <Button Content="{Binding ActionText}" Command="{Binding StopCommand}" Padding="10,4"
+                                    AutomationProperties.AutomationId="{Binding AutomationId}" />
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
         <!-- Toolbar -->
-        <DockPanel Grid.Row="3" Margin="0,0,0,8">
+        <DockPanel Grid.Row="5" Margin="0,0,0,8">
             <Button DockPanel.Dock="Left" Command="{Binding CreateBaselineCommand}" Padding="12,6"
                     ToolTip="{l:Tr Main_MakeBaseline_Tooltip}" AutomationProperties.AutomationId="MakeBaselineButton">
                 <StackPanel Orientation="Horizontal">
@@ -143,7 +187,7 @@
         </DockPanel>
 
         <!-- Lists -->
-        <TabControl Grid.Row="4" Margin="0,0,0,12">
+        <TabControl Grid.Row="6" Margin="0,0,0,12">
             <TabItem Header="{Binding CandidatesHeader}" AutomationProperties.AutomationId="TabNew">
                 <Grid Margin="0,8,0,0">
                     <Grid.RowDefinitions>
@@ -190,7 +234,7 @@
         </TabControl>
 
         <!-- Footer -->
-        <DockPanel Grid.Row="5">
+        <DockPanel Grid.Row="7">
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                 <Button Content="{l:Tr Main_AlwaysKeep}" Command="{Binding KeepSelectedCommand}" Padding="12,8" Margin="0,0,8,0"
                         ToolTip="{l:Tr Main_AlwaysKeep_Tooltip}" />

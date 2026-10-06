@@ -3,13 +3,18 @@ using Microsoft.Extensions.Logging;
 using SnapBack.Core;
 using SnapBack.Core.Baselines;
 using SnapBack.Core.Classification;
+using SnapBack.Core.Environments;
 using SnapBack.Core.Execution;
+using SnapBack.Core.Insights;
 using SnapBack.Core.Logging;
 using SnapBack.Core.Memory;
 using SnapBack.Core.Persistence;
 using SnapBack.Core.Planning;
+using SnapBack.Core.Profiles;
+using SnapBack.Core.Rules;
 using SnapBack.Core.Text;
 using SnapBack.Windows;
+using SnapBack.Windows.Environments;
 
 namespace SnapBack.Cli;
 
@@ -51,19 +56,29 @@ internal static class Program
         {
             var probe = new WindowsSystemProbe(loggers.CreateLogger<WindowsSystemProbe>());
             var controller = new WindowsProcessController(probe.BaseContext, loggers.CreateLogger<WindowsProcessController>());
-            var (settings, baseline, history) = StoreFactory.Create(paths, loggers);
-            var engine = new SnapBackEngine(probe, controller, settings, baseline, history, loggers);
+            var (settings, profiles, history) = StoreFactory.Create(paths, loggers);
+            var engine = new SnapBackEngine(probe, controller, settings, profiles, history, loggers);
 
             log.LogInformation("CLI: {Args}", string.Join(' ', args));
+            if (a.Value("--profile") is { } profileName && engine.Profiles.FindByName(profileName) is null)
+            {
+                return Usage($"No profile named '{profileName}'. Run 'snapback-cli profiles'.");
+            }
+
             return a.Command switch
             {
-                "status" => Status(engine),
+                "status" => Status(engine, a),
                 "baseline" => Baseline(engine, a),
                 "list" => List(engine, a),
                 "preview" => Preview(engine, a),
                 "restore" => await Restore(engine, a),
                 "history" => History(engine, a),
                 "memory" => Memory(engine, a),
+                "profiles" => Profiles(engine, a),
+                "profile" => Profile(engine, a),
+                "rules" => Rules(engine, a),
+                "rule" => Rule(engine, a),
+                "env" => await Env(probe, loggers, a),
                 _ => Usage($"Unknown command '{a.Command}'."),
             };
         }
@@ -75,27 +90,255 @@ internal static class Program
         }
     }
 
-    private static int Status(SnapBackEngine engine)
+    /// <summary>Analysis against --profile, or the selected profile.</summary>
+    private static Analysis Analyze(SnapBackEngine engine, Args a) =>
+        a.Value("--profile") is { } name ? engine.AnalyzeFor(engine.Profiles.FindByName(name)!.Id) : engine.Analyze();
+
+    private static int Status(SnapBackEngine engine, Args a)
     {
-        var analysis = engine.Analyze();
-        Console.WriteLine($"Baseline:           {DescribeBaseline(engine.Baseline)}");
+        var analysis = Analyze(engine, a);
+        var drift = analysis.Drift(DateTime.UtcNow);
+        var impact = analysis.DefaultImpact();
+        if (a.Has("--json"))
+        {
+            Console.WriteLine(JsonSerializer.Serialize(new
+            {
+                profile = analysis.Profile?.Name,
+                baselineCreatedUtc = analysis.Baseline?.CreatedAtUtc,
+                sessionUptimeMinutes = drift.SessionUptime is { } up ? (int)up.TotalMinutes : (int?)null,
+                apps = analysis.RunningAppCount,
+                processes = analysis.Snapshot.Processes.Count,
+                memory = new { inUseBytes = analysis.Memory.UsedPhysicalBytes, availableBytes = analysis.Memory.AvailablePhysicalBytes, cacheBytes = analysis.Memory.CachedBytes },
+                drift = new { level = drift.Level, drift.Score, drift.NewApps, drift.ProcessDelta, drift.NewAppMemoryBytes, drift.MainFactor },
+                impact = new { level = impact.Level, impact.EstimatedReclaimBytes, impact.AppsToClose, breakdown = impact.Breakdown },
+                environments = EnvironmentDetector.Detect(analysis.Snapshot).Where(e => e.IsRunning).Select(e => new { e.Name, e.MemoryBytes }),
+            }, Json));
+            return ExitOk;
+        }
+
+        Console.WriteLine($"Profile:            {analysis.Profile?.Name ?? "none"}  ({DescribeBaseline(analysis.Baseline)})");
         if (analysis.BaselineProblem is { } problem)
         {
             Console.WriteLine($"                    ! {problem}");
         }
 
+        if (drift.SessionUptime is { } uptime)
+        {
+            Console.WriteLine($"Session uptime:     {(int)uptime.TotalHours}h {uptime.Minutes:00}m");
+        }
+
         Console.WriteLine($"Apps running:       {analysis.RunningAppCount} ({analysis.Snapshot.Processes.Count} processes)");
-        Console.WriteLine($"Memory in use:      {analysis.Memory.UsedPercent:0}% ({ByteSize.Format(analysis.Memory.UsedPhysicalBytes)} of {ByteSize.Format(analysis.Memory.TotalPhysicalBytes)})");
+        Console.WriteLine($"RAM in use:         {ByteSize.Format(analysis.Memory.UsedPhysicalBytes)} of {ByteSize.Format(analysis.Memory.TotalPhysicalBytes)}, available {ByteSize.Format(analysis.Memory.AvailablePhysicalBytes)}");
         if (analysis.HasUsableBaseline)
         {
             Console.WriteLine($"New since baseline: {analysis.NewAppCount} app(s), about {ByteSize.Format(analysis.FreeableBytes)}");
+            Console.WriteLine($"Session drift:      {drift.Level} (score {drift.Score}; {drift.NewApps:+0;-0;0} apps, {drift.ProcessDelta:+0;-0;0} processes, +{ByteSize.Format(drift.NewAppMemoryBytes)})");
+            Console.WriteLine($"Expected impact:    {impact.Level} (~{ByteSize.Format(impact.EstimatedReclaimBytes)} from {impact.AppsToClose} pre-selected app(s); an estimate)");
+            var b = impact.Breakdown;
+            Console.WriteLine($"  In use: new apps {ByteSize.Format(b.NewAppsBytes)}, profile apps {ByteSize.Format(b.ProfileAppsBytes)}, system/other {ByteSize.Format(b.SystemAndOtherBytes)}; cache (available) {(b.CacheBytes is { } c ? ByteSize.Format(c) : "n/a")}");
             if (analysis.Comparison is { IsSameBoot: false })
             {
                 Console.WriteLine("                    (baseline is from a previous boot; matched by application)");
             }
         }
 
+        foreach (var e in EnvironmentDetector.Detect(analysis.Snapshot).Where(e => e.IsRunning))
+        {
+            Console.WriteLine($"{e.Name + ":",-20}running, {ByteSize.Format(e.MemoryBytes)} (stop it from the SnapBack window or with its own command)");
+        }
+
         return ExitOk;
+    }
+
+    private static int Profiles(SnapBackEngine engine, Args a)
+    {
+        var set = engine.Profiles;
+        if (a.Has("--json"))
+        {
+            Console.WriteLine(JsonSerializer.Serialize(set.Profiles.Select(p => new
+            {
+                p.Id,
+                p.Name,
+                isDefault = p.Id == set.DefaultProfileId,
+                isCurrent = p.Id == set.Current?.Id,
+                apps = p.AppCount,
+                p.UpdatedAtUtc,
+                wsl = p.Wsl,
+                docker = p.Docker,
+            }), Json));
+            return ExitOk;
+        }
+
+        if (set.Profiles.Count == 0)
+        {
+            Console.WriteLine("No profiles. Run 'snapback-cli profile create <name>' (or 'baseline create').");
+        }
+
+        foreach (var p in set.Profiles)
+        {
+            var marks = (p.Id == set.DefaultProfileId ? " default" : "") + (p.Id == set.Current?.Id ? " current" : "");
+            Console.WriteLine($"{p.Name,-24} {p.AppCount,3} apps  updated {p.UpdatedAtUtc.ToLocalTime():g}{marks}");
+        }
+
+        return ExitOk;
+    }
+
+    private static int Profile(SnapBackEngine engine, Args a)
+    {
+        var name = a.Positional(2);
+        Profile? Find(string? n) => n is null ? null : engine.Profiles.FindByName(n);
+        switch (a.Sub)
+        {
+            case "create" when name is not null:
+                var created = engine.CreateProfile(name, BaselineOrigin.Manual);
+                Console.WriteLine($"Profile '{created.Name}' created: {created.AppCount} apps.");
+                return ExitOk;
+            case "update":
+                var target = name is null ? engine.CurrentProfile : Find(name);
+                if (target is null)
+                {
+                    return Usage("No such profile.");
+                }
+
+                var updated = engine.UpdateProfile(target.Id, BaselineOrigin.Manual);
+                Console.WriteLine($"Profile '{updated.Name}' updated: {updated.AppCount} apps.");
+                return ExitOk;
+            case "rename" when Find(name) is { } p && a.Positional(3) is { } newName:
+                Console.WriteLine($"Renamed to '{engine.RenameProfile(p.Id, newName).Name}'.");
+                return ExitOk;
+            case "delete" when Find(name) is { } p:
+                if (!a.Has("--yes") && !Ask($"Delete profile '{p.Name}'?"))
+                {
+                    return ExitOk;
+                }
+
+                engine.DeleteProfile(p.Id);
+                Console.WriteLine("Profile deleted.");
+                return ExitOk;
+            case "default" when Find(name) is { } p:
+                engine.SetDefaultProfile(p.Id);
+                Console.WriteLine($"'{p.Name}' is the default profile.");
+                return ExitOk;
+            case "use" when Find(name) is { } p:
+                engine.SelectProfile(p.Id);
+                Console.WriteLine($"Comparing with '{p.Name}'. Nothing was closed.");
+                return ExitOk;
+            default:
+                return Usage("Usage: snapback-cli profile create|update|rename|delete|default|use <name> [<new name>]");
+        }
+    }
+
+    private static int Rules(SnapBackEngine engine, Args a)
+    {
+        var rules = engine.Settings.Rules;
+        if (a.Has("--json"))
+        {
+            Console.WriteLine(JsonSerializer.Serialize(rules, Json));
+            return ExitOk;
+        }
+
+        if (rules.Count == 0)
+        {
+            Console.WriteLine("No rules.");
+        }
+
+        foreach (var r in rules.OrderBy(r => r.DisplayName, StringComparer.CurrentCultureIgnoreCase))
+        {
+            Console.WriteLine($"{r.DisplayName,-32} {r.Kind,-14} {r.AppKey}");
+        }
+
+        return ExitOk;
+    }
+
+    /// <summary>snapback-cli rule keep|close|ask|clear &lt;app&gt; — the app must be running (or have a rule, to clear it).</summary>
+    private static int Rule(SnapBackEngine engine, Args a)
+    {
+        var name = a.Positional(2);
+        AppRuleKind? kind = a.Sub switch
+        {
+            "keep" => AppRuleKind.AlwaysKeep,
+            "close" => AppRuleKind.AlwaysClose,
+            "ask" => AppRuleKind.AskEveryTime,
+            _ => null,
+        };
+        if (name is null || (kind is null && a.Sub != "clear"))
+        {
+            return Usage("Usage: snapback-cli rule keep|close|ask|clear <app name or executable>");
+        }
+
+        if (a.Sub == "clear")
+        {
+            var rule = engine.Settings.Rules.FirstOrDefault(r => r.DisplayName.Equals(name, StringComparison.OrdinalIgnoreCase) || r.AppKey == name);
+            if (rule is null)
+            {
+                return Usage($"No rule for '{name}'.");
+            }
+
+            engine.UpdateSettings(s => s.WithRule(rule.AppKey, rule.DisplayName, null, DateTime.UtcNow));
+            Console.WriteLine($"Rule for {rule.DisplayName} removed.");
+            return ExitOk;
+        }
+
+        var groups = engine.Analyze().Groups.Where(g => !g.IsProtected && Matches(g, name)).DistinctBy(g => g.AppKey).ToList();
+        if (groups.Count != 1)
+        {
+            return Usage(groups.Count == 0 ? $"No running app matches '{name}'." : $"'{name}' matches several apps: {string.Join(", ", groups.Select(g => g.DisplayName))}");
+        }
+
+        var g = groups[0];
+        engine.UpdateSettings(s => s.WithRule(g.AppKey, g.DisplayName, kind, DateTime.UtcNow));
+        Console.WriteLine($"{g.DisplayName}: {kind}. Rules never override protection; closing stays polite.");
+        return ExitOk;
+    }
+
+    /// <summary>Read-only: shows WSL / Docker and what stopping them would end. Stopping happens in the window.</summary>
+    private static async Task<int> Env(WindowsSystemProbe probe, ILoggerFactory loggers, Args a)
+    {
+        var service = new EnvironmentService(new ProcessCommandRunner(), EnvironmentToolLocator.Find(), probe.CaptureLight,
+            TimeProvider.System, loggers.CreateLogger<EnvironmentService>());
+        var details = new List<EnvironmentDetails>();
+        foreach (var kind in Enum.GetValues<EnvironmentKind>())
+        {
+            details.Add(await service.InspectAsync(kind));
+        }
+
+        if (a.Has("--json"))
+        {
+            Console.WriteLine(JsonSerializer.Serialize(details.Select(d => new
+            {
+                d.Name, d.IsRunning, d.MemoryBytes, d.RunningItems, d.ItemsKnown, d.CanStop, d.CannotStopReason,
+            }), Json));
+            return ExitOk;
+        }
+
+        foreach (var d in details)
+        {
+            if (!d.IsRunning)
+            {
+                Console.WriteLine($"{d.Name}: not running");
+                continue;
+            }
+
+            Console.WriteLine($"{d.Name}: running, {ByteSize.Format(d.MemoryBytes)}");
+            Console.WriteLine($"  {(d.Kind == EnvironmentKind.Wsl ? "Distributions" : "Containers")}: {(d.ItemsKnown ? (d.RunningItems.Count > 0 ? string.Join(", ", d.RunningItems) : "none") : "unknown")}");
+            Console.WriteLine(d.CanStop
+                ? $"  Can be stopped with {(d.Kind == EnvironmentKind.Wsl ? "'wsl --shutdown'" : "'docker desktop stop'")} (use the SnapBack window, which shows a warning first)."
+                : $"  {d.CannotStopReason}");
+        }
+
+        return ExitOk;
+    }
+
+    private static bool Matches(Core.Grouping.AppGroup g, string name) =>
+        g.DisplayName.Equals(name, StringComparison.OrdinalIgnoreCase)
+        || g.Root.ImageName.Equals(name, StringComparison.OrdinalIgnoreCase)
+        || Path.GetFileNameWithoutExtension(g.Root.ImageName).Equals(name, StringComparison.OrdinalIgnoreCase);
+
+    private static bool Ask(string question)
+    {
+        Console.Write(question + " [y/N] ");
+        var answer = Console.ReadLine()?.Trim();
+        return string.Equals(answer, "y", StringComparison.OrdinalIgnoreCase) || string.Equals(answer, "yes", StringComparison.OrdinalIgnoreCase);
     }
 
     private static int Baseline(SnapBackEngine engine, Args a)
@@ -145,7 +388,7 @@ internal static class Program
 
     private static int List(SnapBackEngine engine, Args a)
     {
-        var analysis = engine.Analyze();
+        var analysis = Analyze(engine, a);
         if (!RequirePlan(analysis))
         {
             return ExitError;
@@ -171,7 +414,7 @@ internal static class Program
 
     private static int Preview(SnapBackEngine engine, Args a)
     {
-        var analysis = engine.Analyze();
+        var analysis = Analyze(engine, a);
         if (!RequirePlan(analysis))
         {
             return ExitError;
@@ -225,7 +468,7 @@ internal static class Program
 
     private static async Task<int> Restore(SnapBackEngine engine, Args a)
     {
-        var analysis = engine.Analyze();
+        var analysis = Analyze(engine, a);
         if (!RequirePlan(analysis))
         {
             return ExitError;
@@ -244,16 +487,13 @@ internal static class Program
             Console.WriteLine($"  {item.Group.DisplayName,-40} {ByteSize.Format(item.Group.ActionablePrivateWorkingSet),8}  [{Badge(item)}]");
         }
 
-        if (!a.Has("--yes"))
+        var impact = ImpactEstimate.Compute(analysis, selected);
+        Console.WriteLine($"Expected impact: {impact.Level} (~{ByteSize.Format(impact.EstimatedReclaimBytes)}; an estimate, not a promise)");
+
+        if (!a.Has("--yes") && !Ask("Continue?"))
         {
-            Console.Write("Continue? [y/N] ");
-            var answer = Console.ReadLine();
-            if (!string.Equals(answer?.Trim(), "y", StringComparison.OrdinalIgnoreCase)
-                && !string.Equals(answer?.Trim(), "yes", StringComparison.OrdinalIgnoreCase))
-            {
-                Console.WriteLine("Cancelled.");
-                return ExitOk;
-            }
+            Console.WriteLine("Cancelled.");
+            return ExitOk;
         }
 
         using var cts = new CancellationTokenSource();
@@ -263,9 +503,13 @@ internal static class Program
             cts.Cancel();
         };
 
+        var before = SessionStatistics.From(analysis);
         var operation = engine.StartOperation(analysis, selected);
         var report = await operation.RunGracefulAsync(cancellationToken: cts.Token);
-        engine.RecordHistory(report);
+        engine.RecordHistory(report, analysis.Profile);
+        await Task.Delay(TimeSpan.FromSeconds(1.5));
+        var after = SessionStatistics.From(engine.Analyze());
+        engine.UpdateHistory(report.OperationId, r => (r ?? OperationRecord.From(report)).WithStatistics(before, after));
 
         foreach (var r in report.Items)
         {
@@ -302,12 +546,22 @@ internal static class Program
 
         foreach (var r in records)
         {
-            Console.WriteLine($"{r.StartedAtUtc.ToLocalTime():g}  {r.Kind,-8}  {r.Closed}/{r.Requested} closed, {ByteSize.Format(r.MemoryFreedBytes)} released"
-                + (r.StillRunning > 0 ? $", {r.StillRunning} still running" : ""));
+            Console.WriteLine($"{r.StartedAtUtc.ToLocalTime():g}  {r.ProfileName ?? "-",-12}  {r.Closed}/{r.Requested} closed, {ByteSize.Format(r.MemoryFreedBytes)} released by apps"
+                + (r.StillRunning > 0 ? $", {r.StillRunning} still running" : "")
+                + (r.ForceTerminations > 0 ? $", {r.ForceTerminations} process(es) forced" : "")
+                + (r.DeepCleanupUsed ? $", deep cleanup {ByteSize.Format(r.DeepCleanupReclaimedBytes ?? 0)} cache" : "")
+                + (r.EnvironmentsStopped.Count > 0 ? $", stopped {string.Join("/", r.EnvironmentsStopped)}" : ""));
+            if (r.AppsBefore is { } ab && r.AppsAfter is { } aa)
+            {
+                Console.WriteLine($"                   apps {ab} -> {aa}, processes {r.ProcessesBefore} -> {r.ProcessesAfter}, "
+                    + $"in use {Opt(r.InUseBeforeBytes)} -> {Opt(r.InUseAfterBytes)}, available {ByteSize.Format(r.AvailableBeforeBytes)} -> {ByteSize.Format(r.AvailableAfterBytes)}, {r.Duration.TotalSeconds:0} s");
+            }
         }
 
         return ExitOk;
     }
+
+    private static string Opt(long? v) => v is { } x ? ByteSize.Format(x) : "n/a";
 
     /// <summary>Read-only memory report. The CLI never runs Deep Memory Cleanup (it needs a UAC prompt; use the window).</summary>
     private static int Memory(SnapBackEngine engine, Args a)
@@ -331,7 +585,6 @@ internal static class Program
             return ExitOk;
         }
 
-        static string Opt(long? v) => v is { } x ? ByteSize.Format(x) : "n/a";
         Console.WriteLine($"Installed:           {ByteSize.Format(m.TotalPhysicalBytes)}");
         Console.WriteLine($"In use:              {ByteSize.Format(m.UsedPhysicalBytes)} ({m.UsedPercent:0}%)");
         Console.WriteLine($"Available:           {ByteSize.Format(m.AvailablePhysicalBytes)} ({m.AvailablePercent:0}%)");
@@ -430,8 +683,8 @@ internal static class Program
         SnapBack - return your Windows session to its baseline without rebooting.
 
         Usage:
-          snapback-cli status                      Baseline, running apps, memory, what is new
-          snapback-cli baseline create [--force]   Make the current state the baseline
+          snapback-cli status [--json]             Profile, drift, memory, expected impact, WSL/Docker
+          snapback-cli baseline create [--force]   Make the current state the baseline of the selected profile
           snapback-cli baseline show [--all] [--json]
           snapback-cli baseline delete
           snapback-cli list [--all] [--json]       Apps started after the baseline (--all: also kept/protected)
@@ -441,6 +694,19 @@ internal static class Program
                                                    Ask the selected apps to close (never forced)
           snapback-cli history [--json]
           snapback-cli memory [--json]             Memory in use vs. reusable cache, with advice
+          snapback-cli profiles [--json]           List profiles
+          snapback-cli profile create <name>       New profile from the current state
+          snapback-cli profile update [<name>]     Replace a profile's apps with the current state
+          snapback-cli profile rename <name> <new name>
+          snapback-cli profile delete <name> [--yes]
+          snapback-cli profile default <name>      Profile used at startup and by the automatic baseline
+          snapback-cli profile use <name>          Compare with this profile (closes nothing)
+          snapback-cli rules [--json]              Always keep / always close / ask every time
+          snapback-cli rule keep|close|ask|clear <app>
+          snapback-cli env [--json]                WSL / Docker status (read-only; stop them from the window)
+
+        Options:
+          --profile <name>      status/list/preview/restore against this profile instead of the selected one
 
         Selection (default: the apps the GUI pre-selects, i.e. those marked safe):
           --app <name>          Only apps whose name or executable matches (repeatable)
@@ -467,6 +733,11 @@ internal static class Program
         public string? Sub { get; }
 
         public bool Has(string flag) => _args.Contains(flag, StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>The n-th argument (0 = command) unless it is an option.</summary>
+        public string? Positional(int index) => index < _args.Count && !_args[index].StartsWith("--", StringComparison.Ordinal) ? _args[index] : null;
+
+        public string? Value(string option) => Values(option).FirstOrDefault();
 
         public IReadOnlyList<string> Values(string option)
         {

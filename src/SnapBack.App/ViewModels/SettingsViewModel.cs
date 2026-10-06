@@ -4,9 +4,10 @@ using System.IO;
 using System.Windows.Input;
 using SnapBack.App.Localization;
 using SnapBack.App.Mvvm;
-using SnapBack.Core.Localization;
 using SnapBack.Core;
+using SnapBack.Core.Localization;
 using SnapBack.Core.Persistence;
+using SnapBack.Core.Rules;
 using SnapBack.Windows;
 
 namespace SnapBack.App.ViewModels;
@@ -17,11 +18,16 @@ public sealed class SettingsViewModel : ObservableObject
     private readonly IDialogService _dialogs;
     private int _timeout;
     private bool _preselectCaution;
+    private bool _startWithWindows;
+    private bool _startMinimized;
     private bool _autoBaseline;
     private int _minDelay;
     private int _quiet;
     private int _historyLimit;
+    private bool _closeToTray;
+    private bool _showNotifications;
     private LanguageOption _language;
+    private ProfileOption? _autoBaselineProfile;
 
     public SettingsViewModel(SnapBackEngine engine, IDialogService dialogs)
     {
@@ -31,31 +37,42 @@ public sealed class SettingsViewModel : ObservableObject
         OriginalLanguage = s.Language;
         _timeout = s.GracefulTimeoutSeconds;
         _preselectCaution = s.PreselectCautionItems;
+        _startWithWindows = s.StartWithWindows;
+        _startMinimized = s.StartMinimizedToTray;
         _autoBaseline = s.AutoBaselineOnSignIn;
         _minDelay = s.AutoBaselineMinDelaySeconds;
         _quiet = s.AutoBaselineQuietSeconds;
         _historyLimit = s.HistoryLimit;
+        _closeToTray = s.CloseButton == CloseButtonAction.MinimizeToTray;
+        _showNotifications = s.ShowNotifications;
         LanguageOptions = new[] { Languages.System }.Concat(Languages.Supported).Select(code => new LanguageOption(code)).ToList();
         _language = LanguageOptions.FirstOrDefault(o => o.Code == s.Language) ?? LanguageOptions[0];
-        foreach (var k in s.KeepList.OrderBy(k => k.DisplayName, StringComparer.CurrentCultureIgnoreCase))
+
+        var profiles = engine.Profiles;
+        ProfileOptions = profiles.Profiles.Select(p => new ProfileOption(p.Id, p.Name, p.Id == profiles.DefaultProfileId)).ToList();
+        _autoBaselineProfile = ProfileOptions.FirstOrDefault(o => o.Id == s.AutoBaselineProfileId)
+            ?? ProfileOptions.FirstOrDefault(o => o.IsDefault);
+
+        foreach (var r in s.Rules.OrderBy(r => r.DisplayName, StringComparer.CurrentCultureIgnoreCase))
         {
-            KeepList.Add(k);
+            Rules.Add(new RuleItemViewModel(r));
         }
 
-        RemoveKeepCommand = new RelayCommand(p =>
+        RemoveRuleCommand = new RelayCommand(p =>
         {
-            if (p is KeepRule rule)
+            if (p is RuleItemViewModel rule)
             {
-                KeepList.Remove(rule);
+                Rules.Remove(rule);
             }
         });
         OpenDataFolderCommand = new RelayCommand(OpenDataFolder);
-        DeleteBaselineCommand = new RelayCommand(DeleteBaseline, () => _engine.Baseline is not null);
     }
 
-    public ObservableCollection<KeepRule> KeepList { get; } = [];
+    public ObservableCollection<RuleItemViewModel> Rules { get; } = [];
 
     public IReadOnlyList<LanguageOption> LanguageOptions { get; }
+
+    public IReadOnlyList<ProfileOption> ProfileOptions { get; }
 
     /// <summary>The selected language. Applied immediately, so the user sees the effect without restarting.</summary>
     public LanguageOption Language
@@ -73,11 +90,9 @@ public sealed class SettingsViewModel : ObservableObject
     /// <summary>The language that was active when the dialog opened (restored on Cancel).</summary>
     public string OriginalLanguage { get; } = "";
 
-    public ICommand RemoveKeepCommand { get; }
+    public ICommand RemoveRuleCommand { get; }
 
     public ICommand OpenDataFolderCommand { get; }
-
-    public ICommand DeleteBaselineCommand { get; }
 
     public int GracefulTimeoutSeconds
     {
@@ -91,11 +106,31 @@ public sealed class SettingsViewModel : ObservableObject
         set => Set(ref _preselectCaution, value);
     }
 
+    public bool StartWithWindows
+    {
+        get => _startWithWindows;
+        set => Set(ref _startWithWindows, value);
+    }
+
+    public bool StartMinimizedToTray
+    {
+        get => _startMinimized;
+        set => Set(ref _startMinimized, value);
+    }
+
     public bool AutoBaselineOnSignIn
     {
         get => _autoBaseline;
         set => Set(ref _autoBaseline, value);
     }
+
+    public ProfileOption? AutoBaselineProfile
+    {
+        get => _autoBaselineProfile;
+        set => Set(ref _autoBaselineProfile, value);
+    }
+
+    public bool HasProfiles => ProfileOptions.Count > 0;
 
     public int AutoBaselineMinDelaySeconds
     {
@@ -109,13 +144,53 @@ public sealed class SettingsViewModel : ObservableObject
         set => Set(ref _quiet, Math.Clamp(value, 10, 600));
     }
 
+    public bool CloseToTray
+    {
+        get => _closeToTray;
+        set
+        {
+            if (Set(ref _closeToTray, value))
+            {
+                OnPropertyChanged(nameof(ExitOnClose));
+            }
+        }
+    }
+
+    public bool ExitOnClose
+    {
+        get => !_closeToTray;
+        set => CloseToTray = !value;
+    }
+
+    public bool ShowNotifications
+    {
+        get => _showNotifications;
+        set => Set(ref _showNotifications, value);
+    }
+
     public int HistoryLimit
     {
         get => _historyLimit;
         set => Set(ref _historyLimit, Math.Clamp(value, 1, 500));
     }
 
-    public string DataFolder => Core.Persistence.AppPaths.Default().Root;
+    /// <summary>Shown when Windows' own Startup apps settings switched SnapBack off.</summary>
+    public string? StartupDisabledNote
+    {
+        get
+        {
+            try
+            {
+                return StartWithWindows && AutostartRegistration.IsDisabledInWindowsSettings() ? Tr.Get("Settings_StartupDisabledByWindows") : null;
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException or IOException)
+            {
+                return null;
+            }
+        }
+    }
+
+    public string DataFolder => AppPaths.Default().Root;
 
     /// <summary>Applies the settings. Returns false (and tells the user) if something could not be saved.</summary>
     public bool Save()
@@ -126,22 +201,22 @@ public sealed class SettingsViewModel : ObservableObject
             {
                 GracefulTimeoutSeconds = GracefulTimeoutSeconds,
                 PreselectCautionItems = PreselectCautionItems,
+                StartWithWindows = StartWithWindows,
+                StartMinimizedToTray = StartMinimizedToTray,
                 AutoBaselineOnSignIn = AutoBaselineOnSignIn,
+                AutoBaselineProfileId = AutoBaselineProfile?.Id,
                 AutoBaselineMinDelaySeconds = AutoBaselineMinDelaySeconds,
                 AutoBaselineQuietSeconds = AutoBaselineQuietSeconds,
+                CloseButton = CloseToTray ? CloseButtonAction.MinimizeToTray : CloseButtonAction.Exit,
+                ShowNotifications = ShowNotifications,
                 HistoryLimit = HistoryLimit,
                 Language = Language.Code,
-                KeepList = KeepList.ToList(),
+                Rules = Rules.Select(r => r.ToRule()).ToList(),
             });
 
-            var exe = Environment.ProcessPath;
-            if (AutoBaselineOnSignIn && exe is not null)
+            if (Environment.ProcessPath is { } exe)
             {
-                AutostartRegistration.Enable(exe);
-            }
-            else
-            {
-                AutostartRegistration.Disable();
+                AutostartRegistration.Sync(StartWithWindows, exe);
             }
 
             return true;
@@ -158,14 +233,6 @@ public sealed class SettingsViewModel : ObservableObject
         Directory.CreateDirectory(DataFolder);
         Process.Start(new ProcessStartInfo(DataFolder) { UseShellExecute = true });
     }
-
-    private void DeleteBaseline()
-    {
-        if (_dialogs.Confirm(Tr.Get("Confirm_DeleteBaseline_Title"), Tr.Get("Confirm_DeleteBaseline_Text")))
-        {
-            _engine.DeleteBaseline();
-        }
-    }
 }
 
 /// <summary>An entry of the language picker; "System default" shows which language that resolves to.</summary>
@@ -176,6 +243,51 @@ public sealed class LanguageOption(string code)
     public string Name => Code == Languages.System
         ? Tr.Format("Settings_LanguageSystem", Languages.NativeName(Languages.FromSystem(LanguageManager.SystemUiCulture)))
         : Languages.NativeName(Code);
+
+    public override string ToString() => Name;
+}
+
+/// <summary>A standing per-app rule, editable in Settings.</summary>
+public sealed class RuleItemViewModel : ObservableObject
+{
+    private readonly AppRule _rule;
+    private RuleKindOption _kind;
+
+    public RuleItemViewModel(AppRule rule)
+    {
+        _rule = rule;
+        _kind = KindOptions.First(o => o.Kind == rule.Kind);
+    }
+
+    public static IReadOnlyList<RuleKindOption> KindOptions { get; } =
+        Enum.GetValues<AppRuleKind>().Select(k => new RuleKindOption(k)).ToList();
+
+    public IReadOnlyList<RuleKindOption> Options => KindOptions;
+
+    public string DisplayName => _rule.DisplayName;
+
+    public string AppKey => _rule.AppKey;
+
+    public RuleKindOption Kind
+    {
+        get => _kind;
+        set
+        {
+            if (value is not null)
+            {
+                Set(ref _kind, value);
+            }
+        }
+    }
+
+    public AppRule ToRule() => _kind.Kind == _rule.Kind ? _rule : _rule with { Kind = _kind.Kind, UpdatedAtUtc = DateTime.UtcNow };
+}
+
+public sealed class RuleKindOption(AppRuleKind kind)
+{
+    public AppRuleKind Kind { get; } = kind;
+
+    public string Name => Tr.Get("Rule_" + Kind);
 
     public override string ToString() => Name;
 }

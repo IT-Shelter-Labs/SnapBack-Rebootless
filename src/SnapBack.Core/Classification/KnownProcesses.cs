@@ -42,8 +42,23 @@ public static class KnownProcesses
         // Security
         "msmpeng.exe", "nissrv.exe", "mpdefendercoreservice.exe", "mpcmdrun.exe", "securityhealthsystray.exe",
         "securityhealthservice.exe", "securityhealthhost.exe", "msseces.exe",
-        // Virtualization / WSL plumbing
-        "vmcompute.exe", "vmwp.exe", "wslhost.exe", "wslservice.exe", "wslrelay.exe");
+        // Virtualization plumbing
+        "vmcompute.exe", "vmwp.exe");
+
+    /// <summary>
+    /// WSL and Docker Desktop infrastructure. These are never closed as ordinary apps: WSL and
+    /// Docker are stopped with their own commands (<c>wsl --shutdown</c>, <c>docker desktop stop</c>).
+    /// </summary>
+    public static readonly FrozenSet<string> ManagedEnvironmentProcesses = Set(
+        // WSL
+        "vmmem", "vmmemWSL", "wslservice.exe", "wslhost.exe", "wslrelay.exe",
+        // Docker Desktop
+        "docker desktop.exe", "vpnkit.exe", "vpnkit-bridge.exe", "docker-desktop.exe");
+
+    /// <summary>Whether the process belongs to WSL or Docker Desktop (see <see cref="ManagedEnvironmentProcesses"/>).</summary>
+    public static bool IsManagedEnvironment(string imageName) =>
+        ManagedEnvironmentProcesses.Contains(imageName)
+        || imageName.StartsWith("com.docker.", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Package family name prefixes of Windows shell components that ship as packages outside
@@ -140,7 +155,7 @@ public static class KnownProcesses
     /// <summary>Virtual machines and container engines.</summary>
     public static readonly FrozenSet<string> VirtualMachines = Set(
         "virtualbox.exe", "virtualboxvm.exe", "vmware.exe", "vmware-vmx.exe", "vmplayer.exe", "vmconnect.exe",
-        "docker desktop.exe", "qemu-system-x86_64.exe", "parallels.exe", "multipass.exe", "podman desktop.exe");
+        "qemu-system-x86_64.exe", "parallels.exe", "multipass.exe", "podman desktop.exe");
 
     /// <summary>
     /// Generic helper executables that belong to whichever application started them (embedded

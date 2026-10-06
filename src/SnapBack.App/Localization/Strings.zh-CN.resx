@@ -52,12 +52,6 @@
   <data name="Card_NewSince" xml:space="preserve">
     <value>基线之后新增</value>
   </data>
-  <data name="Card_Freeable" xml:space="preserve">
-    <value>可释放</value>
-  </data>
-  <data name="Card_FreeableHint" xml:space="preserve">
-    <value>这些应用占用的内存</value>
-  </data>
   <data name="Main_BaselineNone" xml:space="preserve">
     <value>尚未创建</value>
   </data>
@@ -75,9 +69,6 @@
   </data>
   <data name="Main_ProcessesTotal" xml:space="preserve">
     <value>进程总数：{0}</value>
-  </data>
-  <data name="Main_MemoryHint" xml:space="preserve">
-    <value>已用 {0} / 共 {1}</value>
   </data>
   <data name="Main_NewSinceHint" xml:space="preserve">
     <value>基线之后启动的应用</value>
@@ -128,7 +119,7 @@
     <value>受保护（{0}）</value>
   </data>
   <data name="Tab_Kept_Description" xml:space="preserve">
-    <value>属于基线（或在保留列表中）的应用。SnapBack 永远不会建议关闭它们；它们打开的新窗口或子进程也没有问题。</value>
+    <value>属于所选配置文件或你设置为“始终保留”的应用。SnapBack 从不建议关闭它们；它们打开的新窗口或子进程也没有问题。</value>
   </data>
   <data name="Tab_Protected_Description" xml:space="preserve">
     <value>Windows 组件、服务、提升权限的程序以及 SnapBack 无法完全验证的任何内容。无论选择了什么，这些都永远不会被关闭。</value>
@@ -167,7 +158,7 @@
     <value>始终保留所选应用</value>
   </data>
   <data name="Main_AlwaysKeep_Tooltip" xml:space="preserve">
-    <value>不再建议关闭这些应用（保留列表）</value>
+    <value>不再建议关闭这些应用（规则：始终保留）</value>
   </data>
   <data name="Main_Restore" xml:space="preserve">
     <value>返回基线…</value>
@@ -222,11 +213,6 @@
   </data>
   <data name="Confirm_ReplaceBaseline_Title" xml:space="preserve">
     <value>替换基线</value>
-  </data>
-  <data name="Confirm_ReplaceBaseline_Text" xml:space="preserve">
-    <value>将当前状态设为新的基线？
-
-当前运行的所有内容都将被视为干净状态的一部分。</value>
   </data>
   <data name="Confirm_Keep_Title" xml:space="preserve">
     <value>始终保留</value>
@@ -442,29 +428,14 @@
   <data name="Settings_ClosingHint" xml:space="preserve">
     <value>需要人工确认的应用（脚本、控制台、后台进程）永远不会被预先选中，未经询问也绝不会强制结束任何程序。</value>
   </data>
-  <data name="Settings_AutoBaseline" xml:space="preserve">
-    <value>自动基线</value>
-  </data>
   <data name="Settings_AutoBaselineEnable" xml:space="preserve">
-    <value>登录 Windows 后自动创建基线</value>
-  </data>
-  <data name="Settings_AutoBaselineHint" xml:space="preserve">
-    <value>SnapBack 会在登录时短暂启动，等待启动应用全部启动完毕后保存基线并退出。它只会在你的启动应用中添加一项，不会更改其他任何内容。</value>
+    <value>启动后自动捕获基线</value>
   </data>
   <data name="Settings_MinDelay" xml:space="preserve">
     <value>登录后至少等待的秒数</value>
   </data>
   <data name="Settings_Quiet" xml:space="preserve">
     <value>…并且直到这么多秒内没有新应用启动</value>
-  </data>
-  <data name="Settings_KeepList" xml:space="preserve">
-    <value>始终保留（白名单）</value>
-  </data>
-  <data name="Settings_KeepListHint" xml:space="preserve">
-    <value>这些应用被视为干净状态的一部分，永远不会被建议关闭。可在主窗口中使用“始终保留所选应用”添加。</value>
-  </data>
-  <data name="Settings_KeepListEmpty" xml:space="preserve">
-    <value>保留列表为空。</value>
   </data>
   <data name="Settings_Data" xml:space="preserve">
     <value>数据</value>
@@ -478,17 +449,8 @@
   <data name="Settings_OpenDataFolder" xml:space="preserve">
     <value>打开数据文件夹</value>
   </data>
-  <data name="Settings_DeleteBaseline" xml:space="preserve">
-    <value>删除基线…</value>
-  </data>
   <data name="Settings_SaveFailed" xml:space="preserve">
     <value>无法保存设置：{0}</value>
-  </data>
-  <data name="Confirm_DeleteBaseline_Title" xml:space="preserve">
-    <value>删除基线</value>
-  </data>
-  <data name="Confirm_DeleteBaseline_Text" xml:space="preserve">
-    <value>删除当前基线？在你创建新基线之前，SnapBack 不会建议关闭任何内容。</value>
   </data>
   <data name="History_WindowTitle" xml:space="preserve">
     <value>历史记录 — SnapBack</value>
@@ -514,9 +476,6 @@
   <data name="History_StillRunning" xml:space="preserve">
     <value> · 仍在运行：{0}</value>
   </data>
-  <data name="History_Available" xml:space="preserve">
-    <value>可用内存：{0} → {1}</value>
-  </data>
   <data name="Confirm_ClearHistory_Title" xml:space="preserve">
     <value>清除历史记录</value>
   </data>
@@ -535,5 +494,470 @@
     <value>SnapBack 无法启动：
 
 {0}</value>
+  </data>
+  <data name="Common_OK" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Main_Profile" xml:space="preserve">
+    <value>配置文件</value>
+  </data>
+  <data name="Main_Profile_Tooltip" xml:space="preserve">
+    <value>会话与之比较的状态。选择配置文件不会关闭任何内容。</value>
+  </data>
+  <data name="Main_Profiles" xml:space="preserve">
+    <value>配置文件</value>
+  </data>
+  <data name="Main_Profiles_Tooltip" xml:space="preserve">
+    <value>创建、重命名、更新和编辑配置文件（干净、工作、游戏……）</value>
+  </data>
+  <data name="Main_Uptime" xml:space="preserve">
+    <value>会话时长：{0}</value>
+  </data>
+  <data name="Main_Uptime_Tooltip" xml:space="preserve">
+    <value>自登录 Windows 以来的时间</value>
+  </data>
+  <data name="Main_MemoryAvailable" xml:space="preserve">
+    <value>可用 {0} / 共 {1}</value>
+  </data>
+  <data name="Main_MemoryTooltip" xml:space="preserve">
+    <value>已用：{0}
+可用：{1}
+缓存（待机 + 已修改）：{2}
+
+缓存已计入“可用”：Windows 会立即把它交给应用程序。</value>
+  </data>
+  <data name="Main_NewApps" xml:space="preserve">
+    <value>{0} 个应用</value>
+  </data>
+  <data name="Main_RestoreTo" xml:space="preserve">
+    <value>返回到“{0}”…</value>
+  </data>
+  <data name="Main_RestoreToCount" xml:space="preserve">
+    <value>返回到“{0}”（{1}）…</value>
+  </data>
+  <data name="Card_Drift" xml:space="preserve">
+    <value>会话偏移</value>
+  </data>
+  <data name="Card_Impact" xml:space="preserve">
+    <value>预期效果</value>
+  </data>
+  <data name="Drift_Unknown" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="Drift_Low" xml:space="preserve">
+    <value>低</value>
+  </data>
+  <data name="Drift_Medium" xml:space="preserve">
+    <value>中</value>
+  </data>
+  <data name="Drift_High" xml:space="preserve">
+    <value>高</value>
+  </data>
+  <data name="Drift_Hint" xml:space="preserve">
+    <value>{0} 个应用 · {1} 个进程 · {2}</value>
+  </data>
+  <data name="Drift_Hint_InSync" xml:space="preserve">
+    <value>与配置文件一致</value>
+  </data>
+  <data name="Drift_Hint_Unknown" xml:space="preserve">
+    <value>需要配置文件</value>
+  </data>
+  <data name="Drift_Tooltip" xml:space="preserve">
+    <value>得分 {0}/100 · 主要因素：{1} · 基线时长：{2}</value>
+  </data>
+  <data name="Drift_Explain" xml:space="preserve">
+    <value>会话偏离配置文件的程度：新增应用及其内存影响最大，额外的进程和基线时长影响较小。缓存内存从不计入。</value>
+  </data>
+  <data name="Drift_Factor_None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Drift_Factor_NewApps" xml:space="preserve">
+    <value>新增应用</value>
+  </data>
+  <data name="Drift_Factor_AppMemory" xml:space="preserve">
+    <value>新增应用的内存</value>
+  </data>
+  <data name="Drift_Factor_Processes" xml:space="preserve">
+    <value>额外的进程</value>
+  </data>
+  <data name="Drift_Factor_Age" xml:space="preserve">
+    <value>基线时长</value>
+  </data>
+  <data name="Impact_Unknown" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="Impact_None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="Impact_Low" xml:space="preserve">
+    <value>低</value>
+  </data>
+  <data name="Impact_Medium" xml:space="preserve">
+    <value>中</value>
+  </data>
+  <data name="Impact_High" xml:space="preserve">
+    <value>高</value>
+  </data>
+  <data name="Impact_Hint" xml:space="preserve">
+    <value>约 {0}，来自 {1} 个所选应用</value>
+  </data>
+  <data name="Impact_Line_InUse" xml:space="preserve">
+    <value>已用内存：{0}</value>
+  </data>
+  <data name="Impact_Line_NewApps" xml:space="preserve">
+    <value>  新增应用：{0}</value>
+  </data>
+  <data name="Impact_Line_ProfileApps" xml:space="preserve">
+    <value>  配置文件中的应用：{0}</value>
+  </data>
+  <data name="Impact_Line_System" xml:space="preserve">
+    <value>  系统及其他：{0}</value>
+  </data>
+  <data name="Impact_Line_Cache" xml:space="preserve">
+    <value>缓存 / 待机：{0}（已可用，不算占用）</value>
+  </data>
+  <data name="Impact_Line_Estimate" xml:space="preserve">
+    <value>预计可回收：约 {0}</value>
+  </data>
+  <data name="Impact_Line_Level" xml:space="preserve">
+    <value>预期效果：{0}</value>
+  </data>
+  <data name="Duration_Minutes" xml:space="preserve">
+    <value>{0} 分钟</value>
+  </data>
+  <data name="Duration_HoursMinutes" xml:space="preserve">
+    <value>{0} 小时 {1} 分钟</value>
+  </data>
+  <data name="Duration_DaysHours" xml:space="preserve">
+    <value>{0} 天 {1} 小时</value>
+  </data>
+  <data name="Time_LessThanMinute" xml:space="preserve">
+    <value>不到一分钟</value>
+  </data>
+  <data name="Confirm_ReplaceProfile_Text" xml:space="preserve">
+    <value>用当前状态替换配置文件“{0}”中的应用？
+
+当前正在运行的所有内容都将被视为此配置文件的一部分。</value>
+  </data>
+  <data name="Exit_OperationRunning" xml:space="preserve">
+    <value>SnapBack 正在关闭应用。请等待完成（或停止等待）后再退出。</value>
+  </data>
+  <data name="Status_RuleSet" xml:space="preserve">
+    <value>{0}：{1}</value>
+  </data>
+  <data name="Status_RuleCleared" xml:space="preserve">
+    <value>{0}：已删除规则</value>
+  </data>
+  <data name="Rule_AlwaysKeep" xml:space="preserve">
+    <value>始终保留</value>
+  </data>
+  <data name="Rule_AlwaysClose" xml:space="preserve">
+    <value>始终关闭</value>
+  </data>
+  <data name="Rule_AskEveryTime" xml:space="preserve">
+    <value>每次询问</value>
+  </data>
+  <data name="Rule_Menu_AlwaysKeep" xml:space="preserve">
+    <value>始终保留</value>
+  </data>
+  <data name="Rule_Menu_AlwaysClose" xml:space="preserve">
+    <value>始终关闭（预先选中）</value>
+  </data>
+  <data name="Rule_Menu_AskEveryTime" xml:space="preserve">
+    <value>每次询问（不预先选中）</value>
+  </data>
+  <data name="Rule_Menu_Clear" xml:space="preserve">
+    <value>无规则</value>
+  </data>
+  <data name="Row_Rule" xml:space="preserve">
+    <value>规则：{0}</value>
+  </data>
+  <data name="Growth_Title" xml:space="preserve">
+    <value>内存随时间变化</value>
+  </data>
+  <data name="Growth_Explain" xml:space="preserve">
+    <value>SnapBack 运行期间大约每 15 分钟记录一次每个应用的已提交内存（不写入磁盘）。持续增长不一定是泄漏：缓存和更多工作（标签页、文档）也会增长；重新启动应用即可释放。</value>
+  </data>
+  <data name="Growth_NoData" xml:space="preserve">
+    <value>暂无历史记录：SnapBack 会在运行期间（例如在通知区域中）收集。</value>
+  </data>
+  <data name="Growth_None" xml:space="preserve">
+    <value>没有应用的内存明显增长。</value>
+  </data>
+  <data name="Growth_Growing" xml:space="preserve">
+    <value>正在增长</value>
+  </data>
+  <data name="Growth_Unusual" xml:space="preserve">
+    <value>内存异常增长</value>
+  </data>
+  <data name="Growth_Summary" xml:space="preserve">
+    <value>{2} 小时内 {0} → {1}</value>
+  </data>
+  <data name="Growth_Unusual_Row" xml:space="preserve">
+    <value>内存异常增长：{2} 小时内 {0} → {1}</value>
+  </data>
+  <data name="Growth_Growing_Row" xml:space="preserve">
+    <value>内存增长：{2} 小时内 {0} → {1}</value>
+  </data>
+  <data name="Env_Wsl_Stop" xml:space="preserve">
+    <value>关闭 WSL…</value>
+  </data>
+  <data name="Env_Docker_Stop" xml:space="preserve">
+    <value>停止 Docker…</value>
+  </data>
+  <data name="Env_Wsl_Hint" xml:space="preserve">
+    <value>WSL 通过“wsl --shutdown”停止，绝不会结束 vmmem 进程。停止之前你会看到将要停止的内容。</value>
+  </data>
+  <data name="Env_Docker_Hint" xml:space="preserve">
+    <value>Docker Desktop 通过“docker desktop stop”停止，绝不会结束其进程。停止之前你会看到正在运行的容器。</value>
+  </data>
+  <data name="Env_Checking" xml:space="preserve">
+    <value>正在检查运行内容…</value>
+  </data>
+  <data name="Env_Stopping" xml:space="preserve">
+    <value>正在停止 {0}…</value>
+  </data>
+  <data name="Env_Result_NotRunning" xml:space="preserve">
+    <value>{0} 未运行。</value>
+  </data>
+  <data name="Env_Wsl_Confirm_Title" xml:space="preserve">
+    <value>关闭 WSL？</value>
+  </data>
+  <data name="Env_Docker_Confirm_Title" xml:space="preserve">
+    <value>停止 Docker Desktop？</value>
+  </data>
+  <data name="Preview_Impact" xml:space="preserve">
+    <value>预期效果：{0}</value>
+  </data>
+  <data name="Preview_Env_Title" xml:space="preserve">
+    <value>同时停止（可选）</value>
+  </data>
+  <data name="Preview_Env_Wsl" xml:space="preserve">
+    <value>关闭 WSL · {0}</value>
+  </data>
+  <data name="Preview_Env_Docker" xml:space="preserve">
+    <value>停止 Docker Desktop · {0}</value>
+  </data>
+  <data name="Preview_Env_Confirm_Title" xml:space="preserve">
+    <value>同时停止 WSL / Docker？</value>
+  </data>
+  <data name="Op_Header_StoppingWsl" xml:space="preserve">
+    <value>正在关闭 WSL…</value>
+  </data>
+  <data name="Op_Header_StoppingDocker" xml:space="preserve">
+    <value>正在停止 Docker Desktop…</value>
+  </data>
+  <data name="Profiles_Title" xml:space="preserve">
+    <value>配置文件</value>
+  </data>
+  <data name="Profiles_Intro" xml:space="preserve">
+    <value>配置文件是你想返回的状态：应保持运行的应用。从当前状态创建配置文件，然后在它们之间切换——切换前总会先显示常规预览。</value>
+  </data>
+  <data name="Profiles_Empty" xml:space="preserve">
+    <value>尚无配置文件。请从当前状态创建一个。</value>
+  </data>
+  <data name="Profiles_New" xml:space="preserve">
+    <value>从当前状态新建…</value>
+  </data>
+  <data name="Profiles_New_Tooltip" xml:space="preserve">
+    <value>当前正在运行的所有应用都将成为新配置文件的一部分</value>
+  </data>
+  <data name="Profiles_New_Title" xml:space="preserve">
+    <value>新建配置文件</value>
+  </data>
+  <data name="Profiles_New_Text" xml:space="preserve">
+    <value>新配置文件的名称（当前正在运行的应用都将包含在内）：</value>
+  </data>
+  <data name="Profiles_Rename" xml:space="preserve">
+    <value>重命名…</value>
+  </data>
+  <data name="Profiles_Rename_Title" xml:space="preserve">
+    <value>重命名配置文件</value>
+  </data>
+  <data name="Profiles_Rename_Text" xml:space="preserve">
+    <value>新名称：</value>
+  </data>
+  <data name="Profiles_Delete" xml:space="preserve">
+    <value>删除…</value>
+  </data>
+  <data name="Profiles_Delete_Title" xml:space="preserve">
+    <value>删除配置文件</value>
+  </data>
+  <data name="Profiles_Delete_Text" xml:space="preserve">
+    <value>删除配置文件“{0}”？不会关闭任何内容，只会删除保存的应用列表。</value>
+  </data>
+  <data name="Profiles_SetDefault" xml:space="preserve">
+    <value>设为默认</value>
+  </data>
+  <data name="Profiles_Update" xml:space="preserve">
+    <value>从当前状态更新…</value>
+  </data>
+  <data name="Profiles_Update_Tooltip" xml:space="preserve">
+    <value>用当前正在运行的应用替换此配置文件中的应用（名称和选项保持不变）</value>
+  </data>
+  <data name="Profiles_Use" xml:space="preserve">
+    <value>与此配置文件比较</value>
+  </data>
+  <data name="Profiles_Use_Tooltip" xml:space="preserve">
+    <value>在主窗口中选择此配置文件。不会关闭任何内容。</value>
+  </data>
+  <data name="Profiles_Apps" xml:space="preserve">
+    <value>“{0}”中的应用（{1}）</value>
+  </data>
+  <data name="Profiles_AppsHint" xml:space="preserve">
+    <value>返回到此配置文件时，这些应用会保持运行。其他应用都会被建议关闭（受保护的系统组件永远不会被触及）。</value>
+  </data>
+  <data name="Profiles_AddApp" xml:space="preserve">
+    <value>添加正在运行的应用</value>
+  </data>
+  <data name="Profiles_Environments" xml:space="preserve">
+    <value>切换到此配置文件时</value>
+  </data>
+  <data name="Profiles_StopWsl" xml:space="preserve">
+    <value>建议关闭 WSL</value>
+  </data>
+  <data name="Profiles_StopDocker" xml:space="preserve">
+    <value>建议停止 Docker Desktop</value>
+  </data>
+  <data name="Profiles_EnvironmentsHint" xml:space="preserve">
+    <value>这只是建议：每次都会在预览中显示将要停止的内容并先征求你的同意。</value>
+  </data>
+  <data name="Profiles_Details" xml:space="preserve">
+    <value>{0} 个应用 · 更新于 {1}</value>
+  </data>
+  <data name="Profiles_Default" xml:space="preserve">
+    <value>默认</value>
+  </data>
+  <data name="Profiles_Current" xml:space="preserve">
+    <value>已选择</value>
+  </data>
+  <data name="Profile_Suggest_Clean" xml:space="preserve">
+    <value>干净</value>
+  </data>
+  <data name="Profile_Suggest_Work" xml:space="preserve">
+    <value>工作</value>
+  </data>
+  <data name="Profile_Suggest_Gaming" xml:space="preserve">
+    <value>游戏</value>
+  </data>
+  <data name="Profile_Suggest_Streaming" xml:space="preserve">
+    <value>直播</value>
+  </data>
+  <data name="Profile_Suggest_Custom" xml:space="preserve">
+    <value>自定义</value>
+  </data>
+  <data name="Settings_Startup" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="Settings_StartWithWindows" xml:space="preserve">
+    <value>随 Windows 启动 SnapBack</value>
+  </data>
+  <data name="Settings_StartMinimized" xml:space="preserve">
+    <value>启动时最小化到通知区域</value>
+  </data>
+  <data name="Settings_AutoBaselineProfile" xml:space="preserve">
+    <value>要捕获的配置文件</value>
+  </data>
+  <data name="Settings_StartupHint" xml:space="preserve">
+    <value>使用标准的当前用户启动项（无需管理员权限）。自动基线会等到启动程序全部启动且电脑不再繁忙时再进行。</value>
+  </data>
+  <data name="Settings_StartupDisabledByWindows" xml:space="preserve">
+    <value>SnapBack 已在“Windows 设置 → 应用 → 启动”中关闭。请在那里将其打开以便启动。</value>
+  </data>
+  <data name="Settings_Tray" xml:space="preserve">
+    <value>通知区域</value>
+  </data>
+  <data name="Settings_CloseButton" xml:space="preserve">
+    <value>关闭窗口时：</value>
+  </data>
+  <data name="Settings_CloseToTray" xml:space="preserve">
+    <value>让 SnapBack 继续在通知区域运行（推荐）</value>
+  </data>
+  <data name="Settings_ExitOnClose" xml:space="preserve">
+    <value>退出 SnapBack</value>
+  </data>
+  <data name="Settings_Notifications" xml:space="preserve">
+    <value>显示通知</value>
+  </data>
+  <data name="Settings_NotificationsHint" xml:space="preserve">
+    <value>仅在必要时偶尔通知：会话偏移较高且新增应用占用大量内存，或内存异常增长。绝不会因缓存内存而通知。会遵循 Windows 的“请勿打扰”。</value>
+  </data>
+  <data name="Settings_Rules" xml:space="preserve">
+    <value>规则</value>
+  </data>
+  <data name="Settings_RulesHint" xml:space="preserve">
+    <value>针对每个应用的固定规则。“始终关闭”只会预先选中该应用：它仍会在预览后被礼貌地关闭，未经你确认绝不会被强制结束。任何规则都不能解除系统组件的保护。</value>
+  </data>
+  <data name="Settings_RulesEmpty" xml:space="preserve">
+    <value>尚无规则。在主窗口中右键单击应用即可添加。</value>
+  </data>
+  <data name="History_ReturnTo" xml:space="preserve">
+    <value>返回到“{0}”</value>
+  </data>
+  <data name="History_Released" xml:space="preserve">
+    <value>应用释放的内存：{0}</value>
+  </data>
+  <data name="History_AppsClosed" xml:space="preserve">
+    <value>已关闭应用：{0}/{1}</value>
+  </data>
+  <data name="History_Forced" xml:space="preserve">
+    <value>强制结束的进程：{0}</value>
+  </data>
+  <data name="History_DeepCleanupUsed" xml:space="preserve">
+    <value>深度内存清理：已使用，回收缓存 {0}（与应用分开统计）</value>
+  </data>
+  <data name="History_DeepCleanupNotUsed" xml:space="preserve">
+    <value>深度内存清理：未使用</value>
+  </data>
+  <data name="History_Environments" xml:space="preserve">
+    <value>已使用其自身命令停止：{0}</value>
+  </data>
+  <data name="History_Duration" xml:space="preserve">
+    <value>用时：{0}</value>
+  </data>
+  <data name="Tray_Open" xml:space="preserve">
+    <value>打开 SnapBack</value>
+  </data>
+  <data name="Tray_Return" xml:space="preserve">
+    <value>返回基线…</value>
+  </data>
+  <data name="Tray_ReturnTo" xml:space="preserve">
+    <value>返回到“{0}”…</value>
+  </data>
+  <data name="Tray_ChooseProfile" xml:space="preserve">
+    <value>选择配置文件</value>
+  </data>
+  <data name="Tray_CreateBaseline" xml:space="preserve">
+    <value>创建基线…</value>
+  </data>
+  <data name="Tray_UpdateProfile" xml:space="preserve">
+    <value>从当前状态更新“{0}”…</value>
+  </data>
+  <data name="Tray_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Tray_Exit" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="Tray_Tooltip_Header" xml:space="preserve">
+    <value>SnapBack · {0}</value>
+  </data>
+  <data name="Tray_Tooltip_Extra" xml:space="preserve">
+    <value>额外应用 {0} 个 · 约可回收 {1}</value>
+  </data>
+  <data name="Tray_Tooltip_InSync" xml:space="preserve">
+    <value>没有额外应用</value>
+  </data>
+  <data name="Tray_Tooltip_NoBaseline" xml:space="preserve">
+    <value>尚未创建基线</value>
+  </data>
+  <data name="Tray_Hint_Title" xml:space="preserve">
+    <value>SnapBack 仍在运行</value>
+  </data>
+  <data name="Tray_Hint_Text" xml:space="preserve">
+    <value>它会留在通知区域，每 15 分钟检查一次会话。要退出，请右键单击图标。可以在设置中更改此行为。</value>
+  </data>
+  <data name="Tray_NothingSelected" xml:space="preserve">
+    <value>没有预先选中的应用。请打开列表选择要关闭的应用。</value>
   </data>
 </root>

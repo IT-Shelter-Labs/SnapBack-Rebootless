@@ -9,6 +9,17 @@ public partial class PreviewWindow : Window
     {
         InitializeComponent();
         DataContext = vm;
+        Loaded += async (_, _) =>
+        {
+            try
+            {
+                await vm.LoadEnvironmentDetailsAsync();
+            }
+            catch (Exception ex)
+            {
+                Services.ErrorReporter.Report(ex);
+            }
+        };
     }
 
     private void Confirm_Click(object sender, RoutedEventArgs e) => DialogResult = true;

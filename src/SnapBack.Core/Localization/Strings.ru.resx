@@ -203,7 +203,7 @@
     <value>Был в baseline (с тех пор перезапущен)</value>
   </data>
   <data name="Plan_Kept_UserList" xml:space="preserve">
-    <value>В списке «Всегда оставлять»</value>
+    <value>Всегда оставлять (ваше правило)</value>
   </data>
   <data name="Plan_Kept" xml:space="preserve">
     <value>Оставлено</value>
@@ -609,5 +609,101 @@
   </data>
   <data name="Cmp_Commit" xml:space="preserve">
     <value>Выделено (commit)</value>
+  </data>
+  <data name="Reason_ManagedEnvironment_Label" xml:space="preserve">
+    <value>WSL / Docker</value>
+  </data>
+  <data name="Reason_ManagedEnvironment_Explain" xml:space="preserve">
+    <value>Часть WSL или Docker Desktop. SnapBack никогда не закрывает эти процессы — остановите WSL или Docker их собственной командой.</value>
+  </data>
+  <data name="Plan_RuleAlwaysClose" xml:space="preserve">
+    <value>Ваше правило: всегда закрывать</value>
+  </data>
+  <data name="Profile_DefaultName" xml:space="preserve">
+    <value>Чистый</value>
+  </data>
+  <data name="Profile_NotFound" xml:space="preserve">
+    <value>Профиль больше не существует.</value>
+  </data>
+  <data name="Profile_TooMany" xml:space="preserve">
+    <value>Можно создать не более {0} профилей.</value>
+  </data>
+  <data name="Impact_Explain_NothingSelected" xml:space="preserve">
+    <value>Приложения не выбраны, поэтому ничего не изменится.</value>
+  </data>
+  <data name="Impact_Explain_MostlyNotNew" xml:space="preserve">
+    <value>Большая часть занятой памяти используется не приложениями, добавленными после baseline.</value>
+  </data>
+  <data name="Impact_Explain_PlentyAvailable" xml:space="preserve">
+    <value>Свободной памяти достаточно. Возврат к baseline в основном уберёт лишние приложения и фоновую активность.</value>
+  </data>
+  <data name="Impact_Explain_ShouldHelp" xml:space="preserve">
+    <value>Памяти становится мало, а новые приложения занимают значительную её часть, поэтому возврат к baseline должен заметно помочь.</value>
+  </data>
+  <data name="Impact_Explain_Estimate" xml:space="preserve">
+    <value>Это оценка, а не обещание: память, общая с другими программами, остаётся занятой, приложения могут отказаться закрываться, а часть освобождённой памяти Windows может оставить в кэше (она всё равно доступна).</value>
+  </data>
+  <data name="Notify_Drift_Title" xml:space="preserve">
+    <value>Сеанс сильно отклонился от профиля</value>
+  </data>
+  <data name="Notify_Drift_Text" xml:space="preserve">
+    <value>Лишних приложений: {0} · можно освободить ~{1}</value>
+  </data>
+  <data name="Notify_Growth_Title" xml:space="preserve">
+    <value>Необычный рост памяти</value>
+  </data>
+  <data name="Notify_Growth_Text" xml:space="preserve">
+    <value>{0}: {1} → {2} за {3} ч. Это может быть нормальный кэш или утечка памяти.</value>
+  </data>
+  <data name="Env_Wsl_NotInstalled" xml:space="preserve">
+    <value>Не найден wsl.exe, поэтому SnapBack не может остановить WSL.</value>
+  </data>
+  <data name="Env_Docker_CliMissing" xml:space="preserve">
+    <value>Не найдена утилита командной строки Docker (docker.exe). Закройте Docker Desktop через его значок в трее.</value>
+  </data>
+  <data name="Env_Docker_StopUnsupported" xml:space="preserve">
+    <value>В этой версии Docker Desktop нет команды «docker desktop stop» (нужна версия 4.37 или новее). Закройте Docker Desktop через его значок в трее.</value>
+  </data>
+  <data name="Env_Wsl_Warning" xml:space="preserve">
+    <value>Все дистрибутивы WSL и виртуальная машина WSL будут остановлены (wsl --shutdown).</value>
+  </data>
+  <data name="Env_Wsl_Warning_Distros" xml:space="preserve">
+    <value>Будут остановлены работающие дистрибутивы WSL вместе со всеми процессами и службами Linux (wsl --shutdown): {0}</value>
+  </data>
+  <data name="Env_Wsl_Warning_Docker" xml:space="preserve">
+    <value>Docker Desktop работает внутри WSL: его движок и контейнеры тоже остановятся. Чтобы Docker завершился корректно, сначала остановите Docker.</value>
+  </data>
+  <data name="Env_Docker_Warning_Containers" xml:space="preserve">
+    <value>Будут остановлены работающие контейнеры ({0}): {1}</value>
+  </data>
+  <data name="Env_Docker_Warning_None" xml:space="preserve">
+    <value>Контейнеры не запущены. Docker Desktop и его движок будут остановлены (docker desktop stop).</value>
+  </data>
+  <data name="Env_Docker_Warning_Unknown" xml:space="preserve">
+    <value>SnapBack не удалось получить список работающих контейнеров. Все работающие контейнеры будут остановлены.</value>
+  </data>
+  <data name="Env_Warning_Unsaved" xml:space="preserve">
+    <value>Несохранённая работа внутри них (редакторы, базы данных, задачи) может быть потеряна.</value>
+  </data>
+  <data name="Env_Result_Expired" xml:space="preserve">
+    <value>Подтверждение устарело; ничего не остановлено. Повторите попытку.</value>
+  </data>
+  <data name="Env_Result_NotRunning" xml:space="preserve">
+    <value>{0} не запущен.</value>
+  </data>
+  <data name="Env_Result_Changed" xml:space="preserve">
+    <value>После вашего подтверждения в {0} запустилось что-то новое; ничего не остановлено. Проверьте и повторите попытку.</value>
+  </data>
+  <data name="Env_Result_TimedOut" xml:space="preserve">
+    <value>{0} не успел остановиться вовремя. Возможно, он ещё завершается.</value>
+  </data>
+  <data name="Env_Result_Failed" xml:space="preserve">
+    <value>Не удалось остановить {0}: {1}</value>
+  </data>
+  <data name="Env_Result_StillRunning" xml:space="preserve">
+    <value>Команда остановки выполнена, но {0} всё ещё работает.</value>
+  </data>
+  <data name="Env_Result_Stopped" xml:space="preserve">
+    <value>{0} остановлен собственной командой.</value>
   </data>
 </root>

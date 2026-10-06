@@ -4,8 +4,11 @@ using SnapBack.App.Localization;
 using SnapBack.App.Mvvm;
 using SnapBack.App.Services;
 using SnapBack.Core;
+using SnapBack.Core.Environments;
 using SnapBack.Core.Execution;
+using SnapBack.Core.Insights;
 using SnapBack.Core.Planning;
+using SnapBack.Core.Profiles;
 using SnapBack.Core.Safety;
 using SnapBack.Core.Text;
 
@@ -19,19 +22,99 @@ public sealed class PreviewViewModel : ObservableObject
 {
     private readonly SnapBackEngine _engine;
     private readonly Analysis _analysis;
+    private readonly EnvironmentService? _environments;
     private string _dryRunSummary = "";
     private bool _isChecking;
+    private bool _isLoadingEnvironments;
 
-    public PreviewViewModel(SnapBackEngine engine, Analysis analysis, IReadOnlyList<PlanItem> selected)
+    public PreviewViewModel(SnapBackEngine engine, Analysis analysis, IReadOnlyList<PlanItem> selected, EnvironmentService? environments = null)
     {
         _engine = engine;
         _analysis = analysis;
+        _environments = environments;
         Selected = selected;
         Items = selected.Select(i => new PreviewItemViewModel(i)).ToList();
         DryRunCommand = new AsyncRelayCommand(DryRunAsync, () => !_isChecking);
+        Impact = ImpactEstimate.Compute(analysis, selected);
+
+        if (environments is not null)
+        {
+            var profile = analysis.Profile;
+            EnvironmentOptions = EnvironmentDetector.Detect(analysis.Snapshot)
+                .Where(e => e.IsRunning)
+                .Select(e => new EnvironmentOptionViewModel(e, PolicyFor(profile, e.Kind) == EnvironmentPolicy.Stop))
+                .ToList();
+        }
     }
 
     public IReadOnlyList<PlanItem> Selected { get; }
+
+    // ---- Expected impact (an estimate made before anything happens) ----------------------------
+
+    public ImpactEstimate Impact { get; }
+
+    public string ImpactTitle => Tr.Format("Preview_Impact", Tr.Get("Impact_" + Impact.Level));
+
+    public string ImpactText => ImpactFormatter.Describe(Impact);
+
+    // ---- WSL / Docker ------------------------------------------------------------------------
+
+    public IReadOnlyList<EnvironmentOptionViewModel> EnvironmentOptions { get; } = [];
+
+    public bool HasEnvironmentOptions => EnvironmentOptions.Count > 0;
+
+    /// <summary>The confirm button waits until the environments have been inspected.</summary>
+    public bool CanConfirm => !_isLoadingEnvironments;
+
+    /// <summary>Inspects running environments with their own read-only commands (to show what would stop).</summary>
+    public async Task LoadEnvironmentDetailsAsync()
+    {
+        if (_environments is null || EnvironmentOptions.Count == 0)
+        {
+            return;
+        }
+
+        _isLoadingEnvironments = true;
+        OnPropertyChanged(nameof(CanConfirm));
+        try
+        {
+            foreach (var option in EnvironmentOptions)
+            {
+                option.SetDetails(await _environments.InspectAsync(option.Kind));
+            }
+        }
+        finally
+        {
+            _isLoadingEnvironments = false;
+            OnPropertyChanged(nameof(CanConfirm));
+        }
+    }
+
+    /// <summary>
+    /// After the preview was confirmed: if environments are ticked, shows their warning once more and
+    /// returns the confirmations, an empty list when none is ticked, or <c>null</c> when the user
+    /// declined (then nothing at all happens).
+    /// </summary>
+    public IReadOnlyList<EnvironmentStopConfirmation>? ConfirmEnvironmentStops(IDialogService dialogs)
+    {
+        var chosen = EnvironmentOptions.Where(o => o.IsChecked && o.Details is { IsRunning: true, CanStop: true }).ToList();
+        if (chosen.Count == 0)
+        {
+            return [];
+        }
+
+        var text = string.Join("\n\n", chosen.Select(o => o.Details!.Name + ":\n" + o.Details.Warning));
+        if (!dialogs.Confirm(Tr.Get("Preview_Env_Confirm_Title"), text, dangerous: true))
+        {
+            return null;
+        }
+
+        var now = DateTime.UtcNow;
+        return chosen.Select(o => EnvironmentStopConfirmation.FromUserConfirmation(o.Details!, now)).ToList();
+    }
+
+    private static EnvironmentPolicy PolicyFor(Profile? profile, EnvironmentKind kind) =>
+        profile is null ? EnvironmentPolicy.Keep : kind == EnvironmentKind.Wsl ? profile.Wsl : profile.Docker;
 
     public IReadOnlyList<PreviewItemViewModel> Items { get; }
 
@@ -84,6 +167,50 @@ public sealed class PreviewViewModel : ObservableObject
             _isChecking = false;
             CommandManager.InvalidateRequerySuggested();
         }
+    }
+}
+
+/// <summary>A running WSL / Docker environment offered in the preview, with what stopping it would end.</summary>
+public sealed class EnvironmentOptionViewModel : ObservableObject
+{
+    private bool _isChecked;
+    private EnvironmentDetails? _details;
+
+    public EnvironmentOptionViewModel(EnvironmentPresence presence, bool suggested)
+    {
+        Presence = presence;
+        _isChecked = suggested;
+    }
+
+    public EnvironmentPresence Presence { get; }
+
+    public EnvironmentKind Kind => Presence.Kind;
+
+    public EnvironmentDetails? Details => _details;
+
+    public string Label => Tr.Format(Kind == EnvironmentKind.Wsl ? "Preview_Env_Wsl" : "Preview_Env_Docker",
+        Presence.MemoryBytes > 0 ? ByteSize.Format(Presence.MemoryBytes) : "–");
+
+    public bool IsChecked
+    {
+        get => _isChecked && CanStop;
+        set => Set(ref _isChecked, value);
+    }
+
+    public bool CanStop => _details is { CanStop: true };
+
+    public string StatusText => _details switch
+    {
+        null => Tr.Get("Env_Checking"),
+        { IsRunning: false } d => Tr.Format("Env_Result_NotRunning", d.Name),
+        { CanStop: false } d => d.CannotStopReason ?? "",
+        { } d => d.Warning,
+    };
+
+    public void SetDetails(EnvironmentDetails details)
+    {
+        _details = details;
+        OnPropertyChanged(string.Empty);
     }
 }
 

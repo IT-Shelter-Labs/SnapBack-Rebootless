@@ -1,0 +1,114 @@
+<Window x:Class="SnapBack.App.Views.ProfilesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:SnapBack.App.ViewModels"
+        xmlns:l="clr-namespace:SnapBack.App.Localization"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:ProfilesViewModel}"
+        Title="{l:Tr Profiles_Title}" FontFamily="{Binding UiFont, Source={x:Static l:Tr.Instance}}"
+        Width="960" Height="680" MinWidth="720" MinHeight="460"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        AutomationProperties.AutomationId="ProfilesWindow">
+
+    <Grid Margin="24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.ColumnSpan="2" Margin="0,0,0,12">
+            <TextBlock Text="{l:Tr Profiles_Title}" FontSize="22" FontWeight="SemiBold" />
+            <TextBlock Text="{l:Tr Profiles_Intro}" Style="{StaticResource Secondary}" FontSize="13" TextWrapping="Wrap" TextTrimming="None" Margin="0,4,0,0" />
+        </StackPanel>
+
+        <!-- Profiles -->
+        <DockPanel Grid.Row="1" Margin="0,0,12,0">
+            <WrapPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                <Button Content="{l:Tr Profiles_New}" Command="{Binding NewCommand}" Padding="12,6" Margin="0,0,6,6"
+                        ToolTip="{l:Tr Profiles_New_Tooltip}" AutomationProperties.AutomationId="NewProfileButton" />
+                <Button Content="{l:Tr Profiles_Rename}" Command="{Binding RenameCommand}" Padding="12,6" Margin="0,0,6,6" />
+                <Button Content="{l:Tr Profiles_SetDefault}" Command="{Binding SetDefaultCommand}" Padding="12,6" Margin="0,0,6,6" />
+                <Button Content="{l:Tr Profiles_Delete}" Command="{Binding DeleteCommand}" Padding="12,6" Margin="0,0,6,6" Style="{StaticResource DangerButton}" />
+            </WrapPanel>
+            <Grid>
+                <ListBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding Selected}" AutomationProperties.AutomationId="ProfilesList">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,4" AutomationProperties.Name="{Binding Name}">
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
+                                <TextBlock Text="{Binding Details}" Style="{StaticResource Secondary}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock Text="{l:Tr Profiles_Empty}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="16"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+                           Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}" />
+            </Grid>
+        </DockPanel>
+
+        <!-- Selected profile -->
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}" Visibility="{Binding HasSelection, Converter={StaticResource BoolToVisibility}}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <DockPanel Margin="0,0,0,8">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="{l:Tr Profiles_Update}" Command="{Binding UpdateCommand}" Padding="12,6" Margin="0,0,6,0"
+                                    ToolTip="{l:Tr Profiles_Update_Tooltip}" />
+                            <Button Content="{l:Tr Profiles_Use}" Command="{Binding UseCommand}" Padding="12,6" ToolTip="{l:Tr Profiles_Use_Tooltip}"
+                                    AutomationProperties.AutomationId="UseProfileButton" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding AppsHeader}" Style="{StaticResource SectionTitle}" Margin="0" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    </DockPanel>
+                    <TextBlock Text="{l:Tr Profiles_AppsHint}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,8" />
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+                    <DockPanel Margin="0,0,0,10">
+                        <Button DockPanel.Dock="Right" Content="{l:Tr Profiles_AddApp}" Command="{Binding AddAppCommand}" Padding="12,6" Margin="8,0,0,0" />
+                        <ComboBox ItemsSource="{Binding AddableApps}" SelectedItem="{Binding SelectedAddable}" DisplayMemberPath="Name"
+                                  AutomationProperties.Name="{l:Tr Profiles_AddApp}" />
+                    </DockPanel>
+                    <TextBlock Text="{l:Tr Profiles_Environments}" FontWeight="SemiBold" Margin="0,0,0,4" />
+                    <CheckBox IsChecked="{Binding StopWsl}">
+                        <TextBlock Text="{l:Tr Profiles_StopWsl}" TextWrapping="Wrap" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding StopDocker}">
+                        <TextBlock Text="{l:Tr Profiles_StopDocker}" TextWrapping="Wrap" />
+                    </CheckBox>
+                    <TextBlock Text="{l:Tr Profiles_EnvironmentsHint}" Style="{StaticResource Secondary}" TextWrapping="Wrap" TextTrimming="None" Margin="0,4,0,0" />
+                </StackPanel>
+
+                <ListView ItemsSource="{Binding Apps}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="ToolTip" Value="{Binding Path}" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Content="{l:Tr Common_Remove}" Padding="10,2"
+                                        Command="{Binding DataContext.RemoveAppCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}" />
+                                <Image DockPanel.Dock="Left" Source="{Binding Icon}" Width="20" Height="20" Margin="0,0,8,0" />
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </DockPanel>
+        </Border>
+
+        <Button Grid.Row="2" Grid.Column="1" Content="{l:Tr Common_Close}" IsCancel="True" HorizontalAlignment="Right" Padding="22,8" Margin="0,12,0,0"
+                AutomationProperties.AutomationId="CloseProfilesButton" />
+    </Grid>
+</Window>

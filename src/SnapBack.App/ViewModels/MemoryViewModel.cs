@@ -3,6 +3,7 @@ using System.Windows.Input;
 using SnapBack.App.Localization;
 using SnapBack.App.Mvvm;
 using SnapBack.Core;
+using SnapBack.Core.Insights;
 using SnapBack.Core.Localization;
 using SnapBack.Core.Memory;
 using SnapBack.Core.Model;
@@ -37,6 +38,13 @@ public sealed class MemoryViewModel : ObservableObject
     public ObservableCollection<MemoryRowViewModel> Rows { get; } = [];
 
     public ObservableCollection<ComparisonRowViewModel> ResultRows { get; } = [];
+
+    /// <summary>Applications whose memory has been growing (from the background memory history).</summary>
+    public ObservableCollection<GrowthRowViewModel> Growth { get; } = [];
+
+    public bool HasGrowth => Growth.Count > 0;
+
+    public string GrowthEmptyText => _engine.Tracker.LastSampleUtc is null ? Tr.Get("Growth_NoData") : Tr.Get("Growth_None");
 
     public ICommand RefreshCommand { get; }
 
@@ -108,6 +116,12 @@ public sealed class MemoryViewModel : ObservableObject
 
     private void Rebuild()
     {
+        Growth.Clear();
+        foreach (var (series, growth) in _engine.Tracker.Assessments().Where(x => x.Growth.Level != GrowthLevel.None).Take(8))
+        {
+            Growth.Add(new GrowthRowViewModel(series, growth));
+        }
+
         Rows.Clear();
         var m = _memory;
         if (m.IsKnown)
@@ -192,4 +206,31 @@ public sealed class MemoryRowViewModel(string labelKey, string value, string? hi
     public string Value { get; } = value;
 
     public string? Hint { get; } = hint;
+}
+
+/// <summary>One application's memory over time ("10:00 420 MB · 13:00 610 MB · …").</summary>
+public sealed class GrowthRowViewModel(MemorySeries series, GrowthAssessment growth)
+{
+    public string Name => series.DisplayName;
+
+    public bool IsUnusual => growth.Level == GrowthLevel.Unusual;
+
+    public string LevelText => Tr.Get(IsUnusual ? "Growth_Unusual" : "Growth_Growing");
+
+    public string Summary => Tr.Format("Growth_Summary", ByteSize.Format(growth.FromBytes), ByteSize.Format(growth.ToBytes),
+        Math.Max(1, (int)Math.Round(growth.Span.TotalHours)));
+
+    /// <summary>Up to eight evenly spaced samples.</summary>
+    public string Timeline
+    {
+        get
+        {
+            var samples = series.Samples;
+            var count = Math.Min(8, samples.Count);
+            var points = Enumerable.Range(0, count)
+                .Select(i => samples[count == 1 ? 0 : (int)Math.Round(i * (samples.Count - 1) / (double)(count - 1))])
+                .Select(s => s.AtUtc.ToLocalTime().ToString("t", Loc.Culture) + "  " + ByteSize.Format(s.Bytes));
+            return string.Join("   ·   ", points);
+        }
+    }
 }

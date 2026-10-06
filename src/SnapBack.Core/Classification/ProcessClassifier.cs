@@ -61,6 +61,11 @@ public sealed class ProcessClassifier
             b.Add(RiskReason.ShellComponent);
         }
 
+        if (KnownProcesses.IsManagedEnvironment(name))
+        {
+            b.Add(RiskReason.ManagedEnvironment);
+        }
+
         if (PathUtil.IsUnder(p.ImagePath, ctx.WindowsDirectory))
         {
             b.Add(KnownProcesses.WindowsUserTools.Contains(name) ? RiskReason.WindowsUserTool : RiskReason.WindowsComponent);

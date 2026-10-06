@@ -9,6 +9,18 @@
         <Setter Property="ToolTipService.InitialShowDelay" Value="600" />
         <Setter Property="ToolTipService.ShowDuration" Value="30000" />
         <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
+        <!-- Standing rules for the app (never available for protected components). -->
+        <Setter Property="ContextMenu">
+            <Setter.Value>
+                <ContextMenu>
+                    <MenuItem Header="{l:Tr Rule_Menu_AlwaysKeep}" Command="{Binding RuleKeepCommand}" />
+                    <MenuItem Header="{l:Tr Rule_Menu_AlwaysClose}" Command="{Binding RuleCloseCommand}" />
+                    <MenuItem Header="{l:Tr Rule_Menu_AskEveryTime}" Command="{Binding RuleAskCommand}" />
+                    <Separator />
+                    <MenuItem Header="{l:Tr Rule_Menu_Clear}" Command="{Binding RuleClearCommand}" />
+                </ContextMenu>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- Column header: each title is a button that sorts by that column (click again to reverse). -->
@@ -63,6 +75,8 @@
             <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="4,0,12,0">
                 <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                 <TextBlock Text="{Binding Subtitle}" Style="{StaticResource Secondary}" />
+                <TextBlock Text="{Binding GrowthText}" FontSize="12" Foreground="{DynamicResource SystemFillColorCautionBrush}" TextTrimming="CharacterEllipsis"
+                           Visibility="{Binding GrowthText, Converter={StaticResource HasValueToVisibility}}" />
             </StackPanel>
 
             <TextBlock Grid.Column="3" Text="{Binding MemoryText}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,20,0" />

@@ -131,7 +131,7 @@ public sealed class MemoryTests : IDisposable
 
     private SnapBackEngine CreateEngine(FakeSystem system)
     {
-        var (settings, baseline, history) = StoreFactory.Create(new AppPaths(_dir), NullLoggerFactory.Instance);
-        return new SnapBackEngine(system, system, settings, baseline, history, NullLoggerFactory.Instance);
+        var (settings, profiles, history) = StoreFactory.Create(new AppPaths(_dir), NullLoggerFactory.Instance);
+        return new SnapBackEngine(system, system, settings, profiles, history, NullLoggerFactory.Instance);
     }
 }

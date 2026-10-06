@@ -15,12 +15,17 @@ public enum SettleState
 /// programs are still launching.
 /// </summary>
 /// <remarks>
-/// Startup counts as settled when (1) at least <c>minSinceLogon</c> has passed since sign-in and
-/// (2) the set of running applications has not changed for <c>quietPeriod</c>. If that never
-/// happens, the detector gives up after <c>maxWait</c> (the caller then takes the baseline anyway).
+/// Startup counts as settled when (1) at least <c>minSinceLogon</c> has passed since sign-in,
+/// (2) the set of running applications has not changed for <c>quietPeriod</c>, and (3) the CPU has
+/// not been busy (average below <see cref="BusyThreshold"/>) during that quiet period — autostart
+/// programs often keep loading for a while after their process appears. If that never happens,
+/// the detector gives up after <c>maxWait</c> (the caller then takes the baseline anyway).
 /// </remarks>
 public sealed class StartupSettleDetector
 {
+    /// <summary>System-wide CPU usage above which startup is considered still busy.</summary>
+    public const double BusyThreshold = 0.5;
+
     private readonly TimeSpan _minSinceLogon;
     private readonly TimeSpan _quietPeriod;
     private readonly DateTime _logonUtc;
@@ -37,11 +42,15 @@ public sealed class StartupSettleDetector
         _lastChangeUtc = startedUtc;
     }
 
-    public SettleState Observe(DateTime nowUtc, IEnumerable<string> runningAppKeys)
+    /// <param name="nowUtc">Current time.</param>
+    /// <param name="runningAppKeys">Running user applications.</param>
+    /// <param name="cpuBusy">System CPU usage since the previous observation (0–1), when known.</param>
+    public SettleState Observe(DateTime nowUtc, IEnumerable<string> runningAppKeys, double? cpuBusy = null)
     {
         var keys = runningAppKeys.ToHashSet(StringComparer.Ordinal);
-        if (_lastKeys is null || !_lastKeys.SetEquals(keys))
+        if (_lastKeys is null || !_lastKeys.SetEquals(keys) || cpuBusy >= BusyThreshold)
         {
+            // A busy CPU restarts the quiet period just like a newly started app.
             _lastKeys = keys;
             _lastChangeUtc = nowUtc;
         }
