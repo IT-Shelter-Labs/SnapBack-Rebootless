@@ -71,8 +71,8 @@ public sealed unsafe class ShellNotifyIcon : IDisposable
     }
 
     /// <summary>
-    /// Shows a notification. Windows shows it as a toast, respects Focus Assist / Do Not Disturb,
-    /// and (with NIIF_RESPECT_QUIET_TIME) stays quiet during the first hour after a new sign-in.
+    /// Shows a notification. Windows shows it as a toast and respects Focus Assist / Do Not Disturb;
+    /// NIIF_RESPECT_QUIET_TIME also keeps it quiet during a new user's first hour on the machine.
     /// </summary>
     public bool ShowNotification(string title, string text)
     {

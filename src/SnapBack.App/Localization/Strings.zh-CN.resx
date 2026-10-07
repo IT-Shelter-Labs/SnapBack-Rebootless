@@ -960,4 +960,7 @@
   <data name="Tray_NothingSelected" xml:space="preserve">
     <value>没有预先选中的应用。请打开列表选择要关闭的应用。</value>
   </data>
+  <data name="Settings_DefaultProfileOption" xml:space="preserve">
+    <value>默认配置文件</value>
+  </data>
 </root>

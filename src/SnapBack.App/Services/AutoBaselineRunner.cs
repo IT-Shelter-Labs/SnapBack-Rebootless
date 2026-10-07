@@ -62,8 +62,20 @@ public static class AutoBaselineRunner
                 continue;
             }
 
-            // Settings or profiles may have changed while waiting.
+            // Settings or profiles may have changed while waiting: re-check everything.
+            if (!engine.Settings.AutoBaselineOnSignIn)
+            {
+                log.LogInformation("Automatic baseline was turned off while waiting; nothing captured");
+                return;
+            }
+
             target = AutoBaselinePolicy.Target(engine.Profiles, engine.Settings.AutoBaselineProfileId);
+            if (!AutoBaselinePolicy.ShouldCapture(target, logon))
+            {
+                log.LogInformation("Profile {Profile} was captured during this sign-in while waiting; keeping it", target!.Name);
+                return;
+            }
+
             var profile = target is null
                 ? engine.CreateProfile(Core.Localization.Loc.Get("Profile_DefaultName"), BaselineOrigin.Automatic, snapshot)
                 : engine.UpdateProfile(target.Id, BaselineOrigin.Automatic, snapshot);

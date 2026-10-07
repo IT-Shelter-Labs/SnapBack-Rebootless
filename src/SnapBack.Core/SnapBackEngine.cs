@@ -66,6 +66,8 @@ public sealed class SnapBackEngine
     private readonly object _gate = new();
     private Settings _settings;
     private ProfileSet _profiles;
+    private DateTime? _settingsStamp;
+    private DateTime? _profilesStamp;
 
     public SnapBackEngine(
         ISystemProbe probe,
@@ -86,6 +88,8 @@ public sealed class SnapBackEngine
         _time = time ?? TimeProvider.System;
         _settings = settingsStore.Load();
         _profiles = profileStore.Load();
+        _settingsStamp = settingsStore.LastWriteUtc;
+        _profilesStamp = profileStore.LastWriteUtc;
     }
 
     /// <summary>Raised after every analysis (on the analyzing thread).</summary>
@@ -136,11 +140,76 @@ public sealed class SnapBackEngine
     {
         lock (_gate)
         {
-            _settings = update(_settings).Normalize();
-            _settingsStore.Save(_settings);
+            // Start from what is on disk (the CLI or another window may have changed it); the new
+            // settings take effect only once they have been saved.
+            SyncSettingsLocked();
+            var next = update(_settings).Normalize();
+            _settingsStore.Save(next);
+            _settings = next;
+            _settingsStamp = _settingsStore.LastWriteUtc;
         }
 
         SettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Picks up settings and profiles changed by another SnapBack process (for example the CLI while
+    /// the window runs in the tray). Cheap: compares file times. Raises the change events.
+    /// </summary>
+    public void RefreshFromDisk()
+    {
+        bool settingsChanged, profilesChanged;
+        lock (_gate)
+        {
+            settingsChanged = SyncSettingsLocked();
+            profilesChanged = SyncProfilesLocked();
+        }
+
+        if (settingsChanged)
+        {
+            SettingsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        if (profilesChanged)
+        {
+            RaiseProfilesChanged();
+        }
+    }
+
+    private bool SyncSettingsLocked()
+    {
+        var stamp = _settingsStore.LastWriteUtc;
+        if (stamp is null || stamp == _settingsStamp)
+        {
+            return false;
+        }
+
+        _settingsStamp = stamp;
+        if (_settingsStore.LoadSaved() is not { } saved)
+        {
+            return false; // unreadable: keep what we have rather than falling back to defaults
+        }
+
+        _settings = saved;
+        return true;
+    }
+
+    private bool SyncProfilesLocked()
+    {
+        var stamp = _profileStore.LastWriteUtc;
+        if (stamp is null || stamp == _profilesStamp)
+        {
+            return false;
+        }
+
+        _profilesStamp = stamp;
+        if (_profileStore.LoadSaved() is not { } saved)
+        {
+            return false;
+        }
+
+        _profiles = saved;
+        return true;
     }
 
     public Analysis Analyze() => Analyze(_probe.Capture());
@@ -151,6 +220,7 @@ public sealed class SnapBackEngine
     /// <summary>Analyzes the snapshot against the selected profile (or <paramref name="profileId"/>).</summary>
     public Analysis Analyze(SystemSnapshot snapshot, Guid? profileId = null)
     {
+        RefreshFromDisk();
         var groups = new AppGrouper(_classifier).Group(snapshot);
         var profiles = Profiles;
         var profile = profileId is { } id ? profiles.Find(id) : profiles.Current;
@@ -222,6 +292,7 @@ public sealed class SnapBackEngine
         Profile profile;
         lock (_gate)
         {
+            SyncProfilesLocked();
             if (_profiles.Profiles.Count >= ProfileSet.MaxProfiles)
             {
                 throw new InvalidOperationException(Localization.Loc.Format("Profile_TooMany", ProfileSet.MaxProfiles));
@@ -291,6 +362,7 @@ public sealed class SnapBackEngine
     {
         lock (_gate)
         {
+            SyncProfilesLocked();
             if (_profiles.Find(id) is null)
             {
                 return;
@@ -335,6 +407,7 @@ public sealed class SnapBackEngine
         Profile updated;
         lock (_gate)
         {
+            SyncProfilesLocked();
             var existing = _profiles.Find(id) ?? throw new InvalidOperationException(Localization.Loc.Get("Profile_NotFound"));
             updated = change(existing) with { UpdatedAtUtc = _time.GetUtcNow().UtcDateTime };
             if (unique)
@@ -355,6 +428,7 @@ public sealed class SnapBackEngine
     {
         lock (_gate)
         {
+            SyncProfilesLocked();
             SaveProfiles(change(_profiles));
         }
 
@@ -366,6 +440,7 @@ public sealed class SnapBackEngine
         var normalized = set.Normalize();
         _profileStore.Save(normalized);
         _profiles = normalized;
+        _profilesStamp = _profileStore.LastWriteUtc;
     }
 
     private void RaiseProfilesChanged()

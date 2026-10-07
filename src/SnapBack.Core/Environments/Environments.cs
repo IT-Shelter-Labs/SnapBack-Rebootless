@@ -157,6 +157,13 @@ public sealed record EnvironmentStopConfirmation
         return new EnvironmentStopConfirmation(shown.Kind, shown.RunningItems.ToHashSet(StringComparer.OrdinalIgnoreCase), shown.ItemsKnown, nowUtc);
     }
 
+    /// <summary>
+    /// The order to stop environments in: Docker before WSL, because Docker Desktop runs inside WSL
+    /// and would otherwise lose its engine before it could shut down cleanly.
+    /// </summary>
+    public static IReadOnlyList<EnvironmentStopConfirmation> InStopOrder(IEnumerable<EnvironmentStopConfirmation> confirmations) =>
+        confirmations.OrderBy(c => c.Kind == EnvironmentKind.Wsl ? 1 : 0).ToList();
+
     public bool IsExpired(DateTime nowUtc) => nowUtc - ConfirmedAtUtc > Lifetime || nowUtc < ConfirmedAtUtc - TimeSpan.FromMinutes(1);
 
     /// <summary>Whether the live state is still what the user confirmed (nothing new would be stopped).</summary>
@@ -284,14 +291,14 @@ public sealed class EnvironmentService
         }
 
         var list = await Run(wsl, ["--list", "--running", "--quiet"], WslEnvironment, InspectTimeout, ct).ConfigureAwait(false);
-        var distros = list.Succeeded || list.Output.Length > 0 ? ParseLines(list.Output) : [];
+        var distros = list.Succeeded ? ParseLines(list.Output) : [];
         return new EnvironmentDetails
         {
             Kind = EnvironmentKind.Wsl,
             IsRunning = true,
             MemoryBytes = presence.MemoryBytes,
             RunningItems = distros,
-            ItemsKnown = !list.TimedOut && !list.NotFound,
+            ItemsKnown = list.Succeeded,
             CanStop = true,
             DockerDependsOnIt = dockerRunning || distros.Any(d => d.StartsWith("docker-desktop", StringComparison.OrdinalIgnoreCase)),
         };

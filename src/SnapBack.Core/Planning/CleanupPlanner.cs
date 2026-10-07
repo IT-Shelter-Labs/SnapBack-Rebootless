@@ -84,7 +84,9 @@ public sealed class CleanupPlanner
 
             var preselect = rule switch
             {
-                AppRuleKind.AlwaysClose => true,
+                // Manual-review items (scripts, consoles, windowless processes) are never pre-selected,
+                // not even by a rule: the user ticks them deliberately.
+                AppRuleKind.AlwaysClose => assessment.Level is SafetyLevel.Safe or SafetyLevel.Caution,
                 AppRuleKind.AskEveryTime => false,
                 _ => assessment.Level == SafetyLevel.Safe || (assessment.Level == SafetyLevel.Caution && options.PreselectCaution),
             };

@@ -29,6 +29,24 @@ public sealed class JsonFileStore<T>
 
     public string FilePath => _path;
 
+    public bool Exists => File.Exists(_path);
+
+    /// <summary>Last write time of the file, or <c>null</c> when it does not exist (used to notice changes by another process).</summary>
+    public DateTime? LastWriteUtc
+    {
+        get
+        {
+            try
+            {
+                return File.Exists(_path) ? File.GetLastWriteTimeUtc(_path) : null;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                return null;
+            }
+        }
+    }
+
     /// <summary>Loads the document, or returns <c>null</c> when it does not exist or is unreadable.</summary>
     public T? Load()
     {

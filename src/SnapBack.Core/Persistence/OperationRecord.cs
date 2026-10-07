@@ -78,6 +78,8 @@ public sealed record OperationRecord
             {
                 DisplayName = i.Item.Group.DisplayName,
                 AppKey = i.Item.Group.AppKey,
+                RootPid = i.Item.Group.Id.Pid,
+                RootCreationTime = i.Item.Group.Id.CreationTime,
                 Outcome = i.Outcome,
                 Message = i.Message,
                 ProcessesExited = i.ProcessesExited,
@@ -86,7 +88,8 @@ public sealed record OperationRecord
                 MemoryFreedBytes = i.MemoryFreedBytes,
             };
 
-            var index = items.FindIndex(x => x.AppKey == item.AppKey && x.DisplayName == item.DisplayName);
+            // One entry per app instance (root process identity), so two instances of the same app stay apart.
+            var index = items.FindIndex(x => x.SameInstance(item));
             if (index >= 0)
             {
                 // Results are cumulative per application: a forced run reports everything that
@@ -152,6 +155,11 @@ public sealed record OperationRecordItem
 
     public string AppKey { get; init; } = "";
 
+    /// <summary>Root process of the app instance (identifies the instance within one operation).</summary>
+    public int RootPid { get; init; }
+
+    public long RootCreationTime { get; init; }
+
     public ItemOutcome Outcome { get; init; }
 
     public string Message { get; init; } = "";
@@ -163,4 +171,7 @@ public sealed record OperationRecordItem
     public int ProcessesTerminated { get; init; }
 
     public long MemoryFreedBytes { get; init; }
+
+    public bool SameInstance(OperationRecordItem other) =>
+        RootPid == other.RootPid && RootCreationTime == other.RootCreationTime && AppKey == other.AppKey;
 }

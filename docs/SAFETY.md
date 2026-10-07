@@ -89,7 +89,7 @@ reference for reviewing any change that touches classification, planning or exec
 | Threat | Mitigation |
 |---|---|
 | A rule or profile closes a system component | Protection is decided first in `CleanupPlanner`; a protected group is never a candidate whatever the rules say (tests set *Always close* on svchost, Explorer and an elevated app). |
-| *Always close* turns into "close without asking" | It only pre-selects. The preview and its confirmation, the polite close, the live guard and handle verification run as always; an app that asks to save is left waiting, and forced termination still needs its own confirmation (tested). |
+| *Always close* turns into "close without asking" | It only pre-selects, and never pre-selects items that need manual review (scripts, consoles, windowless processes). The preview and its confirmation, the polite close, the live guard and handle verification run as always; an app that asks to save is left waiting, and forced termination still needs its own confirmation (tested). |
 | *Always close* skips the live re-check | No: the guard and `VerifiedProcess` act on the live process; a target that became protected (e.g. restarted elevated) is skipped (tested). |
 | Switching to a profile closes apps by itself | Selecting a profile only changes what the session is compared with. Returning to it is the normal *Return to baseline* flow with preview and confirmation; the tray menu only opens that preview. |
 | A stale or foreign profile | Profiles carry the user SID; a profile of another user is refused (`BaselineFactory.Validate`). Profiles from earlier boots match apps by application key only, as before. |
@@ -99,7 +99,8 @@ reference for reviewing any change that touches classification, planning or exec
 | Threat | Mitigation |
 |---|---|
 | Killing `vmmem`/`vmmemWSL` or Docker processes corrupts the VM or loses container data | They carry `ManagedEnvironment` (protected) and are never candidates, whatever the rules. They are only stopped with `wsl --shutdown` / `docker desktop stop`. |
-| Stopping WSL ends Linux services, jobs or unsaved work; stopping Docker ends containers | Before stopping, SnapBack lists the running distributions or containers and warns explicitly (including that Docker Desktop depends on WSL). Nothing stops without the user's confirmation. |
+| Stopping WSL ends Linux services, jobs or unsaved work; stopping Docker ends containers | Before stopping, SnapBack lists the running distributions or containers and warns explicitly (including that Docker Desktop depends on WSL). Nothing stops without the user's confirmation. When both are chosen, Docker is stopped before WSL so it can shut down cleanly. |
+| Two actions at once (tray menu while a preview or operation is open) | Only one preview/operation can be open; tray actions then just bring the open dialog to the front. |
 | Something starts between the warning and the stop | The confirmation records exactly what was shown and expires after 5 minutes; right before the command, SnapBack inspects again and does nothing if anything new is running or the list can no longer be read. |
 | Old Docker Desktop without `docker desktop stop` | Reported as not supported; SnapBack does not fall back to closing its processes. |
 | SnapBack starts WSL/Docker by inspecting them | Read-only commands are only run when the process list already shows the environment running. |

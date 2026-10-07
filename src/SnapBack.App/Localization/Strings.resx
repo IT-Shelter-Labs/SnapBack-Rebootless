@@ -960,4 +960,7 @@ Everything that is running right now will be considered part of this profile.</v
   <data name="Tray_NothingSelected" xml:space="preserve">
     <value>No apps are pre-selected. Open the list to choose which apps to close.</value>
   </data>
+  <data name="Settings_DefaultProfileOption" xml:space="preserve">
+    <value>Default profile</value>
+  </data>
 </root>

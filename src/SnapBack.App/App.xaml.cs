@@ -96,20 +96,30 @@ public partial class App : Application
 
         var exe = Environment.ProcessPath ?? "";
         _tray = new TrayController(engine, exe, _log);
-        _tray.OpenRequested += (_, _) => ShowMainWindow();
+        _tray.OpenRequested += (_, _) => _ = ShowMainWindow();
         _tray.ReturnRequested += async (_, _) =>
         {
-            ShowMainWindow();
-            await Guard(() => _vm.ReturnFromTrayAsync());
+            if (!ShowMainWindow())
+            {
+                await Guard(() => _vm.ReturnFromTrayAsync());
+            }
         };
         _tray.UpdateBaselineRequested += async (_, _) =>
         {
-            ShowMainWindow();
-            await Guard(() => _vm.CaptureFromTrayAsync());
+            if (!ShowMainWindow())
+            {
+                await Guard(() => _vm.CaptureFromTrayAsync());
+            }
         };
         _tray.RefreshRequested += async (_, _) => await Guard(() => _monitor!.AnalyzeAsync());
         _tray.ProfileSelected += async (_, id) =>
         {
+            if (IsDialogOpen)
+            {
+                ShowMainWindow(); // not while a preview, an operation or another dialog is open
+                return;
+            }
+
             engine.SelectProfile(id);
             await Guard(() => IsWindowVisible ? _vm.RefreshAsync() : _monitor!.AnalyzeAsync());
         };
@@ -119,7 +129,7 @@ public partial class App : Application
         _monitor = new BackgroundMonitor(engine, _tray, () => IsWindowVisible, _log);
         _monitor.Start();
 
-        _instance.ListenForActivation(() => Dispatcher.BeginInvoke(ShowMainWindow));
+        _instance.ListenForActivation(() => Dispatcher.BeginInvoke(() => ShowMainWindow()));
         _instance.ListenForExit(() => Dispatcher.BeginInvoke(ExitApp));
         SessionEnding += (_, _) => ExitApp();
 
@@ -143,11 +153,15 @@ public partial class App : Application
 
     private bool IsWindowVisible => _window is { IsVisible: true };
 
-    private void ShowMainWindow()
+    /// <summary>A dialog (preview, operation, settings, profiles, ...) is open.</summary>
+    private bool IsDialogOpen => (_vm?.IsRestoring ?? false) || Windows.OfType<Window>().Any(w => w != _window && w.IsVisible);
+
+    /// <summary>Shows the window. Returns true when a dialog is open (it is brought to the front instead).</summary>
+    private bool ShowMainWindow()
     {
         if (_exiting || _vm is null)
         {
-            return;
+            return true;
         }
 
         if (_window is null)
@@ -164,6 +178,13 @@ public partial class App : Application
         }
 
         _window.BringToFront();
+        if (Windows.OfType<Window>().LastOrDefault(w => w != _window && w.IsVisible) is { } dialog)
+        {
+            dialog.Activate();
+            return true;
+        }
+
+        return IsDialogOpen;
     }
 
     /// <summary>The close button hides the window to the notification area unless the user chose "Exit".</summary>

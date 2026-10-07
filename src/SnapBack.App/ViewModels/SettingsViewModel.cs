@@ -48,10 +48,12 @@ public sealed class SettingsViewModel : ObservableObject
         LanguageOptions = new[] { Languages.System }.Concat(Languages.Supported).Select(code => new LanguageOption(code)).ToList();
         _language = LanguageOptions.FirstOrDefault(o => o.Code == s.Language) ?? LanguageOptions[0];
 
+        // "Default profile" (Guid.Empty) follows whichever profile is the default; it is stored as null.
         var profiles = engine.Profiles;
-        ProfileOptions = profiles.Profiles.Select(p => new ProfileOption(p.Id, p.Name, p.Id == profiles.DefaultProfileId)).ToList();
-        _autoBaselineProfile = ProfileOptions.FirstOrDefault(o => o.Id == s.AutoBaselineProfileId)
-            ?? ProfileOptions.FirstOrDefault(o => o.IsDefault);
+        ProfileOptions = new[] { new ProfileOption(Guid.Empty, Tr.Get("Settings_DefaultProfileOption"), false) }
+            .Concat(profiles.Profiles.Select(p => new ProfileOption(p.Id, p.Name, p.Id == profiles.DefaultProfileId)))
+            .ToList();
+        _autoBaselineProfile = ProfileOptions.FirstOrDefault(o => o.Id == s.AutoBaselineProfileId) ?? ProfileOptions[0];
 
         foreach (var r in s.Rules.OrderBy(r => r.DisplayName, StringComparer.CurrentCultureIgnoreCase))
         {
@@ -130,7 +132,7 @@ public sealed class SettingsViewModel : ObservableObject
         set => Set(ref _autoBaselineProfile, value);
     }
 
-    public bool HasProfiles => ProfileOptions.Count > 0;
+    public bool HasProfiles => ProfileOptions.Count > 1;
 
     public int AutoBaselineMinDelaySeconds
     {
@@ -204,7 +206,7 @@ public sealed class SettingsViewModel : ObservableObject
                 StartWithWindows = StartWithWindows,
                 StartMinimizedToTray = StartMinimizedToTray,
                 AutoBaselineOnSignIn = AutoBaselineOnSignIn,
-                AutoBaselineProfileId = AutoBaselineProfile?.Id,
+                AutoBaselineProfileId = AutoBaselineProfile is { Id: var id } && id != Guid.Empty ? id : null,
                 AutoBaselineMinDelaySeconds = AutoBaselineMinDelaySeconds,
                 AutoBaselineQuietSeconds = AutoBaselineQuietSeconds,
                 CloseButton = CloseToTray ? CloseButtonAction.MinimizeToTray : CloseButtonAction.Exit,

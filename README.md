@@ -105,7 +105,8 @@ Right-click an app in the list (or use *Settings → Rules*):
 
 - **Always keep** — never offered for closing, in any profile.
 - **Always close** — pre-selected whenever you return to a profile, even if it was running when the
-  profile was captured.
+  profile was captured (apps that need manual review — scripts, consoles, windowless processes — are
+  still never pre-selected).
 - **Ask every time** — offered, but never pre-selected.
 
 Rules only decide what is offered and ticked. They never change protection, never skip the preview,

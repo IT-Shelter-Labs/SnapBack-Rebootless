@@ -33,6 +33,7 @@ public sealed class MainViewModel : ObservableObject
     private SessionDrift _drift = SessionDrift.Unknown;
     private bool _isBusy;
     private bool _isOperationRunning;
+    private bool _isRestoring;
     private bool _updatingProfiles;
     private string _status = "";
     private string _searchText = "";
@@ -127,6 +128,9 @@ public sealed class MainViewModel : ObservableObject
 
     /// <summary>Whether apps are being closed right now (SnapBack must not exit then).</summary>
     public bool IsOperationRunning => _isOperationRunning;
+
+    /// <summary>Whether a preview or an operation is open.</summary>
+    public bool IsRestoring => _isRestoring;
 
     public string Status
     {
@@ -566,6 +570,11 @@ public sealed class MainViewModel : ObservableObject
 
     private async Task CreateBaselineAsync()
     {
+        if (_isRestoring)
+        {
+            return; // not while apps are being closed
+        }
+
         var profile = _engine.CurrentProfile;
         if (profile is not null && !_dialogs.Confirm(Tr.Get("Confirm_ReplaceBaseline_Title"), Tr.Format("Confirm_ReplaceProfile_Text", profile.Name)))
         {
@@ -623,6 +632,25 @@ public sealed class MainViewModel : ObservableObject
     public void ShowOperationRunningNotice() => _dialogs.Inform(Tr.Get("App_Name"), Tr.Get("Exit_OperationRunning"));
 
     private async Task RestoreAsync()
+    {
+        // Never two previews/operations at once (e.g. the tray menu while one is open).
+        if (_analysis is null || _isRestoring)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            await RestoreCoreAsync();
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
+    }
+
+    private async Task RestoreCoreAsync()
     {
         if (_analysis is null)
         {
@@ -730,10 +758,14 @@ public sealed class MainViewModel : ObservableObject
         await RefreshAsync();
     }
 
+    /// <summary>
+    /// Runs on the UI thread, always deferred: profile changes can be raised while a ComboBox is
+    /// still committing its selection, and the list must not be rebuilt underneath it.
+    /// </summary>
     private static void RunOnUi(Action action)
     {
         var dispatcher = System.Windows.Application.Current?.Dispatcher;
-        if (dispatcher is null || dispatcher.CheckAccess())
+        if (dispatcher is null)
         {
             action();
         }

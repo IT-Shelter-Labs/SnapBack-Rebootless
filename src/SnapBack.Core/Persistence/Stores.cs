@@ -8,6 +8,11 @@ public sealed class SettingsStore(JsonFileStore<Settings> store)
 {
     public Settings Load() => (store.Load() ?? new Settings()).Normalize();
 
+    /// <summary>The saved settings, or <c>null</c> when there is no readable file (never defaults).</summary>
+    public Settings? LoadSaved() => store.Load()?.Normalize();
+
+    public DateTime? LastWriteUtc => store.LastWriteUtc;
+
     public void Save(Settings settings) => store.Save(settings.Normalize());
 }
 
@@ -28,9 +33,11 @@ public sealed class ProfileStore(JsonFileStore<ProfileSet> store, BaselineStore 
 {
     public ProfileSet Load()
     {
-        if (store.Load() is { } set)
+        // Migrate only when there has never been a profiles file: an unreadable or corrupt file must
+        // never be replaced by the old baseline (the corrupt file is kept aside by JsonFileStore).
+        if (store.Exists)
         {
-            return set.Normalize();
+            return store.Load()?.Normalize() ?? ProfileSet.Empty;
         }
 
         if (legacy.Load() is not { } baseline)
@@ -49,6 +56,11 @@ public sealed class ProfileStore(JsonFileStore<ProfileSet> store, BaselineStore 
         store.Save(migrated);
         return migrated;
     }
+
+    /// <summary>The saved profiles, or <c>null</c> when there is no readable file.</summary>
+    public ProfileSet? LoadSaved() => store.Exists ? store.Load()?.Normalize() : null;
+
+    public DateTime? LastWriteUtc => store.LastWriteUtc;
 
     public void Save(ProfileSet set) => store.Save(set.Normalize());
 }

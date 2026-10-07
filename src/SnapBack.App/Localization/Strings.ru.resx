@@ -960,4 +960,7 @@
   <data name="Tray_NothingSelected" xml:space="preserve">
     <value>Ни одно приложение не отмечено заранее. Откройте список и выберите, что закрыть.</value>
   </data>
+  <data name="Settings_DefaultProfileOption" xml:space="preserve">
+    <value>Основной профиль</value>
+  </data>
 </root>

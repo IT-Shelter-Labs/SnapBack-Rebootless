@@ -150,11 +150,12 @@ public sealed class MemoryTracker
         }
     }
 
+    /// <summary>A copy of the series of one instance (safe to read while sampling continues).</summary>
     public MemorySeries? For(ProcessIdentity instance)
     {
         lock (_gate)
         {
-            return _series.GetValueOrDefault(instance);
+            return _series.TryGetValue(instance, out var s) ? Copy(s) : null;
         }
     }
 

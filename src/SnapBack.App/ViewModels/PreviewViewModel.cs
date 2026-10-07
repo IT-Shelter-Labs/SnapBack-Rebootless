@@ -110,7 +110,7 @@ public sealed class PreviewViewModel : ObservableObject
         }
 
         var now = DateTime.UtcNow;
-        return chosen.Select(o => EnvironmentStopConfirmation.FromUserConfirmation(o.Details!, now)).ToList();
+        return EnvironmentStopConfirmation.InStopOrder(chosen.Select(o => EnvironmentStopConfirmation.FromUserConfirmation(o.Details!, now)));
     }
 
     private static EnvironmentPolicy PolicyFor(Profile? profile, EnvironmentKind kind) =>

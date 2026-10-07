@@ -8,8 +8,9 @@ public enum AppRuleKind
 
     /// <summary>
     /// Pre-selected for closing whenever the session is returned to a profile, even if the app was
-    /// running when the profile was captured. Closing still goes through every safety check, is
-    /// polite first, and forced termination still needs its own confirmation.
+    /// running when the profile was captured. Apps that need manual review are still never
+    /// pre-selected. Closing goes through every safety check, is polite first, and forced
+    /// termination still needs its own confirmation.
     /// </summary>
     AlwaysClose,
 
