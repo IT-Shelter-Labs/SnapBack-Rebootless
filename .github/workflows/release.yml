@@ -3,9 +3,18 @@ name: Release
 on:
   push:
     tags: ['v*']
+  # Manual release from the Actions tab: creates the tag on the checked-out commit.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 1.0.0 (must match <Version> and CHANGELOG.md)'
+        required: true
 
 permissions:
   contents: write
+
+env:
+  TAG: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref_name }}
 
 jobs:
   release:
@@ -20,7 +29,9 @@ jobs:
       - name: Check version
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}".TrimStart('v')
+          $version = $env:TAG.TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?$') { throw "Invalid version '$version'" }
+          if (git ls-remote --tags origin "refs/tags/$env:TAG") { if ("${{ github.event_name }}" -eq 'workflow_dispatch') { throw "Tag $env:TAG already exists" } }
           $declared = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
           if ($declared -ne $version) { throw "Tag $version does not match <Version>$declared</Version> in Directory.Build.props" }
           if (-not (Select-String -Path CHANGELOG.md -Pattern "^## \[$([regex]::Escape($version))\]" -Quiet)) { throw "CHANGELOG.md has no entry for $version" }
@@ -31,7 +42,7 @@ jobs:
       - name: Publish
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}".TrimStart('v')
+          $version = $env:TAG.TrimStart('v')
           foreach ($rid in @('win-x64', 'win-arm64')) {
             $out = "publish/SnapBack-$version-$rid"
             dotnet publish src/SnapBack.App -c Release -r $rid --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=$version -o $out
@@ -65,11 +76,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $tag = "${{ github.ref_name }}"
+          $tag = $env:TAG
           $notes = "docs/release-notes/$tag.md"
+          # --target creates the tag on the tested commit when it does not exist yet (manual release).
+          $assets = @((Get-ChildItem publish -Filter 'SnapBack-*.zip').FullName) + (Resolve-Path publish/SHA256SUMS.txt).Path
+          if ($assets.Count -ne 3) { throw "Expected 2 packages and SHA256SUMS.txt, found: $assets" }
+          $common = @($tag) + $assets + @('--title', "SnapBack $tag", '--target', '${{ github.sha }}')
           if (Test-Path $notes) {
-            gh release create $tag publish/*.zip publish/SHA256SUMS.txt --title "SnapBack $tag" --notes-file $notes --verify-tag
+            gh release create @common --notes-file $notes
           } else {
-            gh release create $tag publish/*.zip publish/SHA256SUMS.txt --title "SnapBack $tag" --generate-notes --verify-tag
+            gh release create @common --generate-notes
           }
           if ($LASTEXITCODE -ne 0) { throw 'gh release create failed' }
