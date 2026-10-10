@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using SnapBack.App.ViewModels;
 
 namespace SnapBack.App.Views;
@@ -29,6 +30,12 @@ public partial class MainWindow : Window
         {
             Services.ErrorReporter.Report(ex, "analyzing running applications");
         }
+    }
+
+    private void Contact_RequestNavigate(object sender, RequestNavigateEventArgs e)
+    {
+        e.Handled = true;
+        Services.CommunityLinks.Open(e.Uri, this);
     }
 
     /// <summary>Brings the window to the front (second launch of SnapBack).</summary>

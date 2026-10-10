@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using SnapBack.App.ViewModels;
 
 namespace SnapBack.App.Views;
@@ -27,6 +28,12 @@ public partial class SettingsWindow : Window
         {
             DialogResult = true;
         }
+    }
+
+    private void Contact_RequestNavigate(object sender, RequestNavigateEventArgs e)
+    {
+        e.Handled = true;
+        Services.CommunityLinks.Open(e.Uri, this);
     }
 
     protected override void OnClosed(EventArgs e)

@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:SnapBack.App.ViewModels"
         xmlns:l="clr-namespace:SnapBack.App.Localization"
+        xmlns:s="clr-namespace:SnapBack.App.Services"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
         Title="{l:Tr Settings_WindowTitle}" FontFamily="{Binding UiFont, Source={x:Static l:Tr.Instance}}"
@@ -21,6 +22,25 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Text="{l:Tr Settings_Title}" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="IT Shelter" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{l:Tr Contact_Description}" Style="{StaticResource Secondary}"
+                                   TextWrapping="Wrap" TextTrimming="None" Margin="0,0,0,8" />
+                        <TextBlock TextWrapping="Wrap">
+                            <Hyperlink NavigateUri="{x:Static s:CommunityLinks.Telegram}" RequestNavigate="Contact_RequestNavigate"
+                                       ToolTip="{l:Tr Contact_TelegramHint}" AutomationProperties.AutomationId="SettingsTelegramLink">
+                                <Run Text="{l:Tr Contact_Telegram}" />
+                            </Hyperlink>
+                            <Run Text="  ·  " />
+                            <Hyperlink NavigateUri="{x:Static s:CommunityLinks.GitHub}" RequestNavigate="Contact_RequestNavigate"
+                                       ToolTip="{l:Tr Contact_GitHubHint}" AutomationProperties.AutomationId="SettingsGitHubLink">
+                                <Run Text="{l:Tr Contact_GitHub}" />
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
 
                 <Border Style="{StaticResource Card}" Margin="0,0,0,10">
                     <StackPanel>

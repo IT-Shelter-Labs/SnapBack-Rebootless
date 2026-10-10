@@ -4,6 +4,12 @@
 
 **无需重启，让 Windows 会话回到刚开机时的状态。**
 
+[下载 Windows 版](../../releases) · [IT Shelter Telegram 频道](https://t.me/+ihTcvubt-_BhZTQ6) · [IT-Shelter-Labs](https://github.com/IT-Shelter-Labs)
+
+![SnapBack 的俄语主窗口：会话偏移、内存使用、应用列表和 IT Shelter 联系链接。](docs/images/snapback-dashboard-ru.png)
+
+*真实 Windows 应用截图。界面支持英语、俄语和简体中文。*
+
 刚登录时，Windows 处于相对干净的状态：系统进程、启动应用，仅此而已。几个小时后，浏览器、
 Discord、Telegram、IDE、Python 和 Node.js 进程、WSL、Docker、各种启动器和后台助手程序都堆积了起来。
 SnapBack 会记住你想要的状态（**基线**，baseline，或者多个命名的**配置文件**，例如“干净”“工作”
@@ -345,7 +351,8 @@ docs/                 ARCHITECTURE.md、SAFETY.md
 
 所有数据都保存在 `%LOCALAPPDATA%\SnapBack`（可用环境变量 `SNAPBACK_DATA_DIR` 覆盖）：
 `settings.json`、`profiles.json`、`history.json`，以及 `logs\` 中的每日日志（保留 14 天）。内存历史
-只保存在内存中。窗口标题和命令行只在界面中显示，绝不写入磁盘或日志。SnapBack 不进行任何网络连接。
+只保存在内存中。窗口标题和命令行只在界面中显示，绝不写入磁盘或日志。SnapBack 本身不进行网络连接。
+只有点击社区链接时才会打开默认浏览器，链接不包含会话数据。
 
 ## 常见问题
 
@@ -366,6 +373,12 @@ docs/                 ARCHITECTURE.md、SAFETY.md
 
 **为什么深度内存清理需要管理员权限？** Windows 只允许提升权限的进程清除备用列表。SnapBack 只为这
 一项操作请求权限，并通过一个别无他用的辅助进程完成。
+
+## IT Shelter
+
+SnapBack 是 [IT-Shelter-Labs](https://github.com/IT-Shelter-Labs) 的项目。
+[IT Shelter Telegram 频道](https://t.me/+ihTcvubt-_BhZTQ6)提供编程、AI 和实用工具相关内容（俄语）。
+应用的设置页面提供 Telegram 和 GitHub 链接，主窗口底部也有 Telegram 链接。
 
 ## 参与贡献
 

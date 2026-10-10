@@ -963,4 +963,12 @@
   <data name="Settings_DefaultProfileOption" xml:space="preserve">
     <value>Основной профиль</value>
   </data>
+  <data name="Contact_Byline" xml:space="preserve"><value>SnapBack · IT Shelter</value></data>
+  <data name="Contact_Telegram" xml:space="preserve"><value>Telegram IT Shelter ↗</value></data>
+  <data name="Contact_TelegramHint" xml:space="preserve"><value>Открыть канал IT Shelter в браузере: инструменты, программирование и ИИ.</value></data>
+  <data name="Contact_GitHub" xml:space="preserve"><value>Проекты на GitHub ↗</value></data>
+  <data name="Contact_GitHubHint" xml:space="preserve"><value>Открыть организацию IT-Shelter-Labs на GitHub.</value></data>
+  <data name="Contact_Description" xml:space="preserve"><value>Программирование, ИИ и полезные открытые инструменты. Новости и материалы — в Telegram, исходники проектов — на GitHub.</value></data>
+  <data name="Contact_OpenFailed" xml:space="preserve"><value>Не удалось открыть браузер. Скопируйте адрес и откройте его вручную:
+{0}</value></data>
 </root>

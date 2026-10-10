@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- IT Shelter Telegram link in the main window and a community contact card in Settings,
+  localized in English, Russian and Simplified Chinese. Links open only on user request.
+- An actual application screenshot and IT Shelter contact links in all three READMEs.
+
 ## [1.0.0] - 2026-10-06
 
 First public release. It contains everything listed below; versions 0.1–0.3 were development

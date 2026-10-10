@@ -963,4 +963,12 @@
   <data name="Settings_DefaultProfileOption" xml:space="preserve">
     <value>默认配置文件</value>
   </data>
+  <data name="Contact_Byline" xml:space="preserve"><value>SnapBack · IT Shelter</value></data>
+  <data name="Contact_Telegram" xml:space="preserve"><value>IT Shelter Telegram 频道 ↗</value></data>
+  <data name="Contact_TelegramHint" xml:space="preserve"><value>在浏览器中打开 IT Shelter 频道。内容为俄语。</value></data>
+  <data name="Contact_GitHub" xml:space="preserve"><value>GitHub 项目 ↗</value></data>
+  <data name="Contact_GitHubHint" xml:space="preserve"><value>在 GitHub 上打开 IT-Shelter-Labs。</value></data>
+  <data name="Contact_Description" xml:space="preserve"><value>编程、AI 与实用的开源工具。Telegram 提供新闻和学习资料，GitHub 提供项目源代码。</value></data>
+  <data name="Contact_OpenFailed" xml:space="preserve"><value>无法打开浏览器。请复制此地址并手动打开：
+{0}</value></data>
 </root>

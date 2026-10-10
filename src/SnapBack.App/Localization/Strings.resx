@@ -963,4 +963,12 @@ Everything that is running right now will be considered part of this profile.</v
   <data name="Settings_DefaultProfileOption" xml:space="preserve">
     <value>Default profile</value>
   </data>
+  <data name="Contact_Byline" xml:space="preserve"><value>SnapBack · IT Shelter</value></data>
+  <data name="Contact_Telegram" xml:space="preserve"><value>IT Shelter on Telegram ↗</value></data>
+  <data name="Contact_TelegramHint" xml:space="preserve"><value>Open the IT Shelter channel in your browser. Resources are in Russian.</value></data>
+  <data name="Contact_GitHub" xml:space="preserve"><value>Projects on GitHub ↗</value></data>
+  <data name="Contact_GitHubHint" xml:space="preserve"><value>Open IT-Shelter-Labs on GitHub.</value></data>
+  <data name="Contact_Description" xml:space="preserve"><value>Programming, AI and useful open-source tools. News and resources on Telegram; source code on GitHub.</value></data>
+  <data name="Contact_OpenFailed" xml:space="preserve"><value>Could not open the browser. Copy this address and open it manually:
+{0}</value></data>
 </root>

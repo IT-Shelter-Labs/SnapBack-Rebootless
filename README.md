@@ -4,6 +4,12 @@
 
 **Return your Windows session to its fresh-start state — without rebooting.**
 
+[Download for Windows](../../releases) · [IT Shelter on Telegram](https://t.me/+ihTcvubt-_BhZTQ6) · [IT-Shelter-Labs](https://github.com/IT-Shelter-Labs)
+
+![SnapBack dashboard in Russian: session drift, memory usage, application list and IT Shelter contact link.](docs/images/snapback-dashboard-ru.png)
+
+*Actual Windows app. The interface is available in English, Russian and Simplified Chinese.*
+
 Right after you sign in, Windows is in a fairly clean state: system processes, your startup apps,
 nothing else. A few hours later there are browsers, Discord, Telegram, an IDE, Python and Node.js
 processes, WSL, Docker, launchers and background helpers. SnapBack records the state you want (the
@@ -387,7 +393,8 @@ docs/                 ARCHITECTURE.md, SAFETY.md
 Everything lives in `%LOCALAPPDATA%\SnapBack` (override with the `SNAPBACK_DATA_DIR` environment
 variable): `settings.json`, `profiles.json`, `history.json` and daily logs in `logs\` (kept for 14
 days). The memory history is kept in memory only. Window titles and command lines are shown in the UI only; they are never written to disk or to
-the logs. SnapBack makes no network connections.
+the logs. SnapBack makes no network connections itself. Community links open in your default
+browser only when you click them; no session data is included in the link.
 
 ## FAQ
 
@@ -411,6 +418,13 @@ the tray icon's menu, or choose *Exit SnapBack* under *Settings → When I close
 **Why does Deep Memory Cleanup ask for administrator permission?** Windows only lets elevated
 processes purge the standby list. SnapBack asks for that one operation only, through a helper that
 can do nothing else.
+
+## IT Shelter
+
+SnapBack is maintained under [IT-Shelter-Labs](https://github.com/IT-Shelter-Labs).
+Find programming resources, useful tools and project announcements on
+[IT Shelter's Telegram channel](https://t.me/+ihTcvubt-_BhZTQ6) (in Russian).
+The same links are available in the app's Settings; Telegram is also linked in the main window.
 
 ## Contributing
 
