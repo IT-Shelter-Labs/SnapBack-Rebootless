@@ -6,10 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-11
+
 ### Added
 - IT Shelter Telegram link in the main window and a community contact card in Settings,
   localized in English, Russian and Simplified Chinese. Links open only on user request.
 - An actual application screenshot and IT Shelter contact links in all three READMEs.
+
+### Fixed
+- Release archives include the README screenshot and safety documentation at their linked paths.
 
 ## [1.0.0] - 2026-10-06
 
@@ -104,4 +109,5 @@ milestones and were never published.
 - WPF app with Fluent theme (light/dark) and a command-line interface.
 - Unit tests for all safety-critical logic and Windows integration tests.
 
+[1.0.1]: https://github.com/IT-Shelter-Labs/SnapBack-Rebootless/releases/tag/v1.0.1
 [1.0.0]: https://github.com/IT-Shelter-Labs/SnapBack-Rebootless/releases/tag/v1.0.0

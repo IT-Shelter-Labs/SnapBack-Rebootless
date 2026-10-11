@@ -50,7 +50,10 @@ jobs:
             dotnet publish src/SnapBack.Cli -c Release -r $rid --self-contained -p:PublishSingleFile=true -p:Version=$version -o $out
             if ($LASTEXITCODE -ne 0) { throw "publish Cli $rid failed" }
             Remove-Item "$out/*.pdb" -ErrorAction SilentlyContinue
-            Copy-Item README.md, README.ru.md, README.zh-CN.md, LICENSE, CHANGELOG.md, docs/SAFETY.md -Destination $out
+            Copy-Item README.md, README.ru.md, README.zh-CN.md, LICENSE, CHANGELOG.md -Destination $out
+            New-Item -ItemType Directory -Path "$out/docs/images" -Force | Out-Null
+            Copy-Item docs/SAFETY.md, docs/ARCHITECTURE.md -Destination "$out/docs"
+            Copy-Item docs/images/snapback-dashboard-ru.png -Destination "$out/docs/images"
 
             # Sanity checks of the package.
             foreach ($exe in 'SnapBack.exe', 'snapback-cli.exe') {
